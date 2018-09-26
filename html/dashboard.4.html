@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Flatkit - HTML Version | Bootstrap 4 Web App Kit with AngularJS</title>
+  <title>EMWS - Powered by Flatkit</title>
   <meta name="description" content="Admin, Dashboard, Bootstrap, Bootstrap 4, Angular, AngularJS" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -221,9 +221,9 @@
         </ul>
       </div>
       <div class="m-b">
-        <p><i class="fa fa-fw text-muted m-r-xs fa-plus-circle"></i> <a href="http://emlab.utep.edu/ee5390cem.htm">Computational Electromagnetics (additional info)</a></p>
-        <p><i class="fa fa-fw text-muted m-r-xs fa-plus-circle"></i> <a href="http://emlab.utep.edu/ee5390cem.htm"> (additional info)</a></p>
-        <!-- <p><i class="fa fa-fw text-muted m-r-xs fa-phone"></i> (432) 999 000</p>
+        <p><i class="fa fa-fw text-muted m-r-xs fa-plus-circle"></i> <a href="http://emlab.utep.edu/ee5390cem.htm">Computational Electromagnetics (Additional Info)</a></p>
+        <!-- <p><i class="fa fa-fw text-muted m-r-xs fa-plus-circle"></i> <a href="http://emlab.utep.edu/ee5390cem.htm"> (additional info)</a></p>
+        <p><i class="fa fa-fw text-muted m-r-xs fa-phone"></i> (432) 999 000</p>
         <p><i class="fa fa-fw text-muted m-r-xs fa-clock-o"></i> Mon-Fri 9:00 - 16:00</p> -->
       </div>
     </div>
@@ -235,15 +235,14 @@
     <div ng-init="init()" style="display: none"></div>
     <input id="shownVal" value="Ex" style="display: none">
     <div class="margin">
-        <h5 class="mb-0 _300">Hi Dr. Shipman, Welcome back</h5>
-        <small class="text-muted">Awesome visualizations of Electromagnetic Wave Scattering</small>
+        <h5 class="mb-0 _300">Visualizations of Electromagnetic Wave Scattering</h5>
     </div>
     <div class="row">
         <div class="col-12 ">
             <div class="box">
                 <div class="box-header">
-                    <h3>Define Structures</h3>
-                    <small>Fill in the corresponding epsilon, mu, and length values for each layer.</small>
+                    <h3>Define Layered Structure</h3>
+                    <small>Enter number of layers and length, electric tensors, and magnetic tensors for each layer.</small>
                 </div>
                 <div class="box-divider m-a-0"></div>
                 <div class="box-body">
@@ -429,7 +428,8 @@
                         </ul>
                     </form>
                     <button type="button" class='btn white' ng-click="buildStruct()">Build Structures</button>
-                    <a ng-click="addLayer()">Submit</a><a ng-click="removeLayer()">remove</a>
+                    <button type="button" class='btn btn-sm white' ng-click="addLayer()">+</button>
+                    <button type="button" class='btn btn-sm white' ng-click="removeLayer()">-</button>
                 </div>
             </div>
         </div>
@@ -439,7 +439,7 @@
             <div class="row no-gutter box bg">
                 <div class="col-12">
                     <div class="box-header">
-                        <h3>Structures View</h3>
+                        <h3>Layered Structure</h3>
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div style="height:400px" class="box-body addHere3" id="structureView">
@@ -455,14 +455,14 @@
 <div class="padding p2" style="visibility: hidden; position: absolute; left: 0px; top: 0px;">
     <div class="margin">
         <h5 class="mb-0 _300">Electromagnetic Field</h5>
-        <small class="text-muted">Bottom Text</small>
+        <small class="text-muted">Computation of electromagnetic field in space and time.</small>
     </div>
     <div class="row">
         <div class="col-lg-4">
             <div class="box">
                 <div class="box-header">
-                    <h3>Input Frequencys and Parallel Wave Vector</h3>
-                    <small>Omega, kx, ky. Computes incoming modes</small>
+                    <h3>Frequency and Wave Vector</h3>
+                    <small>Enter frequency &omega; and wave vector (k<sub>1</sub>, k<sub>2</sub>) parallel to layers.</small>
                     <!-- <small>box to add</small> -->
                 </div>
                 <div class="text-center b-t">
@@ -479,7 +479,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K1</label>
+                                        <label>K<sub>1</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k1" ng-model="k1">
@@ -487,7 +487,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K2</label>
+                                        <label>K<sub>2</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k2" ng-model="k2">
@@ -513,32 +513,33 @@
             <div class="row no-gutter box bg">
                 <div class="col-6">
                     <div class="box-header">
-                        <h3>Incoming modes</h3>
-                        <small>Bottom text</small>
+                        <h3>Incoming Modes in Ambient Medium</h3>
+                        <small>Calculate perpendicular wave vectors in the left and right ambient media.</small> 
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body " id="">
-                        <div style="height:262px">
-                            <h6> Backward Modes </h6>
-                            <p> {{mBack1x}}  - {{mBack1y}}i </p>
-                            <p> {{mBack2x}}  - {{mBack2y}}i </p>
-                            <h6> Forward Modes </h6>
-                            <p> {{mFor1x}}  - {{mFor1y}}i </p>
-                            <p> {{mFor2x}}  - {{mFor2y}}i </p>
+                        <div style="height:262px;width:155px;float:left;">
+                            <h6> Leftward Modes </h6>
+                            <p> {{mBack1x}} + {{mBack1y}}i </p>
+                            <p> {{mBack2x}} + {{mBack2y}}i </p>
+                            
+                            <h6> Rightward Modes </h6>
+                            <p> {{mFor1x}} + {{mFor1y}}i </p>
+                            <p> {{mFor2x}} + {{mFor2y}}i </p>
 
-                            <button ng-click="buildModes()" type="submit" class="btn white">Recalculate Modes</button>                             
+                            <button ng-click="buildModes()" type="submit" class="btn white">Calculate Modes</button>  
 
                             <!-- place procedural layer forms here -->
                         </div>
-                    </div>                    
+                    </div>             
                 </div>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="box">
                 <div class="box-header">
-                    <h3>Define Left and Right Hand Incoming Modes</h3>
-                    <small>Define the strength of the incoming modes and run the experiment.</small>
+                    <h3>Coefficients of Incoming Modes</h3>
+                    <small>Enter complex amplitudes of the incoming modes.</small>
                 </div>
                 <div class="text-center b-t">
                     <div class="row-col">

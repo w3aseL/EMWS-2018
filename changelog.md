@@ -1,1 +1,29 @@
-
+## **2.1.1**
+ - Changed title of web page (can be seen in tabs)
+ - **Structure Tab**
+   - Changed page title
+     - Removed bottom text
+   - Changed title "Define Structures" to "Define Layered Structure"
+     - Changed bottom text
+     - Changed default values for each layer
+     - Changed "Submit" and "Remove" buttons to "+" and "-"
+	   - These buttons add and remove layers
+   - Changed title "Structures View" to "Layered Structure"
+     - Removed numbers labeling vertical axis
+     - Attempted to remove the grid
+     - Horizontal axis labels increment by 2
+ - **Field Tab**
+   - Changed bottom text under "Electromagnetic Field"
+   - Changed first section title to "Frequency and Wave Vector"
+     - Fixed special characters and subscripts
+	 - Changed default values (1, 0.2, 0.2) -> (1, 0, 0)
+   - Changed middle section title to "Incoming Modes in Ambient Medium"
+     - Changed bottom text
+	 - Changed "Forward Modes" to "Rightward Modes"
+	 - Changed "Backward Modes" to "Leftward Modes"
+	 - Changed all subtraction signs to addition signs
+	 - Changed button name to "Calculate Modes"
+   - Changed right section title to "Coefficients of Incoming Modes"
+     - Changed bottom text
+	 - Changed default values [1, 0, 0 , 1] -> [1, 0, 0, 0]
+	 

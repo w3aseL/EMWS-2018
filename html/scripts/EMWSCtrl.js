@@ -10,11 +10,11 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.context;
         $scope.NumLayers = 5;
         $scope.o = 1; //omega
-        $scope.k1 = .2;
-        $scope.k2 = .2;
+        $scope.k1 = 0;
+        $scope.k2 = 0;
         $scope.wLeft = -5; //bounds for the transmission graph
         $scope.wRight = 5;
-        $scope.incoming = [1, 0, 0, 1];
+        $scope.incoming = [1, 0, 0, 0];
         $scope.eArray = [];
         $scope.muArray = [];
         $scope.lArray = [];
@@ -35,7 +35,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.Layers = [{
                 "layerName": "Ambient Left",
                 "epsilon": [1, 2, 3, 4],
-                "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                "epsilonA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                 "mu": [1, 2, 3, 4],
                 "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
                 "length": 6
@@ -43,7 +43,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             {
                 "layerName": "Layer 1",
                 "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                "epsilonA": [[2, 1, 0], [1, 2, 0], [0, 0, 1]],
                 "mu": [2, 2, 3, 6],
                 "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
                 "length": 6
@@ -51,7 +51,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             {
                 "layerName": "Layer 2",
                 "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                "epsilonA": [[3, 0, 0], [0, 3, 0], [0, 0, 1]],
                 "mu": [2, 2, 3, 6],
                 "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
                 "length": 9
@@ -59,7 +59,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             {
                 "layerName": "Layer 3",
                 "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                "epsilonA": [[2, 1, 0], [1, 2, 0], [0, 0, 1]],
                 "mu": [2, 2, 3, 6],
                 "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
                 "length": 6
@@ -67,7 +67,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             {
                 "layerName": "Ambient Right",
                 "epsilon": [1, 2, 3, 4],
-                "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                "epsilonA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                 "mu": [1, 2, 3, 4],
                 "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
                 "length": 6
@@ -107,7 +107,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             $scope.Layers.push({
                 "layerName": "Ambient Right",
                 "epsilon": [1, 2, 3, 4],
-                "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                "epsilonA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                 "mu": [1, 2, 3, 4],
                 "muA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                 "length": 6
@@ -140,7 +140,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 $scope.Layers.push({
                     "layerName": "Ambient Right",
                     "epsilon": [1, 2, 3, 4],
-                    "epsilonA": [[2, 1, 0], [1, 3, 0], [0, 0, 1]],
+                    "epsilonA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                     "mu": [1, 2, 3, 4],
                     "muA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                     "length": 6
@@ -259,6 +259,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var options = {
                 chart: {
                     title: document.getElementById("shownVal").value + ' Values in Relation to Z'
+                },
+                hAxis: {
+                     
                 },
                 width: "100%",
                 height: "100%",
@@ -1408,14 +1411,23 @@ catch (e) {
                 width: '100%',
                 height: '100%',
                 hAxis: {
-                    gridlines: { count: interfaceLength },
+                    gridlines: { 
+                        count: (interfaceLength / 2),
+                        color: 'transparent' 
+                    },
                     viewWindow: {
                         min: 0,
                         max: $scope.totalLength //modify max by adding layer lengths, then apply to buildstructure button, then set up value placement of layers, then custom overlays
                     }
                 },
                 vAxis: {
-                    gridlines: { count: 10 },
+
+                    //title: 'z',
+                    textPosition: 'none',
+                    gridlines: {
+                         count: 10,
+                         color: 'transparent'  
+                    },
                     viewWindow: {
                         min: -1,
                         max: 1
