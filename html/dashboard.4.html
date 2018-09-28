@@ -60,7 +60,7 @@
           </div>
           <div id="c_1" class="collapse in">
             <div class="box-body">
-              <p class="text-sm text-muted"><span class="text-md pull-left w-32 m-r rounded success">A</span> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, <br><br>raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+              <p class="text-sm text-muted"><span class="text-md pull-left w-32 m-r rounded success">A</span> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, <br><br>raw denim aesthetic synth nesciunt you probably haven' heard of them accusamus labore sustainable VHS sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
               </p>
             </div>
           </div>
@@ -233,7 +233,7 @@
 <!-- Start Application -->
 <div class="padding p1" style="visibility: hidden; position: absolute; left: 0px; top: px;">
     <div ng-init="init()" style="display: none"></div>
-    <input id="shownVal" value="Ex" style="display: none">
+    <input id="shownVal" value="Eₓ" style="display: none">
     <div class="margin">
         <h5 class="mb-0 _300">Visualizations of Electromagnetic Wave Scattering</h5>
     </div>
@@ -518,17 +518,19 @@
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body " id="">
-                        <div style="height:262px;width:155px;float:left;">
+                        <div style="height:160px;width:250px;float:left;">
                             <h6> Leftward Modes </h6>
                             <p> {{mBack1x}} + {{mBack1y}}i </p>
                             <p> {{mBack2x}} + {{mBack2y}}i </p>
-                            
-                            <h6> Rightward Modes </h6>
-                            <p> {{mFor1x}} + {{mFor1y}}i </p>
-                            <p> {{mFor2x}} + {{mFor2y}}i </p>
 
                             <button ng-click="buildModes()" type="submit" class="btn white">Calculate Modes</button>  
 
+                            <!-- place procedural layer forms here -->
+                        </div>
+                        <div style="height:160px;width:250px;float:right;">
+                            <h6> Rightward Modes </h6>
+                            <p> {{mFor1x}} + {{mFor1y}}i </p>
+                            <p> {{mFor2x}} + {{mFor2y}}i </p>
                             <!-- place procedural layer forms here -->
                         </div>
                     </div>             
@@ -583,13 +585,22 @@
             <div class="row no-gutter box bg">
                 <div class="col-12">
                     <div class="box-header">
-                        <h3>Structures</h3>
-                        <small>Input for # of Layers, Lengths, Epsilon, Mu</small>
+                        <h3>Structure</h3>
+                        <!--<small>Input for # of Layers, Lengths, Epsilon, Mu</small>-->
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body addHere" id="structView">
                         <div style="height:262px">
                             <!-- place procedural layer forms here -->
+                        </div>
+                    </div>
+                    <div class="box-body" id="">
+                        <div style="height:30px">
+                            <button type="button" class='btn btn-sm white' ng-click="toggleEx()">E<sub>x</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleEy()">E<sub>Y</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleHx()">H<sub>x</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleHy()">H<sub>Y</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="resetFieldChart()">Reset</button>
                         </div>
                     </div>
                 </div>
@@ -601,7 +612,7 @@
             <div class="row no-gutter box bg">
                 <div class="col-12">
                     <div class="box-header">
-                        <h3>Structure Views</h3>
+                        <h3>Structure View</h3>
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body" id="testcanvas" style="min-height: 400px;">
@@ -648,7 +659,7 @@
     		<div class="box">
                 <div class="box-header">
                     <h3>Input Frequencys and Parallel Wave Vector</h3>
-                    <small>Omega, kx, ky. Computes incoming modes</small>
+                    <small>&omega;, K<sub>1</sub>, K<sub>2</sub>. Computes incoming modes</small>
                     <!-- <small>box to add</small> -->
                 </div>
                 <div class="text-center b-t">
@@ -657,7 +668,7 @@
                             <form role="form">
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>W-interval</label>
+                                        <label>&omega;-interval</label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="intervalLeft" ng-model="wLeft"> 
@@ -666,7 +677,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K1</label>
+                                        <label>K<sub>1</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k1" ng-model="k1">
@@ -674,7 +685,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K2</label>
+                                        <label>K<sub>2</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k2" ng-model="k2">
@@ -706,11 +717,23 @@
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body " id="incomingModess">
-                        <div style="height:262px">
+                        <!--<div style="height:262px">
                              <p> backward modes </p>
                             <p> {{mBack1x}}x  - {{mBack1y}}y </p>
                             <p> {{mBack2x}}x  - {{mBack2y}}y </p>
                             <p> forward modes </p>
+                            <p> {{mFor1x}}x  - {{mFor1y}}y </p>
+                            <p> {{mFor2x}}x  - {{mFor2y}}y </p>
+                            <--place procedural layer forms here->
+                        </div>-->
+                        <div style="height:160px;width:250px;float:left;">
+                            <h6> Leftward Modes </h6>
+                            <p> {{mBack1x}}x  - {{mBack1y}}y </p>
+                            <p> {{mBack2x}}x  - {{mBack2y}}y </p>
+                            <!-- place procedural layer forms here -->
+                        </div>
+                        <div style="height:160px;width:250px;float:right;">
+                            <h6> Rightward Modes </h6>
                             <p> {{mFor1x}}x  - {{mFor1y}}y </p>
                             <p> {{mFor2x}}x  - {{mFor2y}}y </p>
                             <!-- place procedural layer forms here -->

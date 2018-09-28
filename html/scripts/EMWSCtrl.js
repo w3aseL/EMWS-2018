@@ -220,8 +220,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             updateFields();
             updateModes();
         }
-        
-
             
         function createFieldChart() {
             var fields = $scope.field;
@@ -229,30 +227,41 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'z');
-            data.addColumn('number', document.getElementById("shownVal").value);
+            //data.addColumn('number', document.getElementById("shownVal").value);
+            data.addColumn('number', 'Eₓ');
+            data.addColumn('number', 'Eᵧ');
+            data.addColumn('number', 'Hₓ');
+            data.addColumn('number', 'Hᵧ');
+            
             //Iterate through fields values
 
             for (var i = 0, N = fields.z.length; i < N; i++) {
-                if (document.getElementById("shownVal").value == 'Ex') {
+                /*
+                if (document.getElementById("shownVal").value == 'Eₓ') {
                     data.addRows([
                         [fields.z[i], fields.Ex[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Ey') {
+                if (document.getElementById("shownVal").value == 'Eᵧ') {
                     data.addRows([
                         [fields.z[i], fields.Ey[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Hx') {
+                if (document.getElementById("shownVal").value == 'Hₓ') {
                     data.addRows([
                         [fields.z[i], fields.Hx[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Hy') {
+                if (document.getElementById("shownVal").value == 'Hᵧ') {
                     data.addRows([
                         [fields.z[i], fields.Hy[i]]
                     ]);
                 }
+                */
+                data.addRows([
+                    [fields.z[i], fields.Ex[i], fields.Ey[i], fields.Hx[i], fields.Hy[i]]
+                ]);
+
                 // console.log(fields.z[i] + " " + fields.Ex[i] + " " + fields.Ey[i] + " " + fields.Hx[i] + " " + fields.Hy[i]);
             }
 
@@ -311,7 +320,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     for (var j = 0; j < overlays.length; j++) {
                         overlays[j].style.position = 'absolute';
                         overlays[j].style.opacity = '.5';
-                        overlays[j].style.top = Math.floor(cli.getChartAreaBoundingBox().top) + 86 + "px";
+                        overlays[j].style.top = Math.floor(cli.getChartAreaBoundingBox().top) + 65 + "px";
                         overlays[j].style.left = Math.floor(cli.getXLocation(interfaces[j])) + 16 + "px";
 
                     }
@@ -337,6 +346,33 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var myElements = document.querySelectorAll(".hiddenChart");
             for (var i = 0; i < myElements.length; i++) {
                 myElements[i].style.opacity = 1;
+            }
+
+            var chartView = new google.visualization.DataView(data);
+
+            $scope.toggleEx = function() {
+                chartView.hideColumns([1]);
+                chart.draw(chartView, options);
+            }
+    
+            $scope.toggleEy = function() {
+                chartView.hideColumns([2]);
+                chart.draw(chartView, options);
+            }
+    
+            $scope.toggleHx = function() {
+                chartView.hideColumns([3]);
+                chart.draw(chartView, options);
+            }
+    
+            $scope.toggleHy = function() {
+                chartView.hideColumns([4]);
+                chart.draw(chartView, options);
+            }
+
+            $scope.resetFieldChart = function() {
+                chartView.setColumns([0, 1, 2, 3 , 4]);
+                chart.draw(chartView, options);
             }
         }
 
@@ -1271,22 +1307,22 @@ catch (e) {
             //Iterate through fields values
 
             for (var i = 0, N = fields.z.length; i < N; i++) {
-                if (document.getElementById("shownVal").value == 'Ex') {
+                if (document.getElementById("shownVal").value == 'Eₓ') {
                     data.addRows([
                         [fields.z[i], fields.Ex[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Ey') {
+                if (document.getElementById("shownVal").value == 'Eᵧ') {
                     data.addRows([
                         [fields.z[i], fields.Ey[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Hx') {
+                if (document.getElementById("shownVal").value == 'Hₓ') {
                     data.addRows([
                         [fields.z[i], fields.Hx[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Hy') {
+                if (document.getElementById("shownVal").value == 'Hᵧ') {
                     data.addRows([
                         [fields.z[i], fields.Hy[i]]
                     ]);
@@ -1421,7 +1457,6 @@ catch (e) {
                     }
                 },
                 vAxis: {
-
                     //title: 'z',
                     textPosition: 'none',
                     gridlines: {

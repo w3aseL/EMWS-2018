@@ -26,4 +26,13 @@
    - Changed right section title to "Coefficients of Incoming Modes"
      - Changed bottom text
 	 - Changed default values [1, 0, 0 , 1] -> [1, 0, 0, 0]
-	 
+
+## **2.2**
+ - **Field Tab**
+   - Organized "Incoming Modes in Ambient Medium" section
+   - Added other lines to "Structure" graph
+     - Removed bottom text (temporarily)
+	 - Added buttons to show/hide graph lines
+  - Switched Dispersion and Transmission tabs around
+  - **Transmission Tab**
+    - Fixed subscripts and special characters
