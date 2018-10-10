@@ -36,3 +36,10 @@
   - Switched Dispersion and Transmission tabs around
   - **Transmission Tab**
     - Fixed subscripts and special characters
+	
+## **2.2.1**
+ - **Field Tab**
+   - Organized "Incoming Modes in Ambient Medium" section
+   - Applied changes to Structure graph
+     - Overlay is behind graph now
+	 - Changed guidelines to match overlay boundaries

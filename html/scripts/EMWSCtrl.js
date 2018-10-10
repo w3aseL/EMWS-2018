@@ -31,6 +31,11 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.crystal;
         $scope.field;
         $scope.dispersion;
+        $scope.EX = 'Eₓ';
+        $scope.EY = 'Eᵧ';
+        $scope.HX = 'Hₓ';
+        $scope.HY = 'Hᵧ';
+
 
         $scope.Layers = [{
                 "layerName": "Ambient Left",
@@ -228,10 +233,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'z');
             //data.addColumn('number', document.getElementById("shownVal").value);
-            data.addColumn('number', 'Eₓ');
-            data.addColumn('number', 'Eᵧ');
-            data.addColumn('number', 'Hₓ');
-            data.addColumn('number', 'Hᵧ');
+            data.addColumn('number', $scope.EX);
+            data.addColumn('number', $scope.EY);
+            data.addColumn('number', $scope.HX);
+            data.addColumn('number', $scope.HY);
             
             //Iterate through fields values
 
@@ -265,22 +270,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 // console.log(fields.z[i] + " " + fields.Ex[i] + " " + fields.Ey[i] + " " + fields.Hx[i] + " " + fields.Hy[i]);
             }
 
-            var options = {
-                chart: {
-                    title: document.getElementById("shownVal").value + ' Values in Relation to Z'
-                },
-                hAxis: {
-                     
-                },
-                width: "100%",
-                height: "100%",
-                chartArea: {
-                    left: 40,
-                    top: 40
-                }
-
-            };
-
             function printInterfaces(dataTable) { //prints the colored squares on the top of the chart
                 var cli = this.getChartLayoutInterface();
                 var chartArea = cli.getChartAreaBoundingBox();
@@ -313,40 +302,67 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     // document.querySelector('.overlay').style.top = Math.floor(cli.getChartAreaBoundingBox().top) + "px";
                     // document.querySelector('.overlay').style.left = Math.floor(cli.getXLocation(interfaces[i])) + 15 + "px";
 
+                    //axisTicks[j] = (cli.getXLocation(interfaces[j]) / 1511);
                 };
 
                 if (htmlClass == "addHere") {
                     var overlays = document.querySelectorAll('.overlay');
                     for (var j = 0; j < overlays.length; j++) {
                         overlays[j].style.position = 'absolute';
+                        overlays[j].style.pointerEvents = 'none';
                         overlays[j].style.opacity = '.5';
                         overlays[j].style.top = Math.floor(cli.getChartAreaBoundingBox().top) + 65 + "px";
                         overlays[j].style.left = Math.floor(cli.getXLocation(interfaces[j])) + 16 + "px";
-
                     }
                 } else if (htmlClass == "addHere2") {
                     var overlays = document.querySelectorAll('.overlay2');
                     for (var j = 0; j < overlays.length; j++) {
                         overlays[j].style.position = 'absolute';
+                        overlays[j].style.pointerEvents = 'none';
                         overlays[j].style.opacity = '.5';
                         overlays[j].style.top = Math.floor(cli.getChartAreaBoundingBox().top) + 15 + "px";
                         overlays[j].style.left = Math.floor(cli.getXLocation(interfaces[j])) + 30 + "px";
                     }
                 }
-
-
-
             }
-
+            
             var chart = new google.visualization.LineChart(document.getElementById('structView'));
             google.visualization.events.addListener(chart, 'ready', printInterfaces.bind(chart, data)); //all from Google's tutorial https://developers.google.com/chart/interactive/docs/overlays
             //var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+            var options = {
+                chart: {
+                    title: document.getElementById("shownVal").value + ' Values in Relation to Z'
+                },
+                hAxis: {
+                    gridlines: {
+                        color: 'black'  
+                   },
+                   ticks: interfaces
+                },
+                vAxis:{
+                    gridlines: {
+                        color: 'transparent'  
+                   }
+                },
+                width: "100%",
+                height: "100%",
+                chartArea: {
+                    left: 40,
+                    top: 40
+                },
+                backgroundColor: 'transparent'
+
+            };
+
             chart.draw(data, options);
 
             var myElements = document.querySelectorAll(".hiddenChart");
             for (var i = 0; i < myElements.length; i++) {
                 myElements[i].style.opacity = 1;
             }
+
+            document.getElementById('structView').children[0].style.zIndex = 1;         //This is probably the most inefficient way to grab the chart's division and put it above the overlays, but it works (for now)
 
             var chartView = new google.visualization.DataView(data);
 
@@ -1307,22 +1323,22 @@ catch (e) {
             //Iterate through fields values
 
             for (var i = 0, N = fields.z.length; i < N; i++) {
-                if (document.getElementById("shownVal").value == 'Eₓ') {
+                if (document.getElementById("shownVal").value == $scope.EX) {
                     data.addRows([
                         [fields.z[i], fields.Ex[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Eᵧ') {
+                if (document.getElementById("shownVal").value == $scope.EY) {
                     data.addRows([
                         [fields.z[i], fields.Ey[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Hₓ') {
+                if (document.getElementById("shownVal").value == $scope.HX) {
                     data.addRows([
                         [fields.z[i], fields.Hx[i]]
                     ]);
                 }
-                if (document.getElementById("shownVal").value == 'Hᵧ') {
+                if (document.getElementById("shownVal").value == $scope.HY) {
                     data.addRows([
                         [fields.z[i], fields.Hy[i]]
                     ]);

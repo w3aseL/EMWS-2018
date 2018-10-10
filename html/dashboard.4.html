@@ -518,21 +518,22 @@
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body " id="">
-                        <div style="height:160px;width:250px;float:left;">
+                        <div style="padding-left:45px;float:left;">
                             <h6> Leftward Modes </h6>
                             <p> {{mBack1x}} + {{mBack1y}}i </p>
                             <p> {{mBack2x}} + {{mBack2y}}i </p>
 
-                            <button ng-click="buildModes()" type="submit" class="btn white">Calculate Modes</button>  
-
                             <!-- place procedural layer forms here -->
                         </div>
-                        <div style="height:160px;width:250px;float:right;">
+                        <div style="padding-right:75px;float:right;">
                             <h6> Rightward Modes </h6>
                             <p> {{mFor1x}} + {{mFor1y}}i </p>
                             <p> {{mFor2x}} + {{mFor2y}}i </p>
                             <!-- place procedural layer forms here -->
                         </div>
+                        <div style="clear:both;width:152px;margin:auto;">
+                            <button ng-click="buildModes()" type="button" class="btn gray">Calculate Modes</button>
+                        </div>  
                     </div>             
                 </div>
             </div>
@@ -590,7 +591,7 @@
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body addHere" id="structView">
-                        <div style="height:262px">
+                        <div style="height:262px;">
                             <!-- place procedural layer forms here -->
                         </div>
                     </div>
@@ -726,13 +727,13 @@
                             <p> {{mFor2x}}x  - {{mFor2y}}y </p>
                             <--place procedural layer forms here->
                         </div>-->
-                        <div style="height:160px;width:250px;float:left;">
+                        <div style="padding-left:10px;height:160px;float:left;">
                             <h6> Leftward Modes </h6>
                             <p> {{mBack1x}}x  - {{mBack1y}}y </p>
                             <p> {{mBack2x}}x  - {{mBack2y}}y </p>
                             <!-- place procedural layer forms here -->
                         </div>
-                        <div style="height:160px;width:250px;float:right;">
+                        <div style="padding-right:10px;height:160px;float:right;">
                             <h6> Rightward Modes </h6>
                             <p> {{mFor1x}}x  - {{mFor1y}}y </p>
                             <p> {{mFor2x}}x  - {{mFor2y}}y </p>
