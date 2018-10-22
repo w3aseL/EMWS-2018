@@ -479,7 +479,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K<sub>1</sub></label>
+                                        <label>k<sub>1</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k1" ng-model="k1">
@@ -487,7 +487,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K<sub>2</sub></label>
+                                        <label>k<sub>2</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k2" ng-model="k2">
@@ -518,18 +518,57 @@
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body " id="">
-                        <div style="padding-left:45px;float:left;">
+                        <div style="padding-left:25px;float:left;margin-bottom: 10px">
                             <h6> Leftward Modes </h6>
-                            <p> {{mBack1x}} + {{mBack1y}}i </p>
-                            <p> {{mBack2x}} + {{mBack2y}}i </p>
+                            <!--<p> {{mBack1}} </p>
+                            <p> {{mBack2}} </p>-->
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack1}}
+                                <input type="checkbox" id="backModeChk1">
+                                <span class="checkmark"></span>
+                            </label>
 
-                            <!-- place procedural layer forms here -->
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack2}}
+                                <input type="checkbox" id="backModeChk2">
+                                <span class="checkmark"></span>
+                            </label>
+
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack3}}
+                                <input type="checkbox" id="backModeChk3">
+                                <span class="checkmark"></span>
+                            </label>
+
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack4}}
+                                <input type="checkbox" id="backModeChk4">
+                                <span class="checkmark"></span>
+                            </label>
+
+                             <!-- place procedural layer forms here --> 
                         </div>
-                        <div style="padding-right:75px;float:right;">
+                        <div style="clear:both;padding-left:25px;float:left;">
                             <h6> Rightward Modes </h6>
-                            <p> {{mFor1x}} + {{mFor1y}}i </p>
-                            <p> {{mFor2x}} + {{mFor2y}}i </p>
-                            <!-- place procedural layer forms here -->
+                            <!--<p> {{mFor1}} </p>
+                            <p> {{mFor2}} </p>-->
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor1}}
+                                <input type="checkbox" id="forModeChk1">
+                                <span class="checkmark"></span>
+                            </label>
+
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor2}}
+                                <input type="checkbox" id="forModeChk2">
+                                <span class="checkmark"></span>
+                            </label>
+
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor3}}
+                                <input type="checkbox" id="forModeChk3">
+                                <span class="checkmark"></span>
+                            </label>
+
+                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor4}}
+                                <input type="checkbox" id="forModeChk4">
+                                <span class="checkmark"></span>
+                            </label>
+                            
+                             <!-- place procedural layer forms here -->
                         </div>
                         <div style="clear:both;width:152px;margin:auto;">
                             <button ng-click="buildModes()" type="button" class="btn gray">Calculate Modes</button>
@@ -660,7 +699,7 @@
     		<div class="box">
                 <div class="box-header">
                     <h3>Input Frequencys and Parallel Wave Vector</h3>
-                    <small>&omega;, K<sub>1</sub>, K<sub>2</sub>. Computes incoming modes</small>
+                    <small>&omega;, k<sub>1</sub>, k<sub>2</sub>. Computes incoming modes</small>
                     <!-- <small>box to add</small> -->
                 </div>
                 <div class="text-center b-t">
@@ -678,7 +717,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K<sub>1</sub></label>
+                                        <label>k<sub>1</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k1" ng-model="k1">
@@ -686,7 +725,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-lg-4">
-                                        <label>K<sub>2</sub></label>
+                                        <label>k<sub>2</sub></label>
                                     </div>
                                     <div class="col-lg-6">
                                         <input type="text" class="form-control form-control-sm" id="k2" ng-model="k2">

@@ -24,10 +24,26 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.mBack1y;
         $scope.mBack2x;
         $scope.mBack2y;
+        $scope.mBack3x; 
+        $scope.mBack3y;
+        $scope.mBack4x;
+        $scope.mBack4y;
         $scope.mFor1x;
         $scope.mFor1y;
         $scope.mFor2x;
         $scope.mFor2y;
+        $scope.mFor3x;
+        $scope.mFor3y;
+        $scope.mFor4x;
+        $scope.mFor4y;
+        $scope.mFor1;
+        $scope.mFor2;
+        $scope.mFor3;
+        $scope.mFor4;
+        $scope.mBack1; 
+        $scope.mBack2;
+        $scope.mBack3; 
+        $scope.mBack4;
         $scope.crystal;
         $scope.field;
         $scope.dispersion;
@@ -80,7 +96,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         ];
 
         // $scope.
-        $scope.init = function() {       
+        $scope.init = function() {     
             getArrays();
             updateAll();
             google.charts.setOnLoadCallback(createStructureChart);
@@ -167,7 +183,38 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         }
 
         $scope.buildModes = function() {
-            updateModes();
+            getArrays();
+            updateAll();
+        }
+
+        $scope.checkBoxes = function() {
+            var backChecked = 0;
+            var forChecked = 0
+
+            for(let i = 1; i <= 4; i++){
+                if(document.getElementById("backModeChk" + i).checked == true) backChecked++;
+                if(document.getElementById("forModeChk" + i).checked == true) forChecked++;
+            }
+
+            if(backChecked == 2){
+                for(let i = 1; i <= 4; i++){
+                    if(document.getElementById("backModeChk" + i).checked == false) document.getElementById("backModeChk" + i).disabled = true;
+                }
+            }else if(backChecked < 2){
+                for(let i = 1; i <= 4; i++){
+                    if(document.getElementById("backModeChk" + i).disabled == true) document.getElementById("backModeChk" + i).disabled = false;
+                }
+            }
+
+            if(forChecked == 2){
+                for(let i = 1; i <= 4; i++){
+                    if(document.getElementById("forModeChk" + i).checked == false) document.getElementById("forModeChk" + i).disabled = true;
+                }
+            }else if(forChecked < 2){
+                for(let i = 1; i <= 4; i++){
+                    if(document.getElementById("forModeChk" + i).disabled == true) document.getElementById("forModeChk" + i).disabled = false;
+                }
+            }
         }
         
         //#########################################################################################
@@ -199,14 +246,32 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         function updateModes() {
             var lastEigensystem = $scope.crystal.Struct.Eigensystems.length - 1;
-            $scope.mBack1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(9));
-            $scope.mBack1y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(9));
-            $scope.mBack2x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(9));
-            $scope.mBack2y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(9));
-            $scope.mFor1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[0][2].eigenvalue).toFixed(9));
-            $scope.mFor1y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[0][2].eigenvalue).toFixed(9));
-            $scope.mFor2x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[0][3].eigenvalue).toFixed(9));
-            $scope.mFor2y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[0][3].eigenvalue).toFixed(9));
+            $scope.mBack1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
+            $scope.mBack1y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
+            $scope.mBack2x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(4));
+            $scope.mBack2y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(4));
+            $scope.mBack3x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][2].eigenvalue).toFixed(4));
+            $scope.mBack3y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][2].eigenvalue).toFixed(4));
+            $scope.mBack4x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][3].eigenvalue).toFixed(4));
+            $scope.mBack4y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][3].eigenvalue).toFixed(4));
+            $scope.mFor1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[0][0].eigenvalue).toFixed(4));
+            $scope.mFor1y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[0][0].eigenvalue).toFixed(4));
+            $scope.mFor2x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[0][1].eigenvalue).toFixed(4));
+            $scope.mFor2y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[0][1].eigenvalue).toFixed(4));
+            $scope.mFor3x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[0][2].eigenvalue).toFixed(4));
+            $scope.mFor3y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[0][2].eigenvalue).toFixed(4));
+            $scope.mFor4x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[0][3].eigenvalue).toFixed(4));
+            $scope.mFor4y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[0][3].eigenvalue).toFixed(4));
+
+            $scope.mBack1 = math.complex($scope.mBack1x, $scope.mBack1y);
+            $scope.mBack2 = math.complex($scope.mBack2x, $scope.mBack2y);
+            $scope.mBack3 = math.complex($scope.mBack3x, $scope.mBack3y);
+            $scope.mBack4 = math.complex($scope.mBack4x, $scope.mBack4y);
+
+            $scope.mFor1 = math.complex($scope.mFor1x, $scope.mFor1y);
+            $scope.mFor2 = math.complex($scope.mFor2x, $scope.mFor2y);
+            $scope.mFor3 = math.complex($scope.mFor3x, $scope.mFor3y);
+            $scope.mFor4 = math.complex($scope.mFor4x, $scope.mFor4y);
         }
         
         function updateCrystal(){

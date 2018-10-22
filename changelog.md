@@ -43,3 +43,7 @@
    - Applied changes to Structure graph
      - Overlay is behind graph now
 	 - Changed guidelines to match overlay boundaries
+	 
+## **2.2.2**
+ - **Field Tab**
+   - Reorganized "Incoming Modes in Ambient Medium" sections
