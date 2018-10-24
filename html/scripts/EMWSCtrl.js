@@ -111,7 +111,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
 
             //$(".p1").addClass("ng-hide");
-
+            $scope.checkBoxes();
         }
 
         function addHide() {
@@ -185,11 +185,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.buildModes = function() {
             getArrays();
             updateAll();
+
+            $scope.checkBoxes();
         }
 
         $scope.checkBoxes = function() {
             var backChecked = 0;
-            var forChecked = 0
+            var forChecked = 0;
 
             for(let i = 1; i <= 4; i++){
                 if(document.getElementById("backModeChk" + i).checked == true) backChecked++;
@@ -197,22 +199,48 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
 
             if(backChecked == 2){
+                let j = 0;
+
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("backModeChk" + i).checked == false) document.getElementById("backModeChk" + i).disabled = true;
+                    if(document.getElementById("backModeChk" + i).checked == false) { document.getElementById("backModeChk" + i).disabled = true; }
+                    else {
+                        if(i == 1) $scope.incoming[j] = $scope.mBack1;
+                        else if(i == 2) $scope.incoming[j] = $scope.mBack2;
+                        else if(i == 3) $scope.incoming[j] = $scope.mBack3;
+                        else if(i == 4) $scope.incoming[j] = $scope.mBack4;
+                        j++;
+                    }
                 }
             }else if(backChecked < 2){
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("backModeChk" + i).disabled == true) document.getElementById("backModeChk" + i).disabled = false;
+                    if(document.getElementById("backModeChk" + i).disabled == true) { document.getElementById("backModeChk" + i).disabled = false; }
+                    else {
+                        $scope.incoming[0] = 1;
+                        $scope.incoming[1] = 0;
+                    }
                 }
             }
 
             if(forChecked == 2){
+                let j = 2;
+
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("forModeChk" + i).checked == false) document.getElementById("forModeChk" + i).disabled = true;
+                    if(document.getElementById("forModeChk" + i).checked == false) { document.getElementById("forModeChk" + i).disabled = true;  }
+                    else {
+                        if(i == 1) $scope.incoming[j] = $scope.mFor1;
+                        else if(i == 2) $scope.incoming[j] = $scope.mFor2;
+                        else if(i == 3) $scope.incoming[j] = $scope.mFor3;
+                        else if(i == 4) $scope.incoming[j] = $scope.mFor4;
+                        j++;
+                    }
                 }
             }else if(forChecked < 2){
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("forModeChk" + i).disabled == true) document.getElementById("forModeChk" + i).disabled = false;
+                    if(document.getElementById("forModeChk" + i).disabled == true) { document.getElementById("forModeChk" + i).disabled = false; }
+                    else {
+                        $scope.incoming[2] = 0;
+                        $scope.incoming[3] = 0;
+                    }
                 }
             }
         }
@@ -241,7 +269,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 $scope.lArray[layer] = parseFloat($scope.Layers[layer].length);
                 $scope.totalLength += parseFloat($scope.Layers[layer].length);
             }
-            
         }
 
         function updateModes() {
@@ -283,7 +310,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         function updateFields(){
             $scope.field = $scope.crystal.determineField();
         }
-        
         
         function updateAll(){
             updateCrystal();
@@ -431,28 +457,28 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             var chartView = new google.visualization.DataView(data);
 
-            $scope.toggleEx = function() {
-                chartView.hideColumns([1]);
-                chart.draw(chartView, options);
-            }
-    
-            $scope.toggleEy = function() {
-                chartView.hideColumns([2]);
-                chart.draw(chartView, options);
-            }
-    
-            $scope.toggleHx = function() {
-                chartView.hideColumns([3]);
-                chart.draw(chartView, options);
-            }
-    
-            $scope.toggleHy = function() {
-                chartView.hideColumns([4]);
+            $scope.toggleLine = function(id) {
+                var columns = chartView.getViewColumns();
+                var isHidden = true;
+
+                for(var i = 0; i < columns.length; i++){
+                    if(columns[i] == id){
+                        isHidden = false;
+                    }
+                }
+
+                if(isHidden == true){
+                    columns.splice(id, 0, id);
+                    chartView.setColumns(columns);
+                }else{
+                    chartView.hideColumns([id]);
+                }
+
                 chart.draw(chartView, options);
             }
 
             $scope.resetFieldChart = function() {
-                chartView.setColumns([0, 1, 2, 3 , 4]);
+                chartView.setColumns([0, 1, 2, 3, 4]);
                 chart.draw(chartView, options);
             }
         }
@@ -1103,14 +1129,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
                         // console.log("here tooman22233124");
                             try {
-
-   cE = $scope.crystal.crystal.transferMatrices[q].dot(cE); // generates an exception
-}
-catch (e) {
-   // statements to handle any exceptions
-   console.log("errored out");
-   logMyErrors(e); // pass exception object to error handler
-}
+                                cE = $scope.crystal.crystal.transferMatrices[q].dot(cE); // generates an exception
+                            }
+                            catch (e) {
+                            // statements to handle any exceptions
+                            console.log("errored out");
+                            logMyErrors(e); // pass exception object to error handler
+                            }
                                 
                                 // console.log("here tooman222332");
                                 // cH = crystal1.crystal.transferMatrices[q].dot(cH);

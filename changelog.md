@@ -47,3 +47,13 @@
 ## **2.2.2**
  - **Field Tab**
    - Reorganized "Incoming Modes in Ambient Medium" sections
+   
+## **2.2.3**
+ - **Introduction Tab**
+   - Removed "Submit Ticket" section
+   - Edited credits section
+ - **Field Tab**
+   - Selected modes will now reflect in Coefficients section
+   - Hide buttons for graph now have the ability to show the line back up
+   - Calculate modes button updates modes in Coefficients section as well
+   - Changed certain section titles as well

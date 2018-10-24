@@ -125,34 +125,7 @@
           </div>
         </div>
       </div>
-      <!--<h4 class="m-t-md text-md">Submit ticket</h4>
-      <form action="https://formspree.io/dblan18@lsu.edu"
-      method="POST" name="form-contact" class="form-validation m-b-lg">
-        <div class="row">
-          <div class="col-sm-6 m-b">
-            <label>Your name</label>
-            <input type="text" class="form-control" placeholder="Name" ng-model="contact.name" required >
-          </div>
-          <div class="col-sm-6 m-b">
-            <label>Email</label>
-            <input type="email" class="form-control" placeholder="Enter email" name="_replyto" ng-model="contact.email" required >
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Question Subject</label>
-          <select class="form-control c-select">
-            <option>Website/Layout Errors</option>
-            <option>Mathematical Errors</option>
-            <option>Question</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Your Question</label>
-          <textarea class="form-control" rows="6" placeholder="hmm.."></textarea>
-        </div>
-        <button type="submit"  value="Send" class="btn btn-info">Submit</button>
-      </form>
-    </div>-->
+    </div>
     <div class="col-sm-4 col-md-3">
       <h4 class="m-a-0 m-b-sm text-md">Credits</h4>
       <div class="box">
@@ -217,6 +190,18 @@
               <small class="text-muted text-ellipsis">Mathbox 3D Field Visualiztion</small>
             </div>
           </li>
+          <li class="list-item">
+            <a href class="list-left">
+              <span class="w-40 circle avatar brown">
+                <span>N</span>
+                <i class="away b-white"></i>
+              </span>
+            </a>
+            <div class="list-body">
+              <div><a href>Noah Templet</a></div>
+              <small class="text-muted text-ellipsis">Web Developer</small>
+            </div>
+          </li>
           
         </ul>
       </div>
@@ -255,7 +240,7 @@
                             <div class="input-group">
                                 <input type="text" id="numLayers" ng-change="updateLayers()" ng-model="NumLayers" value="3" class="form-control">
                                 <span class="input-group-btn">
-                                </span>
+          </span>
                             </div>
                         </div>
                     </div>
@@ -493,7 +478,7 @@
                                         <input type="text" class="form-control form-control-sm" id="k2" ng-model="k2">
                                     </div>
                                 </div>
-<!--                                <div class="form-group row m-t-md">
+                                <!--<div class="form-group row m-t-md">
                                     <div class="col-lg-offset-2 col-lg-5">
                                          <button ng-click="buildModes()" type="submit" class="btn white">Recalculates Modes</button> 
                                     </div>
@@ -636,10 +621,10 @@
                     </div>
                     <div class="box-body" id="">
                         <div style="height:30px">
-                            <button type="button" class='btn btn-sm white' ng-click="toggleEx()">E<sub>x</sub></button>
-                            <button type="button" class='btn btn-sm white' ng-click="toggleEy()">E<sub>Y</sub></button>
-                            <button type="button" class='btn btn-sm white' ng-click="toggleHx()">H<sub>x</sub></button>
-                            <button type="button" class='btn btn-sm white' ng-click="toggleHy()">H<sub>Y</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleLine(1)">E<sub>x</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleLine(2)">E<sub>Y</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleLine(3)">H<sub>x</sub></button>
+                            <button type="button" class='btn btn-sm white' ng-click="toggleLine(4)">H<sub>Y</sub></button>
                             <button type="button" class='btn btn-sm white' ng-click="resetFieldChart()">Reset</button>
                         </div>
                     </div>
