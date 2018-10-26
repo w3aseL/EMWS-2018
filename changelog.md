@@ -57,3 +57,7 @@
    - Hide buttons for graph now have the ability to show the line back up
    - Calculate modes button updates modes in Coefficients section as well
    - Changed certain section titles as well
+   
+## **2.2.4**
+ - **Field Tab**
+   - Fixed check boxes in "Incoming Modes in Ambient Medium" to function properly

@@ -111,7 +111,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
 
             //$(".p1").addClass("ng-hide");
-            $scope.checkBoxes();
         }
 
         function addHide() {
@@ -201,46 +200,57 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             if(backChecked == 2){
                 let j = 0;
 
+                var backArr = $scope.crystal.Struct.eigenvalues[0];
+
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById("backModeChk" + i).checked == false) { document.getElementById("backModeChk" + i).disabled = true; }
                     else {
-                        if(i == 1) $scope.incoming[j] = $scope.mBack1;
-                        else if(i == 2) $scope.incoming[j] = $scope.mBack2;
-                        else if(i == 3) $scope.incoming[j] = $scope.mBack3;
-                        else if(i == 4) $scope.incoming[j] = $scope.mBack4;
+                        //arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+
+                        if(i == 1) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                        else if(i == 2) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                        else if(i == 3) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                        else if(i == 4) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
                         j++;
                     }
                 }
+
+                console.log(backArr);
             }else if(backChecked < 2){
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById("backModeChk" + i).disabled == true) { document.getElementById("backModeChk" + i).disabled = false; }
-                    else {
+                    /*else {
                         $scope.incoming[0] = 1;
                         $scope.incoming[1] = 0;
-                    }
+                    }*/
                 }
             }
 
             if(forChecked == 2){
                 let j = 2;
 
+                var lastEigenvalue = $scope.crystal.Struct.eigenvalues.length - 1;
+                var forArr = $scope.crystal.Struct.eigenvalues[lastEigenvalue];
+
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById("forModeChk" + i).checked == false) { document.getElementById("forModeChk" + i).disabled = true;  }
                     else {
-                        if(i == 1) $scope.incoming[j] = $scope.mFor1;
-                        else if(i == 2) $scope.incoming[j] = $scope.mFor2;
-                        else if(i == 3) $scope.incoming[j] = $scope.mFor3;
-                        else if(i == 4) $scope.incoming[j] = $scope.mFor4;
+                        if(i == 1) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                        else if(i == 2) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                        else if(i == 3) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                        else if(i == 4) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
                         j++;
                     }
                 }
+
+                console.log(forArr);
             }else if(forChecked < 2){
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById("forModeChk" + i).disabled == true) { document.getElementById("forModeChk" + i).disabled = false; }
-                    else {
+                    /*else {
                         $scope.incoming[2] = 0;
                         $scope.incoming[3] = 0;
-                    }
+                    }*/
                 }
             }
         }
@@ -256,6 +266,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             $("canvas").remove();
             getArrays();
             updateAll();
+
+            $scope.checkBoxes();
+
             createFieldChart();
             createAnim();
             //$scope.buildFieldsWithAnim();
@@ -313,6 +326,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         function updateAll(){
             updateCrystal();
+            $scope.checkBoxes();
             updateFields();
             updateModes();
         }
