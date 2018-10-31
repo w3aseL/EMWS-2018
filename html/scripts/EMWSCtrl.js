@@ -184,8 +184,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.buildModes = function() {
             getArrays();
             updateAll();
-
-            $scope.checkBoxes();
         }
 
         $scope.checkBoxes = function() {
@@ -207,10 +205,19 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     else {
                         //arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 
-                        if(i == 1) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
-                        else if(i == 2) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
-                        else if(i == 3) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
-                        else if(i == 4) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                        if(i == 1) {
+                            backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mBack1.toString();
+                        } else if(i == 2) {
+                            backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mBack2.toString();
+                        } else if(i == 3) {
+                            backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mBack3.toString();
+                        } else if(i == 4) {
+                            backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mBack4.toString();
+                        }
                         j++;
                     }
                 }
@@ -224,6 +231,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         $scope.incoming[1] = 0;
                     }*/
                 }
+
+                document.getElementById("incoming0").innerHTML = $scope.mBack1.toString();
+                document.getElementById("incoming1").innerHTML = $scope.mBack2.toString();
             }
 
             if(forChecked == 2){
@@ -235,10 +245,20 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById("forModeChk" + i).checked == false) { document.getElementById("forModeChk" + i).disabled = true;  }
                     else {
-                        if(i == 1) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
-                        else if(i == 2) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
-                        else if(i == 3) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
-                        else if(i == 4) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                        if(i == 1){
+                            forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mFor1.toString();
+                        } else if(i == 2) {
+                            forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mFor2.toString();
+                        } else if(i == 3) {
+                            forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mFor3.toString();
+                        } else if(i == 4) {
+                            forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
+                            document.getElementById("incoming" + j).innerHTML = $scope.mFor4.toString();
+                        }
+
                         j++;
                     }
                 }
@@ -252,6 +272,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         $scope.incoming[3] = 0;
                     }*/
                 }
+
+                document.getElementById("incoming2").innerHTML = $scope.mFor1.toString();
+                document.getElementById("incoming3").innerHTML = $scope.mFor2.toString();
             }
         }
         
@@ -266,8 +289,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             $("canvas").remove();
             getArrays();
             updateAll();
-
-            $scope.checkBoxes();
 
             createFieldChart();
             createAnim();
@@ -326,9 +347,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         function updateAll(){
             updateCrystal();
+            updateModes();
             $scope.checkBoxes();
             updateFields();
-            updateModes();
         }
             
         function createFieldChart() {

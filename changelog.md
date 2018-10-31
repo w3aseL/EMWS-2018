@@ -61,3 +61,7 @@
 ## **2.2.4**
  - **Field Tab**
    - Fixed check boxes in "Incoming Modes in Ambient Medium" to function properly
+   
+## **2.2.5**
+ - **Field Tab**
+   - Added indication of chosen modes in "Coefficients of Incoming Modes" section
