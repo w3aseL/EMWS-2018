@@ -65,3 +65,7 @@
 ## **2.2.5**
  - **Field Tab**
    - Added indication of chosen modes in "Coefficients of Incoming Modes" section
+   
+## **2.2.5**
+ - **Introduction Tab**
+   - Hid default questions and added new introduction information
