@@ -69,3 +69,9 @@
 ## **2.2.5**
  - **Introduction Tab**
    - Hid default questions and added new introduction information
+   
+## **2.2.6**
+ - **Field Tab**
+   - Added useful information to "Incoming Modes in Ambient Medium"
+ - **Transmission Tab**
+   - Organized tab to be similar to Field tab (no functionality yet)

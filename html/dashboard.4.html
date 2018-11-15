@@ -486,6 +486,9 @@
                                         <input type="text" class="form-control form-control-sm" id="k2" ng-model="k2">
                                     </div>
                                 </div>
+                                <div class="form-group row" style="margin-bottom:0rem">
+                                    <button ng-click="buildModes()" type="button" class="btn gray">Calculate Modes</button>
+                                </div>
                                 <!--<div class="form-group row m-t-md">
                                     <div class="col-lg-offset-2 col-lg-5">
                                          <button ng-click="buildModes()" type="submit" class="btn white">Recalculates Modes</button> 
@@ -507,65 +510,66 @@
                 <div class="col-6">
                     <div class="box-header">
                         <h3>Incoming Modes in Ambient Medium</h3>
-                        <small>Calculate perpendicular wave vectors in the left and right ambient media.</small> 
+                        <!--<small>Calculate perpendicular wave vectors in the left and right ambient media.</small>-->
                     </div>
                     <div class="box-divider m-a-0"></div>
                     <div class="box-body " id="">
                         <div style="padding-left:25px;float:left;margin-bottom: 10px">
-                            <h6> Leftward Modes </h6>
+                            <h6 style="margin-bottom: 0rem">Incoming Modes on the Left</h6>
+                            <small style="display:block;opacity:0.6;margin-top:2px;margin-bottom:4px;">Check two rightward (incoming) modes in the left ambient medium.</small> 
                             <!--<p> {{mBack1}} </p>
                             <p> {{mBack2}} </p>-->
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack1}}
-                                <input type="checkbox" id="backModeChk1">
-                                <span class="checkmark"></span>
-                            </label>
+                            <div class="form-group row" style="margin-left:0rem">
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack1}}
+                                    <input type="checkbox" id="backModeChk1">
+                                    <span class="checkmark"></span>
+                                </label>
 
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack2}}
-                                <input type="checkbox" id="backModeChk2">
-                                <span class="checkmark"></span>
-                            </label>
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack2}}
+                                    <input type="checkbox" id="backModeChk2">
+                                    <span class="checkmark"></span>
+                                </label>
 
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack3}}
-                                <input type="checkbox" id="backModeChk3">
-                                <span class="checkmark"></span>
-                            </label>
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack3}}
+                                    <input type="checkbox" id="backModeChk3">
+                                    <span class="checkmark"></span>
+                                </label>
 
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mBack4}}
-                                <input type="checkbox" id="backModeChk4">
-                                <span class="checkmark"></span>
-                            </label>
-
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack4}}
+                                    <input type="checkbox" id="backModeChk4">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
                              <!-- place procedural layer forms here --> 
                         </div>
                         <div style="clear:both;padding-left:25px;float:left;">
-                            <h6> Rightward Modes </h6>
+                            <h6 style="margin-bottom: 0rem">Incoming Modes on the Right</h6>
+                            <small style="display:block;opacity:0.6;margin-top:2px;margin-bottom:4px;">Check two leftward (incoming) modes in the right ambient medium.</small> 
                             <!--<p> {{mFor1}} </p>
                             <p> {{mFor2}} </p>-->
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor1}}
-                                <input type="checkbox" id="forModeChk1">
-                                <span class="checkmark"></span>
-                            </label>
+                            <div class="form-group row" style="margin-left:0rem">
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor1}}
+                                    <input type="checkbox" id="forModeChk1">
+                                    <span class="checkmark"></span>
+                                </label>
 
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor2}}
-                                <input type="checkbox" id="forModeChk2">
-                                <span class="checkmark"></span>
-                            </label>
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor2}}
+                                    <input type="checkbox" id="forModeChk2">
+                                    <span class="checkmark"></span>
+                                </label>
 
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor3}}
-                                <input type="checkbox" id="forModeChk3">
-                                <span class="checkmark"></span>
-                            </label>
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor3}}
+                                    <input type="checkbox" id="forModeChk3">
+                                    <span class="checkmark"></span>
+                                </label>
 
-                            <label ng-click="checkBoxes()" class="checkboxCont">{{mFor4}}
-                                <input type="checkbox" id="forModeChk4">
-                                <span class="checkmark"></span>
-                            </label>
-                            
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor4}}
+                                    <input type="checkbox" id="forModeChk4">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
                              <!-- place procedural layer forms here -->
                         </div>
-                        <div style="clear:both;width:152px;margin:auto;">
-                            <button ng-click="buildModes()" type="button" class="btn gray">Calculate Modes</button>
-                        </div>  
                     </div>             
                 </div>
             </div>
@@ -692,7 +696,7 @@
     </div>
 
     <div class="row">
-    	<div class="col-lg-6">
+    	<div class="col-lg-4">
     		<div class="box">
                 <div class="box-header">
                     <h3>Input Frequencys and Parallel Wave Vector</h3>
@@ -729,9 +733,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row m-t-md">
-                                    <div class="col-lg-offset-2 col-lg-5">
-                                        <button ng-click="buildTransmission()" type="submit" class="btn white">Recalculates</button>
-                                    </div>
+                                    <button ng-click="buildTransmission()" type="submit" class="btn white">Calculate Modes</button>
                                 </div>
                             </form>
                         </div>
@@ -745,40 +747,121 @@
             </div>
     	</div>
       <div >
-    	<div class= "col-lg-6">
+    	<div class= "col-lg-4">
     		<div class="row no-gutter box bg">
                 <div class="col-12">
                     <div class="box-header">
-                        <h3>Incoming Modes</h3>
-                        <small>Automatic Input</small>
+                        <h3>Incoming Modes in Ambient Medium</h3>
+                        <!--<small>Calculate perpendicular wave vectors in the left and right ambient media.</small>-->
                     </div>
                     <div class="box-divider m-a-0"></div>
-                    <div class="box-body " id="incomingModess">
-                        <!--<div style="height:262px">
-                             <p> backward modes </p>
-                            <p> {{mBack1x}}x  - {{mBack1y}}y </p>
-                            <p> {{mBack2x}}x  - {{mBack2y}}y </p>
-                            <p> forward modes </p>
-                            <p> {{mFor1x}}x  - {{mFor1y}}y </p>
-                            <p> {{mFor2x}}x  - {{mFor2y}}y </p>
-                            <--place procedural layer forms here->
-                        </div>-->
-                        <div style="padding-left:10px;height:160px;float:left;">
-                            <h6> Leftward Modes </h6>
-                            <p> {{mBack1x}}x  - {{mBack1y}}y </p>
-                            <p> {{mBack2x}}x  - {{mBack2y}}y </p>
-                            <!-- place procedural layer forms here -->
+                    <div class="box-body " id="">
+                        <div style="padding-left:25px;float:left;margin-bottom: 10px">
+                            <h6 style="margin-bottom: 0rem">Incoming Modes on the Left</h6>
+                            <small style="display:block;opacity:0.6;margin-top:2px;margin-bottom:4px;">Check two rightward (incoming) modes in the left ambient medium.</small> 
+                            <!--<p> {{mBack1}} </p>
+                            <p> {{mBack2}} </p>-->
+                            <div class="form-group row" style="margin-left:0rem">
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack1}}
+                                    <input type="checkbox" id="backModeChkT1">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack2}}
+                                    <input type="checkbox" id="backModeChkT2">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack3}}
+                                    <input type="checkbox" id="backModeChkT3">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mBack4}}
+                                    <input type="checkbox" id="backModeChkT4">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                             <!-- place procedural layer forms here --> 
                         </div>
-                        <div style="padding-right:10px;height:160px;float:right;">
-                            <h6> Rightward Modes </h6>
-                            <p> {{mFor1x}}x  - {{mFor1y}}y </p>
-                            <p> {{mFor2x}}x  - {{mFor2y}}y </p>
-                            <!-- place procedural layer forms here -->
+                        <div style="clear:both;padding-left:25px;float:left;">
+                            <h6 style="margin-bottom: 0rem">Incoming Modes on the Right</h6>
+                            <small style="display:block;opacity:0.6;margin-top:2px;margin-bottom:4px;">Check two leftward (incoming) modes in the right ambient medium.</small> 
+                            <!--<p> {{mFor1}} </p>
+                            <p> {{mFor2}} </p>-->
+                            <div class="form-group row" style="margin-left:0rem">
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor1}}
+                                    <input type="checkbox" id="forModeChkT1">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor2}}
+                                    <input type="checkbox" id="forModeChkT2">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor3}}
+                                    <input type="checkbox" id="forModeChkT3">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                                <label ng-click="checkBoxes()" class="checkboxCont">{{mFor4}}
+                                    <input type="checkbox" id="forModeChkT4">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                             <!-- place procedural layer forms here -->
                         </div>
                     </div>
                 </div>
             </div>
-    	</div>
+        </div>
+        <div class="col-lg-4">
+            <div class="box">
+                <div class="box-header">
+                    <h3>Coefficients of Incoming Modes</h3>
+                    <small>Enter complex amplitudes of the incoming modes.</small>
+                </div>
+                <div class="text-center b-t">
+                    <div class="row-col">
+                        <div class="row-cell p-a">
+                            <!-- omega k1 k2 -->
+                            <div class="form-group row">
+                                <label for="inputPassword3" class="col-lg-3 form-control-label">Incoming Left</label>
+                                <div class="col-lg-9">
+                                    <div class="row row-sm">
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control form-control-sm" ng-model="incoming[0]" id="j1" style="width: 50%; float: left;">
+                                            <label style="margin-top: 5px;" id="incomingT0">Test</label>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control form-control-sm" ng-model="incoming[1]" id="j2" style="width: 50%; float: left;">
+                                            <label style="margin-top: 5px;" id="incomingT1">Test</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputPassword3" class="col-lg-3 form-control-label">Incoming Right</label>
+                                <div class="col-lg-9">
+                                    <div class="row row-sm">
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control form-control-sm" ng-model="incoming[2]" id="j3" style="width: 50%; float: left;">
+                                            <label style="margin-top: 5px;" id="incomingT2">Test</label>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control form-control-sm" ng-model="incoming[3]" id="j4" style="width: 50%; float: left;">
+                                            <label style="margin-top: 5px;" id="incomingT3">Test</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class='btn red' ng-click="runTransmissionExp()">Run Experiment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     </div>
     <div class="row">
