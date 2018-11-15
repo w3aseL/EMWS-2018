@@ -66,11 +66,11 @@
  - **Field Tab**
    - Added indication of chosen modes in "Coefficients of Incoming Modes" section
    
-## **2.2.5**
+## **2.2.6**
  - **Introduction Tab**
    - Hid default questions and added new introduction information
    
-## **2.2.6**
+## **2.2.7**
  - **Field Tab**
    - Added useful information to "Incoming Modes in Ambient Medium"
  - **Transmission Tab**
