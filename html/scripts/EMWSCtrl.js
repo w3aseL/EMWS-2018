@@ -795,7 +795,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         $scope.buildTransmission = function() {
             create2DArrays();
-            updateCrystal();
+            updateAll();
+        }
+
+        $scope.runTransmissionExp = function() {
+            create2DArrays();
+            updateAll();
+
             createTransmissionChart();
         }
 
