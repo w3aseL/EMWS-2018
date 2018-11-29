@@ -6,22 +6,22 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
 
 
-        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.load('current', { packages: ['corechart'] });             //Loads Google Charts packages
         $scope.context;
-        $scope.NumLayers = 5;
-        $scope.o = 1; //omega
-        $scope.k1 = 0;
-        $scope.k2 = 0;
-        $scope.wLeft = -5; //bounds for the transmission graph
-        $scope.wRight = 5;
-        $scope.incoming = [1, 0, 0, 0];
-        $scope.eArray = [];
-        $scope.muArray = [];
-        $scope.lArray = [];
-        $scope.totalLength = 0;
+        $scope.NumLayers = 5;                                                   //Number of Layers (Default)
+        $scope.o = 1;                                                           //Omega (Default)
+        $scope.k1 = 0;                                                          //k1 (Default)
+        $scope.k2 = 0;                                                          //k2 (Default)
+        $scope.wLeft = -5;                                                      //Left bound for transmissions graph (Default)
+        $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
+        $scope.incoming = [1, 0, 0, 0];                                         //Incoming coefficients (Defaults)
+        $scope.eArray = [];                                                     //Epsilon Array for Layers
+        $scope.muArray = [];                                                    //Mu Array for Layers
+        $scope.lArray = [];                                                     //Length Array for Layers
+        $scope.totalLength = 0;                                                 //Total Length of All Layers
         $scope.outputModes;
-        $scope.mBack1x; 
-        $scope.mBack1y;
+        $scope.mBack1x;                                                         //Real value used in modes (for all mBackix and mForix values, i being a value of 1-4)
+        $scope.mBack1y;                                                         //Imaginary value used in modes (for all mBackiy and mForiy values, i being a value of 1-4)
         $scope.mBack2x;
         $scope.mBack2y;
         $scope.mBack3x; 
@@ -36,7 +36,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.mFor3y;
         $scope.mFor4x;
         $scope.mFor4y;
-        $scope.mFor1;
+        $scope.mFor1;                                                           //Complex mode (for all mBacki and mFori, i being a value of 1-4)
         $scope.mFor2;
         $scope.mFor3;
         $scope.mFor4;
@@ -44,15 +44,16 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.mBack2;
         $scope.mBack3; 
         $scope.mBack4;
-        $scope.crystal;
-        $scope.field;
-        $scope.dispersion;
-        $scope.EX = 'Eₓ';
-        $scope.EY = 'Eᵧ';
-        $scope.HX = 'Hₓ';
-        $scope.HY = 'Hᵧ';
+        $scope.crystal;                                                         //The Photonic Crystal created in emScattering2.js
+        $scope.field;                                                           //The field determined using the Photonic Crystal
+        $scope.dispersion;                                                      
+        $scope.EX = 'Eₓ';                                                       //Label for Ex
+        $scope.EY = 'Eᵧ';                                                       //Label for Ey
+        $scope.HX = 'Hₓ';                                                       //Label for Hx
+        $scope.HY = 'Hᵧ';                                                       //Label for Hy
 
 
+        //Defined default values of the layers
         $scope.Layers = [{
                 "layerName": "Ambient Left",
                 "epsilon": [1, 2, 3, 4],
@@ -95,7 +96,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             },
         ];
 
-        // $scope.
+        /**Initializes the website application. */
         $scope.init = function() {     
             getArrays();
             updateAll();
@@ -120,6 +121,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             // $('.p3').css('visibility', 'visible');
         }
 
+        /** Adds a layer to the current set of layers. */
         $scope.addLayer = function() {
             // getIncomingMode();
             $scope.Layers[$scope.NumLayers - 1].layerName = ("Layer " + ($scope.NumLayers - 1)); //Renames last ambient right layer 
@@ -134,12 +136,14 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             })
         };
 
+        /** Removes a layer from the current set of layers. */
         $scope.removeLayer = function() {
             $scope.Layers.pop();
             $scope.NumLayers--;
             $scope.Layers[$scope.NumLayers - 1].layerName = ("Ambient Right");
         }
 
+        //Not called
         $scope.printLengths = function() {
             angular.forEach($scope.Layers, function(value, index) {
 
@@ -147,6 +151,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             })
         }
 
+        /** Updates current set of layers. */
         $scope.updateLayers = function() {
             if ($scope.NumLayers == null || $scope.NumLayers == 0) { console.log("scope is null or 0"); } else if ($scope.NumLayers > $scope.Layers.length) {
                 if ($scope.Layers[$scope.NumLayers - 1]) {
@@ -175,17 +180,20 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
         
+        /** Builds chart for the Structure tab. */
         $scope.buildStruct = function() {
             getArrays();
             updateCrystal();
             createStructureChart();
         }
 
+        /** Calculates the modes. */
         $scope.buildModes = function() {
             getArrays();
             updateAll();
         }
 
+        /** Checks the state of the check boxes in the Field tabs and sets the order of the selected modes. */
         $scope.checkBoxes = function() {
             var backChecked = 0;
             var forChecked = 0;
@@ -285,6 +293,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         //#########################################################################################
 
 
+        /** Runs the experiment in the Field tab. */
         $scope.runExp = function() {
             $("canvas").remove();
             getArrays();
@@ -295,6 +304,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             //$scope.buildFieldsWithAnim();
         };
         
+        /** Updates the arrays based on the layers. */
         function getArrays() {
             $scope.totalLength = 0;
             for (var layer in $scope.Layers){
@@ -305,6 +315,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
+        /** Updates the modes using the structure's Eigensystems and eigenvalues. */
         function updateModes() {
             var lastEigensystem = $scope.crystal.Struct.Eigensystems.length - 1;
             $scope.mBack1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
@@ -335,23 +346,27 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             $scope.mFor4 = math.complex($scope.mFor4x, $scope.mFor4y);
         }
         
+        /** Updates the Photonic Crystal. */
         function updateCrystal(){
             var k = [$scope.k1,$scope.k2,$scope.o];
             $scope.crystal = emScattering2.Driver(
                     $scope.eArray,$scope.muArray,$scope.lArray,$scope.NumLayers,k,$scope.incoming);
             };
-            
+        
+        /** Updates the field using the Photonic Crystal. */
         function updateFields(){
             $scope.field = $scope.crystal.determineField();
         }
         
+        /** Updates the crystal, modes, and fields, and checks the check boxes on the Field tab. */
         function updateAll(){
             updateCrystal();
             updateModes();
             $scope.checkBoxes();
             updateFields();
         }
-            
+        
+        /** Creates the line chart on the Field tab. */
         function createFieldChart() {
             var fields = $scope.field;
             var interfaces = $scope.crystal.materialInterfaces();
@@ -462,7 +477,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 },
                 hAxis: {
                     gridlines: {
-                        color: 'black'  
+                        color: 'transparent'  
                    },
                    ticks: interfaces
                 },
@@ -518,6 +533,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
+        /** Creates the MathBox animation on the Field tab. */
         function createAnim() {
             var eXmax = 1;
             var hXmax = 1;
@@ -792,12 +808,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         //#########################################################################################
         //#########################################################################################
         
-        
+        /** Builds the information for the Transmissions tab. WIP */
         $scope.buildTransmission = function() {
             create2DArrays();
             updateAll();
         }
 
+        /** Runs the experiment in the Transmissions tab. WIP */
         $scope.runTransmissionExp = function() {
             create2DArrays();
             updateAll();
@@ -805,6 +822,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             createTransmissionChart();
         }
 
+        /** Creates the chart in the Transmissions tab. WIP */
         function createTransmissionChart() {
             var omegLow = 0; //document.getElementById("oLow").value; //hardcode
             var omegHigh = 5; //document.getElementById("oHi").value; //hardcode
@@ -1391,6 +1409,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         }
 
+        /** Creates the chart for the Dispersion tab. WIP */
         function createDispersionChart() {
             var dispersion = $scope.dispersion;
             var divName = "dispView";
@@ -1566,6 +1585,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
+        /** Creates the chart for the Structures tab. */
         function createStructureChart() {
             var interfaces = $scope.crystal.materialInterfaces();
             var interfaceLength = interfaces[interfaces.length - 1];

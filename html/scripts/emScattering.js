@@ -14,7 +14,7 @@ Layer Object
 ------------------------------------------------------------------------------------
 */
 
-/*
+/**
 Represents a single material layer in a 1D photonic crystal. 'epsilon' and 'mu' 
 represent the relative electric permittivity and the relative magnetic permeability, 
 respectively, of the material. Currently, only isotropic materals are suported, so 'epsilon' 
@@ -37,14 +37,14 @@ GENERAL FUNCTIONS
 ------------------------------------------------------------------------------------
 */
 
-/*
+/**
 Prints out the numeric array to the console. 'pre' is a string that is printed before 'mat'.
 */
 emScattering.print = function(pre, mat) {
     document.write(pre + numeric.prettyPrint(mat) + "<br>");
 };
 
-/*
+/**
 Prints out to the console a large array in an easily copied format.
 */
 emScattering.printFields = function(fields) {
@@ -55,7 +55,7 @@ emScattering.printFields = function(fields) {
     }
 };
 
-/*
+/**
 Prints out a large array in an easily copied format.
 */
 emScattering.printFields2 = function(fields) {
@@ -113,14 +113,14 @@ emScattering.printTransmissionGraph = function(tGraph) {
     }
 };
 
-/*
+/**
 Returns an nxn matrix with every element set to 0.
 */
 emScattering.zeroMatrix = function(n) {
     return numeric.T.rep([n, n], new numeric.T(0,0));
 };
 
-/*
+/**
 Converts an array of epsilon, mu, and length values into an array of layers where 
 layers[i] has the value of epsilon[i], mu[i], and length[i].
 */
@@ -133,7 +133,7 @@ emScattering.createLayers = function(epsilon, mu, lengths) {
     return layers;
 };
 
-/*
+/**
 Calculates the eigenvector matrix for a layer of isotropic material. 'eps' is the 
 relative permittivity and 'mu' us the relative permeability of the material. The first 
 two columns are the forward propogating modes, and the last two columns are the 
@@ -178,7 +178,7 @@ emScattering.eigenvectorsIsotropic = function(epsilon, mu, kx, ky) {
     return W;
 };
 
-/*
+/**
 Returns an array containing the eigenvalues for a layer of isotropic material for 
 a plane wave at oblique incidence. The eigenvalues correspond to the ordering of the 
 eigenvectors returned by emScattering.eigenvectorsIsotropic(). Use emScattering.diag() 
@@ -200,7 +200,7 @@ emScattering.eigenvaluesIsotropic = function(epsilon, mu, kx, ky) {
     return [forwardEig, forwardEig, backwardEig, backwardEig];
 };
 
-/*
+/**
 Returns a diagonal matrix with the eigenvalues for an isotropic material layer.
 */
 emScattering.eigenvaluesIsotropicDiag = function(epsilon, mu, kx, ky) {
@@ -212,7 +212,7 @@ emScattering.eigenvaluesIsotropicDiag = function(epsilon, mu, kx, ky) {
     return lambda;
 };
 
-/*
+/**
 Returns exp(lambda*znorm) where 'lambda' is a diagonal matrix of the eigenvalues for a 
 isotropic material layer. 'znorm' is the normalized z coordinate in the layer. 
 znorm = 0 is the left side of the layer, and znorm = L is the right side of the layer 
@@ -242,7 +242,7 @@ emScattering.EigenVal2 = function(lambda, theta, k0, Zed, Time){
     return numeric.T.diag(zPrime.cos());
 };
 
-/* 
+/**
 Returns a normalized value z' for a given 'z'. 'z' is a numeric vector.
 z' = k_0 * z where k_0 is the freespace wavelength.
 */
@@ -256,7 +256,7 @@ Structure Object
 ------------------------------------------------------------------------------------
 */
 
-/*
+/**
 A structure is a 1D photonic crystal. It is composed of several layers each with
 their own epsilon, mu, and length. The layers define the scattering properties of the
 crystal, and functions are provided to solve the scattering problem and determine the
@@ -289,7 +289,7 @@ emScattering.Structure.prototype.calcEigenvaluesIsotropic = function(kx, ky) {
     }
 };
 
-/*
+/**
 Creates the transfer matrices for the given free space wavelength k_0. 
 */
 emScattering.Structure.prototype.calcTransferMatrices = function(k_0, kx, ky) {
@@ -320,7 +320,7 @@ emScattering.Structure.prototype.calcTransferMatrices = function(k_0, kx, ky) {
     }
 };
 
-/*
+/**
 Creates the scattering matrix for the given free space wavelength k_0.
 If U- and U+ represent the backwards and forewards propogating modes that travel 
 away from the structure and J+ and J- represent the forewards and backwards propogating 
@@ -364,7 +364,7 @@ emScattering.Structure.prototype.calcScatteringMatrix = function(k_0, kx, ky) {
 
 
 
-/*
+/**
 Object representing a scattering experiment on a fixed structure. Provides functions to 
 calculate the fields and dispersion relationship.
 ------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ emScattering.PhotonicStructure1D = function(epsilon, mu, length) {
     this.S = [];
 };
 
-/* 
+/**
 Solves the scattering problem at the given free space wavelength k0 and the specified 
 incoming mode which are an Array J = [J+_1, J+_2, J-_1, J-_2] are the field amplitudes of the 
 2 incoming modes on both sides of the structure for a total of 4 incoming modes. Returns 
@@ -458,7 +458,7 @@ emScattering.PhotonicStructure1D.prototype.checkZMathBox = function(z){
         }
     return indexOfMatrix;
 };
-//returns the layers in a list compatible for checking in checkZMathBox
+/**returns the layers in a list compatible for checking in checkZMathBox*/
 emScattering.PhotonicStructure1D.prototype.prepareLayer = function(){
     var prepLayer = new Array();
     var totalLength = 0;
@@ -469,7 +469,7 @@ emScattering.PhotonicStructure1D.prototype.prepareLayer = function(){
     }
     return prepLayer;
 }
-/* 
+/**
 Returns the field values in all the layers given the coefficients of the incoming modes. The 
 fields should be ordered so that J = [J+_1, J+_2, J-_1, J-_2] where F is a 4x1 array or 
 numeric marix. Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
@@ -515,7 +515,7 @@ emScattering.PhotonicStructure1D.prototype.determineField = function(k0, kx, ky,
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 };
 
-/*
+/**
 Returns the dispersion relationship for each layer and the ambient mediums on the left 
 and right side of the strucutre. The relation is calculated over the free space wavelength 
 range [-khi, khi] 'numPoints' is the number of in the interval for k0 that the relation is 
@@ -554,7 +554,7 @@ emScattering.PhotonicStructure1D.prototype.dispersionRelationship = function(kx,
     return {kz: _kz, layersDispersions: dispersionRelationships};
 };
 
-/*
+/**
 Returns the z-coordiantes of the edges of the interfaces. The edges of the ambient mediums 
 are determined by the user entered length of the ambeint mediums even though they do extend 
 to infinity. The hard limit is more for visual purposes and not because of any underlying 
@@ -574,7 +574,7 @@ emScattering.PhotonicStructure1D.prototype.materialInterfaces = function() {
     return interfaces;
 };
 
-/*
+/**
 Returns the transmission vs. frequency graph object. For the specified k_z values (along with the k_x and k_y values), the
 function returns the transmission for each of the k_z values over the specified omega range.
  */
@@ -608,7 +608,7 @@ emScattering.PhotonicStructure1D.prototype.transmission = function(kzList, kx, k
 
 };
 
-/* 
+/**
 Returns the wavelengths of the incoming modes supported by the structure. As this is an isotropic, 
 1D structure, there will be 4 modes in total. Two forward travelling modes coming from the left 
 of the structure (travelling to the right), and two backwards travelling modes coming from the 
@@ -623,7 +623,7 @@ emScattering.PhotonicStructure1D.prototype.incomingModes = function(k0,kx,ky) {
 };
 
 
-/*
+/**
  TransmissionCoeffGraph Object
  ------------------------------------------------------------------------------------
  Represents the transmission vs. frequency for a list of specified kz values at set kx and ky values over a range of
@@ -664,7 +664,7 @@ emScattering.TransmissionCoeffGraph.prototype.kzInGraph = function(kz) {
     return this.kzList.indexOf(kz) != -1;
 };
 
-/*
+/**
 Mode Object
 ------------------------------------------------------------------------------------
 Represents a 1D mode. Contains the eigenvalue, eigenvector, and if it is forward travelling or not.

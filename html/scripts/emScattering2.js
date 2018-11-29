@@ -464,7 +464,7 @@ emScattering2.Struct.prototype.calcScattering = function(){
 
 
 
-/*
+/**
  Photonic Crystal Object and Methods
 ------------------------------------------------------------------------------------
 A Photonic Crystal is a wrapper object for a structure. Methods included are used to complete and display the experiment.
@@ -478,7 +478,7 @@ emScattering2.createPhotonicCrystal = function(Struct){
     return crystal;
 };
 
-/* 
+/**
 Returns the field values in all the layers given the coefficients of the incoming modes.
 Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
 and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
@@ -523,7 +523,7 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 };
 
-/*
+/**
 Setup for Electric Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Ex and Ey in complex polar form, where each part is a separate array output 
  */
@@ -574,7 +574,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxSetupEf = function() {
     return {ExR: ExR, ExPhi: ExPhi, EyR: EyR, EyPhi: EyPhi};
 };
 
-/*
+/**
 Calculates the Ex and Ey bits for Mathbox graphing.
 Expects the array of layer lengths, the current timestamp t, the position z, 
 ExR, ExPhi, EyR, EyPhi.
@@ -608,7 +608,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExP
     return {Ex: Ex, Ey: Ey};
 };
 
-/*
+/**
 Setup for Magnetic Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Hx and Hy in complex polar form, where each part is a separate array output 
  */
@@ -656,7 +656,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxSetupHf = function() {
     return {HxR: HxR, HxPhi: HxPhi, HyR: HyR, HyPhi: HyPhi};
 };
 
-/*
+/**
 Calculates the Hx and Hy bits for Mathbox graphing.
 Expects the array of layer lengths, the current timestamp t, the position z, 
 HxR, HxPhi, HyR, HyPhi.
@@ -690,7 +690,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxHf = function(lengths,t,z,HxR,HxP
 };
 
 
-/*
+/**
 Returns the z-coordiantes of the edges of the interfaces. The edges of the ambient mediums 
 are determined by the user entered length of the ambeint mediums even though they do extend 
 to infinity. The hard limit is more for visual purposes and not because of any underlying 
@@ -722,7 +722,7 @@ emScattering2.PhotonicCrystal.prototype.materialInterfaces = function() {
 
 
 
-//Calls all structure functions in proper order and fills all structure variables, returns filled structure
+/** Calls all structure functions in proper order and fills all structure variables, returns filled structure */
 emScattering2.computeStructure = function(eArray, mArray, length, numLayers, constants, Modes){
     var values,struct;
     Modes = math.complex(Modes);
@@ -817,7 +817,7 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //    console.log(Q);
 //}
 
-//Performs experiment when run, returns completed crystal
+/**Performs experiment when run, returns completed crystal*/
 emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Modes){
     var a,b,c ,d = [],struct, crystal;
     struct = emScattering2.computeStructure(eArray, mArray, length, numLayers, constants, Modes);
