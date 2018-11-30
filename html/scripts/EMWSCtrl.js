@@ -124,8 +124,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         /** Adds a layer to the current set of layers. */
         $scope.addLayer = function() {
             // getIncomingMode();
-            $scope.Layers[$scope.NumLayers - 1].layerName = ("Layer " + ($scope.NumLayers - 1)); //Renames last ambient right layer 
-            $scope.NumLayers++;
+            $scope.Layers[$scope.NumLayers - 1].layerName = ("Layer " + ($scope.NumLayers - 1));    //Renames last ambient right layer 
+            $scope.NumLayers++;                                                                     //Adds to the number of layers
             $scope.Layers.push({
                 "layerName": "Ambient Right",
                 "epsilon": [1, 2, 3, 4],
@@ -133,14 +133,14 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 "mu": [1, 2, 3, 4],
                 "muA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
                 "length": 6
-            })
+            });                                                                                     //Pushes layer to end
         };
 
         /** Removes a layer from the current set of layers. */
         $scope.removeLayer = function() {
-            $scope.Layers.pop();
-            $scope.NumLayers--;
-            $scope.Layers[$scope.NumLayers - 1].layerName = ("Ambient Right");
+            $scope.Layers.pop();                                                                    //Removes last layer
+            $scope.NumLayers--;                                                                     //Subtracts to the number of layers
+            $scope.Layers[$scope.NumLayers - 1].layerName = ("Ambient Right");                      //Renames last layer to Ambient Right
         }
 
         //Not called
@@ -195,25 +195,35 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Checks the state of the check boxes in the Field tabs and sets the order of the selected modes. */
         $scope.checkBoxes = function() {
-            var backChecked = 0;
-            var forChecked = 0;
+            var backChecked = 0;                //Create variable for amount of leftward mode boxes checked
+            var forChecked = 0;                 //Create variable for amount of rightward mode boxes checked
 
             for(let i = 1; i <= 4; i++){
-                if(document.getElementById("backModeChk" + i).checked == true) backChecked++;
-                if(document.getElementById("forModeChk" + i).checked == true) forChecked++;
+                if(document.getElementById("backModeChk" + i).checked == true) backChecked++;   //If box is checked, add one to amount of checked boxes
+                if(document.getElementById("forModeChk" + i).checked == true) forChecked++;     //If box is checked, add one to amount of checked boxes
             }
 
+            //Check if exactly two boxes are checked.
             if(backChecked == 2){
-                let j = 0;
+                let j = 0;                                              //Counter for setting text in coefficients section (should be only 0 and then 1)
 
-                var backArr = $scope.crystal.Struct.eigenvalues[0];
+                var backArr = $scope.crystal.Struct.eigenvalues[0];     //Gets eigenvalues of first layer
 
+                //Loops through check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("backModeChk" + i).checked == false) { document.getElementById("backModeChk" + i).disabled = true; }
-                    else {
+                    if(document.getElementById("backModeChk" + i).checked == false) { document.getElementById("backModeChk" + i).disabled = true; }         //If check box is not checked, disable it
+                    else {                                                                                                                                  //Runs this code if the box is checked
                         //arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 
-                        if(i == 1) {
+                        backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+
+                        //Depending on i value, change text of incomingj element to that mode
+                        if(i == 1) document.getElementById("incoming" + j).innerHTML = $scope.mBack1.toString();
+                        else if(i == 2) document.getElementById("incoming" + j).innerHTML = $scope.mBack2.toString();
+                        else if(i == 3) document.getElementById("incoming" + j).innerHTML = $scope.mBack3.toString();
+                        else if(i == 4) document.getElementById("incoming" + j).innerHTML = $scope.mBack4.toString();
+
+                        /*if(i == 1) {
                             backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
                             document.getElementById("incoming" + j).innerHTML = $scope.mBack1.toString();
                         } else if(i == 2) {
@@ -225,34 +235,43 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         } else if(i == 4) {
                             backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
                             document.getElementById("incoming" + j).innerHTML = $scope.mBack4.toString();
-                        }
-                        j++;
+                        }*/
+
+                        j++;                                                        //Increase j counter for next loop
                     }
                 }
 
-                console.log(backArr);
+                //console.log(backArr);    //Logs first layer eigenvalues (commented out, uncomment when needed)
             }else if(backChecked < 2){
+                //Runs loop through check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("backModeChk" + i).disabled == true) { document.getElementById("backModeChk" + i).disabled = false; }
-                    /*else {
-                        $scope.incoming[0] = 1;
-                        $scope.incoming[1] = 0;
-                    }*/
+                    if(document.getElementById("backModeChk" + i).disabled == true) { document.getElementById("backModeChk" + i).disabled = false; }            //If check box is disabled, enable it.
                 }
 
-                document.getElementById("incoming0").innerHTML = $scope.mBack1.toString();
-                document.getElementById("incoming1").innerHTML = $scope.mBack2.toString();
+                document.getElementById("incoming0").innerHTML = $scope.mBack1.toString();                          //Set incoming0 element to default mode
+                document.getElementById("incoming1").innerHTML = $scope.mBack2.toString();                          //Set incoming1 element to default mode
             }
 
+            //Check if exactly two boxes are checked
             if(forChecked == 2){
-                let j = 2;
+                let j = 2;                                                          //Counter for setting text in coefficients section (should be only 2 and then 3)
 
-                var lastEigenvalue = $scope.crystal.Struct.eigenvalues.length - 1;
-                var forArr = $scope.crystal.Struct.eigenvalues[lastEigenvalue];
+                var lastEigenvalue = $scope.crystal.Struct.eigenvalues.length - 1;  //Gets value of last set of eigenvalues
+                var forArr = $scope.crystal.Struct.eigenvalues[lastEigenvalue];     //Gets eigenvalues of last layer
 
+                //Loop through the check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("forModeChk" + i).checked == false) { document.getElementById("forModeChk" + i).disabled = true;  }
+                    if(document.getElementById("forModeChk" + i).checked == false) { document.getElementById("forModeChk" + i).disabled = true;  }      //If box is not checked, disable it
                     else {
+                        forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+
+                        //Depending on i value, change text of incomingj element to that mode
+                        if(i == 1) document.getElementById("incoming" + j).innerHTML = $scope.mFor1.toString();
+                        else if(i == 2) document.getElementById("incoming" + j).innerHTML = $scope.mFor2.toString();
+                        else if(i == 3) document.getElementById("incoming" + j).innerHTML = $scope.mFor3.toString();
+                        else if(i == 4) document.getElementById("incoming" + j).innerHTML = $scope.mFor4.toString();
+
+                        /*
                         if(i == 1){
                             forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
                             document.getElementById("incoming" + j).innerHTML = $scope.mFor1.toString();
@@ -265,24 +284,21 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         } else if(i == 4) {
                             forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);
                             document.getElementById("incoming" + j).innerHTML = $scope.mFor4.toString();
-                        }
+                        }*/
 
-                        j++;
+                        j++;                                            //Increments j counter for next loop
                     }
                 }
 
-                console.log(forArr);
+                //console.log(forArr);      //Logs last layer eigenvalues (commented out, uncomment when needed)
             }else if(forChecked < 2){
+                //Loops through check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("forModeChk" + i).disabled == true) { document.getElementById("forModeChk" + i).disabled = false; }
-                    /*else {
-                        $scope.incoming[2] = 0;
-                        $scope.incoming[3] = 0;
-                    }*/
+                    if(document.getElementById("forModeChk" + i).disabled == true) { document.getElementById("forModeChk" + i).disabled = false; }          //If check box is disabled, enable it
                 }
 
-                document.getElementById("incoming2").innerHTML = $scope.mFor1.toString();
-                document.getElementById("incoming3").innerHTML = $scope.mFor2.toString();
+                document.getElementById("incoming2").innerHTML = $scope.mFor1.toString();               //Set incoming2 element text to default mode
+                document.getElementById("incoming3").innerHTML = $scope.mFor2.toString();               //Set incoming3 element text to default mode
             }
         }
         
@@ -368,47 +384,22 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         /** Creates the line chart on the Field tab. */
         function createFieldChart() {
-            var fields = $scope.field;
-            var interfaces = $scope.crystal.materialInterfaces();
+            var fields = $scope.field;                                  //Takes field and puts it to a variable
+            var interfaces = $scope.crystal.materialInterfaces();       //Takes interfaces and puts it to a variable
 
-            var data = new google.visualization.DataTable();
-            data.addColumn('number', 'z');
+            var data = new google.visualization.DataTable();            //Creates a data table
+            data.addColumn('number', 'z');                              //Adds z column to data table
             //data.addColumn('number', document.getElementById("shownVal").value);
-            data.addColumn('number', $scope.EX);
-            data.addColumn('number', $scope.EY);
-            data.addColumn('number', $scope.HX);
-            data.addColumn('number', $scope.HY);
+            data.addColumn('number', $scope.EX);                        //Adds Ex column to data table
+            data.addColumn('number', $scope.EY);                        //Adds Ey column to data table
+            data.addColumn('number', $scope.HX);                        //Adds Hx column to data table
+            data.addColumn('number', $scope.HY);                        //Adds Hy column to data table
             
             //Iterate through fields values
-
             for (var i = 0, N = fields.z.length; i < N; i++) {
-                /*
-                if (document.getElementById("shownVal").value == 'Eₓ') {
-                    data.addRows([
-                        [fields.z[i], fields.Ex[i]]
-                    ]);
-                }
-                if (document.getElementById("shownVal").value == 'Eᵧ') {
-                    data.addRows([
-                        [fields.z[i], fields.Ey[i]]
-                    ]);
-                }
-                if (document.getElementById("shownVal").value == 'Hₓ') {
-                    data.addRows([
-                        [fields.z[i], fields.Hx[i]]
-                    ]);
-                }
-                if (document.getElementById("shownVal").value == 'Hᵧ') {
-                    data.addRows([
-                        [fields.z[i], fields.Hy[i]]
-                    ]);
-                }
-                */
                 data.addRows([
                     [fields.z[i], fields.Ex[i], fields.Ey[i], fields.Hx[i], fields.Hy[i]]
                 ]);
-
-                // console.log(fields.z[i] + " " + fields.Ex[i] + " " + fields.Ey[i] + " " + fields.Hx[i] + " " + fields.Hy[i]);
             }
 
             function printInterfaces(dataTable) { //prints the colored squares on the top of the chart
@@ -467,13 +458,14 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 }
             }
             
-            var chart = new google.visualization.LineChart(document.getElementById('structView'));
+            var chart = new google.visualization.LineChart(document.getElementById('structView'));      //Create line chart in structView section
             google.visualization.events.addListener(chart, 'ready', printInterfaces.bind(chart, data)); //all from Google's tutorial https://developers.google.com/chart/interactive/docs/overlays
             //var chart = new google.charts.Line(document.getElementById('linechart_material'));
 
+            //Chart Options
             var options = {
                 chart: {
-                    title: document.getElementById("shownVal").value + ' Values in Relation to Z'
+                    title: 'Ex, Ey, Hx, and Hy Values in Relation to Z'
                 },
                 hAxis: {
                     gridlines: {
@@ -496,40 +488,45 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             };
 
-            chart.draw(data, options);
+            chart.draw(data, options);          //Draw the chart
 
+            //These lines make the elements with .hiddenChart class visible
             var myElements = document.querySelectorAll(".hiddenChart");
             for (var i = 0; i < myElements.length; i++) {
                 myElements[i].style.opacity = 1;
             }
 
-            document.getElementById('structView').children[0].style.zIndex = 1;         //This is probably the most inefficient way to grab the chart's division and put it above the overlays, but it works (for now)
+            document.getElementById('structView').children[0].style.zIndex = 1;         //Takes the chart div and puts it above the overlays
 
-            var chartView = new google.visualization.DataView(data);
+            var chartView = new google.visualization.DataView(data);                    //Creates a new data view variable based on the data
 
+            /** Shows and hides columns based on id.
+             * 
+             * @param id - The column id to show/hide.
+             */
             $scope.toggleLine = function(id) {
-                var columns = chartView.getViewColumns();
-                var isHidden = true;
+                var columns = chartView.getViewColumns();               //Gets the array of visible columns
+                var isHidden = true;                                    //Creates flag if column specified is hidden
 
+                //Loop through visible columns
                 for(var i = 0; i < columns.length; i++){
-                    if(columns[i] == id){
-                        isHidden = false;
-                    }
+                    if(columns[i] == id) isHidden = false;              //If column is visible, set flag to false to signify that it is visible
                 }
 
                 if(isHidden == true){
-                    columns.splice(id, 0, id);
-                    chartView.setColumns(columns);
+                    columns.splice(id, 0, id);                          //If column is not visible, add it back to the visible column array.
+                    chartView.setColumns(columns);                      //Set visible columns to column array
                 }else{
-                    chartView.hideColumns([id]);
+                    chartView.hideColumns([id]);                        //If column is visible, hide the column
                 }
 
-                chart.draw(chartView, options);
+                chart.draw(chartView, options);                         //Draw the updated chart
             }
 
+            /** Resets the columns of the field chart. */
             $scope.resetFieldChart = function() {
-                chartView.setColumns([0, 1, 2, 3, 4]);
-                chart.draw(chartView, options);
+                chartView.setColumns([0, 1, 2, 3, 4]);                  //Reset to show all visible columns
+                chart.draw(chartView, options);                         //Draw the updated chart
             }
         }
 
@@ -1587,9 +1584,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Creates the chart for the Structures tab. */
         function createStructureChart() {
-            var interfaces = $scope.crystal.materialInterfaces();
-            var interfaceLength = interfaces[interfaces.length - 1];
+            var interfaces = $scope.crystal.materialInterfaces();               //Gets the interfaces
+            var interfaceLength = interfaces[interfaces.length - 1];            //Gets highest interface
 
+            //Creates a data table
             var data = google.visualization.arrayToDataTable([
                 [{
                     f: 'Date',
@@ -1599,13 +1597,15 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     type: 'number' // wont work whithout this
                 }],
             ]);
-            var jelem = $("#structureView");
+            var jelem = $("#structureView");        //Gets structureView element using jQuery
             console.log("canvas element jquer:" + jelem.parent().css("background-color"));
             var rgbColor = jelem.parent().css("background-color");
+            
+            //Chart Options
             var options = {
 
                 chart: {
-                    title: 'dispersion relationship'
+                    title: 'Dispersion Relationship'
                 },
                 chartArea: {
                     left: 40,
@@ -1677,10 +1677,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 }
             }
 
-            var chart = new google.visualization.LineChart(document.getElementById('structureView'));
+            var chart = new google.visualization.LineChart(document.getElementById('structureView'));       //Create a line chart in the structureView element
             google.visualization.events.addListener(chart, 'ready', printInterfaces.bind(chart, data)); //all from Google's tutorial https://developers.google.com/chart/interactive/docs/overlays
 
-            chart.draw(data, options);
+            chart.draw(data, options);                      //Draws the chart
         }
 
 
