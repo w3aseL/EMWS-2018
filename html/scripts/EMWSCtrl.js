@@ -14,6 +14,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.k2 = 0;                                                          //k2 (Default)
         $scope.wLeft = -5;                                                      //Left bound for transmissions graph (Default)
         $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
+        $scope.wPoints = 100;                                                   //Number of points for transmissions graph (Default)
         $scope.incoming = [1, 0, 0, 0];                                         //Incoming coefficients (Defaults)
         $scope.eArray = [];                                                     //Epsilon Array for Layers
         $scope.muArray = [];                                                    //Mu Array for Layers
@@ -193,14 +194,27 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             updateAll();
         }
 
-        /** Checks the state of the check boxes in the Field tabs and sets the order of the selected modes. */
-        $scope.checkBoxes = function() {
+        /** Checks the state of the check boxes in the Field tabs and sets the order of the selected modes.
+         * 
+         * @param fieldTab - Boolean if tab being checked is fieldTab (ONLY USE TRUE OR FALSE)
+         */
+        $scope.checkBoxes = function(fieldTab) {
             var backChecked = 0;                //Create variable for amount of leftward mode boxes checked
             var forChecked = 0;                 //Create variable for amount of rightward mode boxes checked
 
+            var backChkStr = "backModeChk";     //Create variable for base of element id names
+            var forChkStr = "forModeChk";       //Create variable for base of element id names
+            var incStr = "incoming";            //Create variable for base of element id names
+
+            if(!fieldTab) {
+                backChkStr = backChkStr + "T";          //If tab is the transmission tab being checked, add T
+                forChkStr = forChkStr + "T";            //If tab is the transmission tab being checked, add T
+                incStr = incStr + "T";                  //If tab is the transmission tab being checked, add T
+            }
+
             for(let i = 1; i <= 4; i++){
-                if(document.getElementById("backModeChk" + i).checked == true) backChecked++;   //If box is checked, add one to amount of checked boxes
-                if(document.getElementById("forModeChk" + i).checked == true) forChecked++;     //If box is checked, add one to amount of checked boxes
+                if(document.getElementById(backChkStr + i).checked == true) backChecked++;   //If box is checked, add one to amount of checked boxes
+                if(document.getElementById(forChkStr + i).checked == true) forChecked++;     //If box is checked, add one to amount of checked boxes
             }
 
             //Check if exactly two boxes are checked.
@@ -211,17 +225,17 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
                 //Loops through check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("backModeChk" + i).checked == false) { document.getElementById("backModeChk" + i).disabled = true; }         //If check box is not checked, disable it
+                    if(document.getElementById(backChkStr + i).checked == false) { document.getElementById(backChkStr + i).disabled = true; }         //If check box is not checked, disable it
                     else {                                                                                                                                  //Runs this code if the box is checked
                         //arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 
                         backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
-                        if(i == 1) document.getElementById("incoming" + j).innerHTML = $scope.mBack1.toString();
-                        else if(i == 2) document.getElementById("incoming" + j).innerHTML = $scope.mBack2.toString();
-                        else if(i == 3) document.getElementById("incoming" + j).innerHTML = $scope.mBack3.toString();
-                        else if(i == 4) document.getElementById("incoming" + j).innerHTML = $scope.mBack4.toString();
+                        if(i == 1) document.getElementById(incStr + j).innerHTML = $scope.mBack1.toString();
+                        else if(i == 2) document.getElementById(incStr + j).innerHTML = $scope.mBack2.toString();
+                        else if(i == 3) document.getElementById(incStr + j).innerHTML = $scope.mBack3.toString();
+                        else if(i == 4) document.getElementById(incStr + j).innerHTML = $scope.mBack4.toString();
 
                         /*if(i == 1) {
                             backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
@@ -245,11 +259,11 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }else if(backChecked < 2){
                 //Runs loop through check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("backModeChk" + i).disabled == true) { document.getElementById("backModeChk" + i).disabled = false; }            //If check box is disabled, enable it.
+                    if(document.getElementById(backChkStr + i).disabled == true) { document.getElementById(backChkStr + i).disabled = false; }            //If check box is disabled, enable it.
                 }
 
-                document.getElementById("incoming0").innerHTML = $scope.mBack1.toString();                          //Set incoming0 element to default mode
-                document.getElementById("incoming1").innerHTML = $scope.mBack2.toString();                          //Set incoming1 element to default mode
+                document.getElementById(incStr + "0").innerHTML = $scope.mBack1.toString();                          //Set incoming0 element to default mode
+                document.getElementById(incStr + "1").innerHTML = $scope.mBack2.toString();                          //Set incoming1 element to default mode
             }
 
             //Check if exactly two boxes are checked
@@ -261,15 +275,15 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
                 //Loop through the check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("forModeChk" + i).checked == false) { document.getElementById("forModeChk" + i).disabled = true;  }      //If box is not checked, disable it
+                    if(document.getElementById(forChkStr + i).checked == false) { document.getElementById(forChkStr + i).disabled = true;  }      //If box is not checked, disable it
                     else {
                         forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
-                        if(i == 1) document.getElementById("incoming" + j).innerHTML = $scope.mFor1.toString();
-                        else if(i == 2) document.getElementById("incoming" + j).innerHTML = $scope.mFor2.toString();
-                        else if(i == 3) document.getElementById("incoming" + j).innerHTML = $scope.mFor3.toString();
-                        else if(i == 4) document.getElementById("incoming" + j).innerHTML = $scope.mFor4.toString();
+                        if(i == 1) document.getElementById(incStr + j).innerHTML = $scope.mFor1.toString();
+                        else if(i == 2) document.getElementById(incStr + j).innerHTML = $scope.mFor2.toString();
+                        else if(i == 3) document.getElementById(incStr + j).innerHTML = $scope.mFor3.toString();
+                        else if(i == 4) document.getElementById(incStr + j).innerHTML = $scope.mFor4.toString();
 
                         /*
                         if(i == 1){
@@ -294,11 +308,11 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }else if(forChecked < 2){
                 //Loops through check boxes
                 for(let i = 1; i <= 4; i++){
-                    if(document.getElementById("forModeChk" + i).disabled == true) { document.getElementById("forModeChk" + i).disabled = false; }          //If check box is disabled, enable it
+                    if(document.getElementById(forChkStr + i).disabled == true) { document.getElementById(forChkStr + i).disabled = false; }          //If check box is disabled, enable it
                 }
 
-                document.getElementById("incoming2").innerHTML = $scope.mFor1.toString();               //Set incoming2 element text to default mode
-                document.getElementById("incoming3").innerHTML = $scope.mFor2.toString();               //Set incoming3 element text to default mode
+                document.getElementById(incStr + "2").innerHTML = $scope.mFor1.toString();               //Set incoming2 element text to default mode
+                document.getElementById(incStr + "3").innerHTML = $scope.mFor2.toString();               //Set incoming3 element text to default mode
             }
         }
         
@@ -378,7 +392,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         function updateAll(){
             updateCrystal();
             updateModes();
-            $scope.checkBoxes();
+            $scope.checkBoxes(true);
+            $scope.checkBoxes(false);
             updateFields();
         }
         
@@ -807,13 +822,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         /** Builds the information for the Transmissions tab. WIP */
         $scope.buildTransmission = function() {
-            create2DArrays();
+            getArrays();
             updateAll();
         }
 
         /** Runs the experiment in the Transmissions tab. WIP */
         $scope.runTransmissionExp = function() {
-            create2DArrays();
+            getArrays();
             updateAll();
 
             createTransmissionChart();
@@ -821,8 +836,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Creates the chart in the Transmissions tab. WIP */
         function createTransmissionChart() {
-            var omegLow = 0; //document.getElementById("oLow").value; //hardcode
-            var omegHigh = 5; //document.getElementById("oHi").value; //hardcode
             var kZsList = [1, 2, 3];
             // var kZs = document.getElementById("kzList").value;
             // for(var i = 0; i < kZs.length; i++) {
@@ -834,7 +847,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             // }
             var divName = "transmissionView";
             console.log(kZsList);
-            var transmissionGraph = $scope.crystal.transmission(kZsList, $scope.k1, $scope.k2, $scope.wLeft, $scope.wRight, 100);
+            var transmissionGraph = $scope.crystal.transmission(kZsList, $scope.k1, $scope.k2, $scope.wLeft, $scope.wRight, $scope.wPoints);        //Method needs to be created in emScattering2!
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'omega');
             for (var i = 0; i < transmissionGraph.kzList.length; i++) {
