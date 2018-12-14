@@ -1629,12 +1629,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 hAxis: {
                     gridlines: { 
                         count: (interfaceLength / 2),
-                        color: 'transparent' 
+                        color: 'transparent'
                     },
                     viewWindow: {
                         min: 0,
                         max: $scope.totalLength //modify max by adding layer lengths, then apply to buildstructure button, then set up value placement of layers, then custom overlays
-                    }
+                    },
+                    ticks: interfaces
                 },
                 vAxis: {
                     //title: 'z',
