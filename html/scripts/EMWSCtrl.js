@@ -14,7 +14,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.k2 = 0;                                                          //k2 (Default)
         $scope.wLeft = -5;                                                      //Left bound for transmissions graph (Default)
         $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
-        $scope.wPoints = 100;                                                   //Number of points for transmissions graph (Default)
+        $scope.wPoints = 10;                                                   //Number of points for transmissions graph (Default)
+        $scope.zPoint = 0;                                                      //Point for each array to pull for transmissions graph
         $scope.incoming = [1, 0, 0, 0];                                         //Incoming coefficients (Defaults)
         $scope.eArray = [];                                                     //Epsilon Array for Layers
         $scope.muArray = [];                                                    //Mu Array for Layers
@@ -400,6 +401,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         /** Creates the line chart on the Field tab. */
         function createFieldChart() {
             var fields = $scope.field;                                  //Takes field and puts it to a variable
+            console.log(fields);
             var interfaces = $scope.crystal.materialInterfaces();       //Takes interfaces and puts it to a variable
 
             var data = new google.visualization.DataTable();            //Creates a data table
@@ -847,9 +849,16 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             // }
             var divName = "transmissionView";
             console.log(kZsList);
-            var transmissionGraph = $scope.crystal.transmission(kZsList, $scope.k1, $scope.k2, $scope.wLeft, $scope.wRight, $scope.wPoints);        //Method needs to be created in emScattering2!
+            var transmission = emScattering2.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering2!
+            console.log(transmission);
             var data = new google.visualization.DataTable();
-            data.addColumn('number', 'omega');
+            data.addColumn('number', 'omega');                          //Adds Omega column to data table
+            data.addColumn('number', $scope.EX);                        //Adds Ex column to data table
+            data.addColumn('number', $scope.EY);                        //Adds Ey column to data table
+            data.addColumn('number', $scope.HX);                        //Adds Hx column to data table
+            data.addColumn('number', $scope.HY);                        //Adds Hy column to data table
+
+            /*
             for (var i = 0; i < transmissionGraph.kzList.length; i++) {
                 data.addColumn('number', 'kz' + transmissionGraph.kzList[i]);
             }
@@ -864,11 +873,12 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     dataArray[i][j] = transmissionGraph.transmissionCoeffArrays[j - 1][i];
                 }
             }
+            */
 
 
-            for (var i = 0; i < dataArray.length; i++) {
+            for (var i = 0; i < $scope.wPoints; i++) {
                 data.addRows([
-                    dataArray[i]
+                    [transmission.omegas[i], transmission.Ex[i], transmission.Ey[i], transmission.Hx[i], transmission.Hy[i]]
                 ]);
             }
             var options = {
@@ -879,6 +889,12 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     left: 40,
                     top: 5
                 },
+                hAxis: {
+                    gridlines: {
+                        color: 'transparent',
+                        count: 10
+                   }
+                },
                 width: '100%',
                 height: '100%'
             };
@@ -886,7 +902,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var chart = new google.visualization.LineChart(document.getElementById(divName));
 
             chart.draw(data, options);
-            console.log(dataArray[0][1]);
+            //console.log(dataArray[0][1]);
 
             var myElements = document.querySelectorAll(".hiddenChart1");
             for (var i = 0; i < myElements.length; i++) {

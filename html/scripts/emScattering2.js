@@ -523,6 +523,29 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 };
 
+emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint){
+    var W, lambda, c, current_c, expDiag, result, currentLayer;
+
+    for(var i = 0; i < this.Struct.numLayers; i++){
+        var interfaces = this.materialInterfaces();
+
+        if(interfaces[i] <= zPoint && interfaces[i+1] >= zPoint) currentLayer = i;
+    }
+    
+    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    
+    if(currentLayer == 0) current_c = c._data.slice(0,4);
+    else current_c = c._data.slice(4+4*i,8+4*i);
+
+    W = this.Struct.eigenvectors[currentLayer];
+    lambda = this.Struct.eigenvalues[currentLayer];
+    
+    expDiag = emScattering2.expEigenvaluesDiag(lambda, zPoint);
+    result =  math.multiply(W,(math.multiply(expDiag,current_c)));
+
+    return {Ex: result._data[0].re, Ey: result._data[1].re, Hx: result._data[2].re, Hy: result._data[3].re};
+}
+
 /**
 Setup for Electric Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Ex and Ey in complex polar form, where each part is a separate array output 
@@ -842,3 +865,32 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
     
     
 };
+
+
+emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
+    var _omegas = new Array(), _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array();
+
+    var omegaInterval = (omegaHigh - omegaLow) / omegaPoints;
+
+    console.log(omegaInterval);
+
+    for(var i = 0; i <= omegaPoints; i++) {
+        var currentOmega = omegaLow + (omegaInterval * i);
+
+        if(currentOmega == 0) continue;
+
+        _omegas.push(currentOmega);
+
+        var constants = [k1, k2, currentOmega];
+        var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
+
+        var field = crystal.determineFieldAtZPoint(zPoint);
+
+        _Ex.push(field.Ex);
+        _Ey.push(field.Ey);
+        _Hx.push(field.Hx);
+        _Hy.push(field.Hy);
+    }
+
+    return {omegas: _omegas, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
+}
