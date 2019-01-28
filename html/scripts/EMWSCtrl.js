@@ -895,6 +895,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         count: 10
                    }
                 },
+                vAxis: {
+                    viewWindowMode: 'maximized'
+                },
+                curveType: 'function',
                 width: '100%',
                 height: '100%'
             };

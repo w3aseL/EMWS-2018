@@ -523,6 +523,12 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 };
 
+/**DetermineFieldAtZPoint
+ * ----------
+ * Takes a point of z and calculates the value of the fields (Ex, Ey, Hx, and Hy) at
+ * that point. Extreme WIP - This code will need to be rewritten and, once working,
+ * will allow for much more efficient Transmission calculations
+ */
 emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint){
     var W, lambda, c, current_c, expDiag, result, currentLayer;
 
@@ -866,7 +872,13 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
     
 };
 
-
+/**CreateTransmissionArrays
+ * --------------------
+ * Takes a range of Omega values (omegaLow-omegaHigh) and increments them based on n (omegaPoints) times. Calculates the crystal and fields for
+ * each calculated value of Omega. Takes the Ex, Ey, Hx, and Hy values at point z and puts them into an array. If Omega is zero, no calculations will be done
+ * and the method will continue. WIP - Extremely inefficient and can take minutes based on the value of omegaPoints
+ * 
+ */
 emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
     var _omegas = new Array(), _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array();
 
@@ -884,13 +896,29 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
         var constants = [k1, k2, currentOmega];
         var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
 
+        //DetermineField Method
+        var fields = crystal.determineField();
+
+        _Ex.push(fields.Ex[zPoint]);
+        _Ey.push(fields.Hx[zPoint]);
+        _Hx.push(fields.Hx[zPoint]);
+        _Hy.push(fields.Hy[zPoint]);
+
+        //DetermineFieldAtZPoint Method
+        /*
         var field = crystal.determineFieldAtZPoint(zPoint);
 
         _Ex.push(field.Ex);
         _Ey.push(field.Ey);
         _Hx.push(field.Hx);
         _Hy.push(field.Hy);
+        */
     }
 
     return {omegas: _omegas, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 }
+/* TODO (Transmission Arrays):
+*   - Add corrected order modes
+*   - Make method more efficient for higher precision calculations
+*   - Hope numbers are correct when issue with calculations is fixed
+*/
