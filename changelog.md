@@ -81,3 +81,8 @@
    - Added Points form for specifying how many points to be calculated
    - Added functionality to Incoming Modes tab
    - Loads of documentary for the internal code added
+
+## **2.3.0**
+ - **Transmission Tab**
+   - Added text field to specify z for Transmission graph
+   - Added functioning line graph

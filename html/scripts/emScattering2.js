@@ -736,7 +736,7 @@ emScattering2.PhotonicCrystal.prototype.materialInterfaces = function() {
     for (var i = 0; i < this.Struct.numLayers; i++){
         interfaces.push(interfaces[i] + this.Struct.layers[i].length);
     }
-    console.log(interfaces);
+    //console.log(interfaces);
     return interfaces;
 };
 
@@ -852,7 +852,7 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
     struct = emScattering2.computeStructure(eArray, mArray, length, numLayers, constants, Modes);
     crystal = emScattering2.createPhotonicCrystal(struct);
     crystal.determineField();  
-    console.log(crystal);
+    //console.log(crystal);
 //    c = math.complex("1 + i");
 //    a = math.matrix([[12,-51,4],
 //                    [6,167,-68],
@@ -884,7 +884,9 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
 
     var omegaInterval = (omegaHigh - omegaLow) / omegaPoints;
 
-    console.log(omegaInterval);
+    //console.log(omegaInterval);
+
+    var zIndex = zPoint * 100;
 
     for(var i = 0; i <= omegaPoints; i++) {
         var currentOmega = omegaLow + (omegaInterval * i);
@@ -896,13 +898,19 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
         var constants = [k1, k2, currentOmega];
         var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
 
+        checkBoxesForModes(crystal);
+
+        var interfaces = crystal.materialInterfaces();
+
+        if(zPoint == interfaces[interfaces.length - 1]) zIndex--;
+
         //DetermineField Method
         var fields = crystal.determineField();
 
-        _Ex.push(fields.Ex[zPoint]);
-        _Ey.push(fields.Hx[zPoint]);
-        _Hx.push(fields.Hx[zPoint]);
-        _Hy.push(fields.Hy[zPoint]);
+        _Ex.push(fields.Ex[zIndex]);
+        _Ey.push(fields.Hx[zIndex]);
+        _Hx.push(fields.Hx[zIndex]);
+        _Hy.push(fields.Hy[zIndex]);
 
         //DetermineFieldAtZPoint Method
         /*
@@ -918,7 +926,40 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
     return {omegas: _omegas, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 }
 /* TODO (Transmission Arrays):
-*   - Add corrected order modes
 *   - Make method more efficient for higher precision calculations
 *   - Hope numbers are correct when issue with calculations is fixed
 */
+
+/**CheckBoxesForModes
+ * ------------
+ * For the transmission tab. Takes the crystal and rearranges the modes based on the selected check
+ * boxes in the "Incoming Modes in Ambient Medium" section.
+ */
+function checkBoxesForModes(crystal) {
+    var backChecked = 0;
+    var forChecked = 0;
+
+    for(let i = 1; i <= 4; i++){
+        if(document.getElementById("backModeChkT" + i).checked == true) backChecked++;
+        if(document.getElementById("forModeChkT" + i).checked == true) forChecked++;
+    }
+
+    var backArr = crystal.Struct.eigenvalues[0];
+    var forArr = crystal.Struct.eigenvalues[crystal.Struct.eigenvalues.length-1];
+
+    if(backChecked == 2){
+        let j = 0;
+
+        for(let i = 1; i <= 4; i++){
+            if(document.getElementById("backModeChkT" + i).checked == true) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+        }
+    }
+
+    if(forChecked == 2){
+        let j = 0;
+
+        for(let i = 1; i <= 4; i++){
+            if(document.getElementById("forModeChkT" + i).checked == true) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+        }
+    }
+}

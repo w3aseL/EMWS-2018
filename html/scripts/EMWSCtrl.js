@@ -104,6 +104,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             updateAll();
             google.charts.setOnLoadCallback(createStructureChart);
             google.charts.setOnLoadCallback(createFieldChart);
+            google.charts.setOnLoadCallback(createTransmissionChart)
             //google.charts.setOnLoadCallback(createDispersionChart);
             //google.charts.setOnLoadCallback(createTransmissionChart);
             createAnim();
@@ -838,7 +839,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Creates the chart in the Transmissions tab. WIP */
         function createTransmissionChart() {
-            var kZsList = [1, 2, 3];
+            //var kZsList = [1, 2, 3];
             // var kZs = document.getElementById("kzList").value;
             // for(var i = 0; i < kZs.length; i++) {
             //  console.log(kZs.charAt(i));
@@ -848,7 +849,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             //  }
             // }
             var divName = "transmissionView";
-            console.log(kZsList);
+            //console.log(kZsList);
             var transmission = emScattering2.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering2!
             console.log(transmission);
             var data = new google.visualization.DataTable();
