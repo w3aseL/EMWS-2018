@@ -75,3 +75,14 @@
    - Added useful information to "Incoming Modes in Ambient Medium"
  - **Transmission Tab**
    - Organized tab to be similar to Field tab (no functionality yet)
+   
+## **2.2.8**
+ - **Transmission Tab**
+   - Added Points form for specifying how many points to be calculated
+   - Added functionality to Incoming Modes tab
+   - Loads of documentary for the internal code added
+
+## **2.3.0**
+ - **Transmission Tab**
+   - Added text field to specify z for Transmission graph
+   - Added functioning line graph

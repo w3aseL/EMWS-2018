@@ -78,6 +78,8 @@ emScattering2.createLayers = function(eMat,mMat, lengths) {
  Generates the anisotropic maxwell matrix for the given values.
  This matrix is found on page 9, slide 17 from the following link
     http://emlab.utep.edu/ee5390cem/Lecture%204%20--%20Transfer%20Matrix%20Method.pdf
+
+ The actual matrix in the Maxwell ODE system is the output of this function times omega.
  */
 
 emScattering2.Maxwell = function(eMat, mMat, kx, ky){
@@ -302,11 +304,12 @@ emScattering2.makeStructure = function(eMat,mMat,length, kx, ky ,omega,Modes) {
 
 /*
  Creates the anisotropic maxwell matrix for each layer and stores in Struct object.
+ The output of emScattering2.Maxwell needs to be multiplied by this.omega to obtain the matrix for the Maxwell ODE system.
  */
 emScattering2.Struct.prototype.makeMaxwell = function(){
     var tmp, kx_ = this.kx/this.omega, ky_ = this.ky/this.omega;
     for( var i = 0; i < this.numLayers; i++){
-        this.maxwellMatrices[i] = emScattering2.Maxwell(this.layers[i].epsilon._data, this.layers[i].mu._data, kx_, ky_);
+        this.maxwellMatrices[i] = math.multiply(emScattering2.Maxwell(this.layers[i].epsilon._data, this.layers[i].mu._data, kx_, ky_), this.omega);
     }
     
 };
@@ -464,7 +467,7 @@ emScattering2.Struct.prototype.calcScattering = function(){
 
 
 
-/*
+/**
  Photonic Crystal Object and Methods
 ------------------------------------------------------------------------------------
 A Photonic Crystal is a wrapper object for a structure. Methods included are used to complete and display the experiment.
@@ -478,7 +481,7 @@ emScattering2.createPhotonicCrystal = function(Struct){
     return crystal;
 };
 
-/* 
+/**
 Returns the field values in all the layers given the coefficients of the incoming modes.
 Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
 and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
@@ -523,7 +526,36 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
 };
 
-/*
+/**DetermineFieldAtZPoint
+ * ----------
+ * Takes a point of z and calculates the value of the fields (Ex, Ey, Hx, and Hy) at
+ * that point. Extreme WIP - This code will need to be rewritten and, once working,
+ * will allow for much more efficient Transmission calculations
+ */
+emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint){
+    var W, lambda, c, current_c, expDiag, result, currentLayer;
+
+    for(var i = 0; i < this.Struct.numLayers; i++){
+        var interfaces = this.materialInterfaces();
+
+        if(interfaces[i] <= zPoint && interfaces[i+1] >= zPoint) currentLayer = i;
+    }
+    
+    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    
+    if(currentLayer == 0) current_c = c._data.slice(0,4);
+    else current_c = c._data.slice(4+4*i,8+4*i);
+
+    W = this.Struct.eigenvectors[currentLayer];
+    lambda = this.Struct.eigenvalues[currentLayer];
+    
+    expDiag = emScattering2.expEigenvaluesDiag(lambda, zPoint);
+    result =  math.multiply(W,(math.multiply(expDiag,current_c)));
+
+    return {Ex: result._data[0].re, Ey: result._data[1].re, Hx: result._data[2].re, Hy: result._data[3].re};
+}
+
+/**
 Setup for Electric Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Ex and Ey in complex polar form, where each part is a separate array output 
  */
@@ -574,7 +606,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxSetupEf = function() {
     return {ExR: ExR, ExPhi: ExPhi, EyR: EyR, EyPhi: EyPhi};
 };
 
-/*
+/**
 Calculates the Ex and Ey bits for Mathbox graphing.
 Expects the array of layer lengths, the current timestamp t, the position z, 
 ExR, ExPhi, EyR, EyPhi.
@@ -608,7 +640,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExP
     return {Ex: Ex, Ey: Ey};
 };
 
-/*
+/**
 Setup for Magnetic Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Hx and Hy in complex polar form, where each part is a separate array output 
  */
@@ -656,7 +688,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxSetupHf = function() {
     return {HxR: HxR, HxPhi: HxPhi, HyR: HyR, HyPhi: HyPhi};
 };
 
-/*
+/**
 Calculates the Hx and Hy bits for Mathbox graphing.
 Expects the array of layer lengths, the current timestamp t, the position z, 
 HxR, HxPhi, HyR, HyPhi.
@@ -690,7 +722,7 @@ emScattering2.PhotonicCrystal.prototype.mathboxHf = function(lengths,t,z,HxR,HxP
 };
 
 
-/*
+/**
 Returns the z-coordiantes of the edges of the interfaces. The edges of the ambient mediums 
 are determined by the user entered length of the ambeint mediums even though they do extend 
 to infinity. The hard limit is more for visual purposes and not because of any underlying 
@@ -707,7 +739,7 @@ emScattering2.PhotonicCrystal.prototype.materialInterfaces = function() {
     for (var i = 0; i < this.Struct.numLayers; i++){
         interfaces.push(interfaces[i] + this.Struct.layers[i].length);
     }
-    console.log(interfaces);
+    //console.log(interfaces);
     return interfaces;
 };
 
@@ -722,7 +754,7 @@ emScattering2.PhotonicCrystal.prototype.materialInterfaces = function() {
 
 
 
-//Calls all structure functions in proper order and fills all structure variables, returns filled structure
+/** Calls all structure functions in proper order and fills all structure variables, returns filled structure */
 emScattering2.computeStructure = function(eArray, mArray, length, numLayers, constants, Modes){
     var values,struct;
     Modes = math.complex(Modes);
@@ -817,13 +849,13 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //    console.log(Q);
 //}
 
-//Performs experiment when run, returns completed crystal
+/**Performs experiment when run, returns completed crystal*/
 emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Modes){
     var a,b,c ,d = [],struct, crystal;
     struct = emScattering2.computeStructure(eArray, mArray, length, numLayers, constants, Modes);
     crystal = emScattering2.createPhotonicCrystal(struct);
-    crystal.determineField();  
-    console.log(crystal);
+    //crystal.determineField();  
+    //console.log(crystal);
 //    c = math.complex("1 + i");
 //    a = math.matrix([[12,-51,4],
 //                    [6,167,-68],
@@ -842,3 +874,102 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
     
     
 };
+
+/**CreateTransmissionArrays
+ * --------------------
+ * Takes a range of Omega values (omegaLow-omegaHigh) and increments them based on n (omegaPoints) times. Calculates the crystal and fields for
+ * each calculated value of Omega. Takes the Ex, Ey, Hx, and Hy values at point z and puts them into an array. If Omega is zero, no calculations will be done
+ * and the method will continue. WIP - Extremely inefficient and can take minutes based on the value of omegaPoints
+ * 
+ */
+emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
+    var _omegas = new Array(), _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array();
+
+    omegaHigh = Number(omegaHigh);
+    omegaLow = Number(omegaLow);
+    omegaPoints = Number(omegaPoints);
+    zPoint = Number(zPoint);
+
+    var omegaInterval = (omegaHigh - omegaLow) / omegaPoints;
+
+    console.log(omegaInterval);
+
+    var zIndex = zPoint * 100;
+
+    for(var i = 0; i <= omegaPoints; i++) {
+        var tempOmega = omegaLow + (omegaInterval * i);
+
+        console.log(tempOmega);
+
+        if(tempOmega == 0) continue;
+
+        _omegas.push(tempOmega);
+
+        var constants = [k1, k2, tempOmega];
+        var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
+
+        checkBoxesForModes(crystal);
+
+        var interfaces = crystal.materialInterfaces();
+
+        if(zPoint == interfaces[interfaces.length - 1]) zIndex--;
+
+        //DetermineField Method
+        var fields = crystal.determineField();
+
+        _Ex.push(fields.Ex[zIndex]);
+        _Ey.push(fields.Hx[zIndex]);
+        _Hx.push(fields.Hx[zIndex]);
+        _Hy.push(fields.Hy[zIndex]);
+
+        //DetermineFieldAtZPoint Method
+        /*
+        var field = crystal.determineFieldAtZPoint(zPoint);
+
+        _Ex.push(field.Ex);
+        _Ey.push(field.Ey);
+        _Hx.push(field.Hx);
+        _Hy.push(field.Hy);
+        */
+    }
+
+    return {omegas: _omegas, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
+}
+/* TODO (Transmission Arrays):
+*   - Make method more efficient for higher precision calculations
+*   - Hope numbers are correct when issue with calculations is fixed
+*/
+
+/**CheckBoxesForModes
+ * ------------
+ * For the transmission tab. Takes the crystal and rearranges the modes based on the selected check
+ * boxes in the "Incoming Modes in Ambient Medium" section.
+ */
+function checkBoxesForModes(crystal) {
+    var backChecked = 0;
+    var forChecked = 0;
+
+    for(let i = 1; i <= 4; i++){
+        if(document.getElementById("backModeChkT" + i).checked == true) backChecked++;
+        if(document.getElementById("forModeChkT" + i).checked == true) forChecked++;
+    }
+
+    var backArr = crystal.Struct.eigenvalues[0];
+    var forArr = crystal.Struct.eigenvalues[crystal.Struct.eigenvalues.length-1];
+
+    if(backChecked == 2){
+        let j = 0;
+
+        for(let i = 1; i <= 4; i++){
+            if(document.getElementById("backModeChkT" + i).checked == true) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+        }
+    }
+
+    if(forChecked == 2){
+        let j = 0;
+
+        for(let i = 1; i <= 4; i++){
+            if(document.getElementById("forModeChkT" + i).checked == true) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+        }
+    }
+}
