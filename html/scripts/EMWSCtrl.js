@@ -401,6 +401,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         /** Creates the line chart on the Field tab. */
         function createFieldChart() {
+            console.log($scope.crystal);
             var fields = $scope.field;                                  //Takes field and puts it to a variable
             console.log(fields);
             var interfaces = $scope.crystal.materialInterfaces();       //Takes interfaces and puts it to a variable

@@ -78,6 +78,8 @@ emScattering2.createLayers = function(eMat,mMat, lengths) {
  Generates the anisotropic maxwell matrix for the given values.
  This matrix is found on page 9, slide 17 from the following link
     http://emlab.utep.edu/ee5390cem/Lecture%204%20--%20Transfer%20Matrix%20Method.pdf
+
+ The actual matrix in the Maxwell ODE system is the output of this function times omega.
  */
 
 emScattering2.Maxwell = function(eMat, mMat, kx, ky){
@@ -302,11 +304,12 @@ emScattering2.makeStructure = function(eMat,mMat,length, kx, ky ,omega,Modes) {
 
 /*
  Creates the anisotropic maxwell matrix for each layer and stores in Struct object.
+ The output of emScattering2.Maxwell needs to be multiplied by this.omega to obtain the matrix for the Maxwell ODE system.
  */
 emScattering2.Struct.prototype.makeMaxwell = function(){
     var tmp, kx_ = this.kx/this.omega, ky_ = this.ky/this.omega;
     for( var i = 0; i < this.numLayers; i++){
-        this.maxwellMatrices[i] = emScattering2.Maxwell(this.layers[i].epsilon._data, this.layers[i].mu._data, kx_, ky_);
+        this.maxwellMatrices[i] = math.multiply(emScattering2.Maxwell(this.layers[i].epsilon._data, this.layers[i].mu._data, kx_, ky_), this.omega);
     }
     
 };
@@ -851,7 +854,7 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
     var a,b,c ,d = [],struct, crystal;
     struct = emScattering2.computeStructure(eArray, mArray, length, numLayers, constants, Modes);
     crystal = emScattering2.createPhotonicCrystal(struct);
-    crystal.determineField();  
+    //crystal.determineField();  
     //console.log(crystal);
 //    c = math.complex("1 + i");
 //    a = math.matrix([[12,-51,4],
@@ -882,20 +885,27 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
 emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
     var _omegas = new Array(), _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array();
 
+    omegaHigh = Number(omegaHigh);
+    omegaLow = Number(omegaLow);
+    omegaPoints = Number(omegaPoints);
+    zPoint = Number(zPoint);
+
     var omegaInterval = (omegaHigh - omegaLow) / omegaPoints;
 
-    //console.log(omegaInterval);
+    console.log(omegaInterval);
 
     var zIndex = zPoint * 100;
 
     for(var i = 0; i <= omegaPoints; i++) {
-        var currentOmega = omegaLow + (omegaInterval * i);
+        var tempOmega = omegaLow + (omegaInterval * i);
 
-        if(currentOmega == 0) continue;
+        console.log(tempOmega);
 
-        _omegas.push(currentOmega);
+        if(tempOmega == 0) continue;
 
-        var constants = [k1, k2, currentOmega];
+        _omegas.push(tempOmega);
+
+        var constants = [k1, k2, tempOmega];
         var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
 
         checkBoxesForModes(crystal);
