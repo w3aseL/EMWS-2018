@@ -380,7 +380,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         /** Updates the Photonic Crystal. */
         function updateCrystal(){
-            var k = [$scope.k1,$scope.k2,$scope.o];
+            var k = [Number($scope.k1),Number($scope.k2),Number($scope.o)];
             $scope.crystal = emScattering2.Driver(
                     $scope.eArray,$scope.muArray,$scope.lArray,$scope.NumLayers,k,$scope.incoming);
             };
@@ -851,7 +851,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             // }
             var divName = "transmissionView";
             //console.log(kZsList);
+            console.time("Transmission Graph");
             var transmission = emScattering2.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering2!
+            console.timeEnd("Transmission Graph");
             console.log(transmission);
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'omega');                          //Adds Omega column to data table
