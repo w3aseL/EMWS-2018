@@ -892,14 +892,14 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
 
     var omegaInterval = (omegaHigh - omegaLow) / omegaPoints;
 
-    console.log(omegaInterval);
+    //console.log(omegaInterval);
 
     var zIndex = zPoint * 100;
 
     for(var i = 0; i <= omegaPoints; i++) {
         var tempOmega = omegaLow + (omegaInterval * i);
 
-        console.log(tempOmega);
+        //console.log(tempOmega);
 
         if(tempOmega == 0) continue;
 
@@ -908,19 +908,21 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
         var constants = [k1, k2, tempOmega];
         var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
 
-        checkBoxesForModes(crystal);
+        //checkBoxesForModes(crystal);                      Disabled until we can come up with an algoritm to correct modes throughout all crystals
 
         var interfaces = crystal.materialInterfaces();
 
         if(zPoint == interfaces[interfaces.length - 1]) zIndex--;
 
         //DetermineField Method
+        ///*
         var fields = crystal.determineField();
 
         _Ex.push(fields.Ex[zIndex]);
         _Ey.push(fields.Hx[zIndex]);
         _Hx.push(fields.Hx[zIndex]);
         _Hy.push(fields.Hy[zIndex]);
+        //*/
 
         //DetermineFieldAtZPoint Method
         /*
@@ -944,6 +946,7 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
  * ------------
  * For the transmission tab. Takes the crystal and rearranges the modes based on the selected check
  * boxes in the "Incoming Modes in Ambient Medium" section.
+ * WIP - UNUSED
  */
 function checkBoxesForModes(crystal) {
     var backChecked = 0;
