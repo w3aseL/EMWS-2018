@@ -8,10 +8,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         google.charts.load('current', { packages: ['corechart'] });             //Loads Google Charts packages
         $scope.context;
-        $scope.NumLayers = 5;                                                   //Number of Layers (Default)
-        $scope.o = 1;                                                           //Omega (Default)
-        $scope.k1 = 0;                                                          //k1 (Default)
-        $scope.k2 = 0;                                                          //k2 (Default)
+        $scope.NumLayers = 3;                                                   //Number of Layers (Default)
+        $scope.o = 0.398;                                                           //Omega (Default)
+        $scope.k1 = 0.5;                                                          //k1 (Default)
+        $scope.k2 = 0.22;                                                          //k2 (Default)
         $scope.wLeft = -5;                                                      //Left bound for transmissions graph (Default)
         $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
         $scope.wPoints = 10;                                                   //Number of points for transmissions graph (Default)
@@ -59,42 +59,26 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.Layers = [{
                 "layerName": "Ambient Left",
                 "epsilon": [1, 2, 3, 4],
-                "epsilonA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                "epsilonA": [[1.5, 0, 0], [0, 8, 0], [0, 0, 1]],
                 "mu": [1, 2, 3, 4],
-                "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
-                "length": 6
+                "muA": [[4,0,0],[0,1,0], [0, 0, 1]],
+                "length": 10
             },
             {
                 "layerName": "Layer 1",
                 "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[2, 1, 0], [1, 2, 0], [0, 0, 1]],
+                "epsilonA": [[8, 0, 0], [0, 1, 0], [0, 0, 1]],
                 "mu": [2, 2, 3, 6],
-                "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
-                "length": 6
-            },
-            {
-                "layerName": "Layer 2",
-                "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[3, 0, 0], [0, 3, 0], [0, 0, 1]],
-                "mu": [2, 2, 3, 6],
-                "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
-                "length": 9
-            },
-            {
-                "layerName": "Layer 3",
-                "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[2, 1, 0], [1, 2, 0], [0, 0, 1]],
-                "mu": [2, 2, 3, 6],
-                "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
-                "length": 6
+                "muA": [[1,0,0],[0,4,0], [0, 0, 1]],
+                "length": 7
             },
             {
                 "layerName": "Ambient Right",
                 "epsilon": [1, 2, 3, 4],
-                "epsilonA": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                "epsilonA": [[1.5, 0, 0], [0, 8, 0], [0, 0, 1]],
                 "mu": [1, 2, 3, 4],
-                "muA": [[1,0,0],[0,1,0], [0, 0, 1]],
-                "length": 6
+                "muA": [[4,0,0],[0,1,0], [0, 0, 1]],
+                "length": 10
             },
         ];
 
