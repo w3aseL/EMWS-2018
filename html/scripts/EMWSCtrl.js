@@ -22,6 +22,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.lArray = [];                                                     //Length Array for Layers
         $scope.totalLength = 0;                                                 //Total Length of All Layers
         $scope.outputModes;
+        $scope.modesBack = new Array();                                         //Array of the backward modes for the GUI
+        $scope.modesForward = new Array();                                      //Array of the forward modes for the GUI
+
+        /*          OLD VARIABLES FOR MODES - ARRAYS USED NOW
         $scope.mBack1x;                                                         //Real value used in modes (for all mBackix and mForix values, i being a value of 1-4)
         $scope.mBack1y;                                                         //Imaginary value used in modes (for all mBackiy and mForiy values, i being a value of 1-4)
         $scope.mBack2x;
@@ -46,6 +50,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.mBack2;
         $scope.mBack3; 
         $scope.mBack4;
+        */
+
         $scope.crystal;                                                         //The Photonic Crystal created in emScattering2.js
         $scope.field;                                                           //The field determined using the Photonic Crystal
         $scope.dispersion;                                                      
@@ -234,10 +240,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
-                        if(i == 1) document.getElementById(incStr + j).innerHTML = $scope.mBack1.toString();
-                        else if(i == 2) document.getElementById(incStr + j).innerHTML = $scope.mBack2.toString();
-                        else if(i == 3) document.getElementById(incStr + j).innerHTML = $scope.mBack3.toString();
-                        else if(i == 4) document.getElementById(incStr + j).innerHTML = $scope.mBack4.toString();
+                        document.getElementById(incStr + j).innerHTML = $scope.modesBack[i-1].toString();
 
                         /*if(i == 1) {
                             backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);
@@ -264,8 +267,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     if(document.getElementById(backChkStr + i).disabled == true) { document.getElementById(backChkStr + i).disabled = false; }            //If check box is disabled, enable it.
                 }
 
-                document.getElementById(incStr + "0").innerHTML = $scope.mBack1.toString();                          //Set incoming0 element to default mode
-                document.getElementById(incStr + "1").innerHTML = $scope.mBack2.toString();                          //Set incoming1 element to default mode
+                document.getElementById(incStr + "0").innerHTML = $scope.modesBack[0].toString();                          //Set incoming0 element to default mode
+                document.getElementById(incStr + "1").innerHTML = $scope.modesBack[1].toString();                          //Set incoming1 element to default mode
             }
 
             //Check if exactly two boxes are checked
@@ -282,10 +285,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
-                        if(i == 1) document.getElementById(incStr + j).innerHTML = $scope.mFor1.toString();
-                        else if(i == 2) document.getElementById(incStr + j).innerHTML = $scope.mFor2.toString();
-                        else if(i == 3) document.getElementById(incStr + j).innerHTML = $scope.mFor3.toString();
-                        else if(i == 4) document.getElementById(incStr + j).innerHTML = $scope.mFor4.toString();
+                        document.getElementById(incStr + j).innerHTML = $scope.modesForward[i-1].toString();;
 
                         /*
                         if(i == 1){
@@ -313,8 +313,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     if(document.getElementById(forChkStr + i).disabled == true) { document.getElementById(forChkStr + i).disabled = false; }          //If check box is disabled, enable it
                 }
 
-                document.getElementById(incStr + "2").innerHTML = $scope.mFor1.toString();               //Set incoming2 element text to default mode
-                document.getElementById(incStr + "3").innerHTML = $scope.mFor2.toString();               //Set incoming3 element text to default mode
+                document.getElementById(incStr + "2").innerHTML = $scope.modesForward[0].toString();               //Set incoming2 element text to default mode
+                document.getElementById(incStr + "3").innerHTML = $scope.modesForward[1].toString();               //Set incoming3 element text to default mode
             }
         }
         
@@ -350,6 +350,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         /** Updates the modes using the structure's Eigensystems and eigenvalues. */
         function updateModes() {
             var lastEigensystem = $scope.crystal.Struct.Eigensystems.length - 1;
+            var eigensystems = $scope.crystal.Struct.Eigensystems;
+
+            /*
             $scope.mBack1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
             $scope.mBack1y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
             $scope.mBack2x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(4));
@@ -376,6 +379,19 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             $scope.mFor2 = math.complex($scope.mFor2x, $scope.mFor2y);
             $scope.mFor3 = math.complex($scope.mFor3x, $scope.mFor3y);
             $scope.mFor4 = math.complex($scope.mFor4x, $scope.mFor4y);
+            */
+
+            for(let i = 0; i < 4; i++){
+                $scope.modesBack[i] = math.complex(
+                    parseFloat(math.re(eigensystems[lastEigensystem][i].eigenvalue)).toFixed(4),
+                    parseFloat(math.im(eigensystems[lastEigensystem][i].eigenvalue)).toFixed(4)
+                );
+                  
+                $scope.modesForward[i] = math.complex(
+                    parseFloat(math.re(eigensystems[0][i].eigenvalue)).toFixed(4),
+                    parseFloat(math.im(eigensystems[0][i].eigenvalue)).toFixed(4)
+                );
+            }
         }
         
         /** Updates the Photonic Crystal. */
