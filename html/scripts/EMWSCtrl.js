@@ -503,8 +503,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     left: 40,
                     top: 40
                 },
-                backgroundColor: 'transparent'
-
+                backgroundColor: 'transparent',
+                colors: [ "red", "orange", "blue", "green" ]
             };
 
             chart.draw(data, options);          //Draw the chart
@@ -903,7 +903,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     viewWindowMode: 'maximized'
                 },
                 width: '100%',
-                height: '100%'
+                height: '100%',
+                colors: [ "red", "orange", "blue", "green" ]
             };
 
             var chart = new google.visualization.LineChart(document.getElementById(divName));
