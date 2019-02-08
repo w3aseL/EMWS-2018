@@ -504,7 +504,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     top: 40
                 },
                 backgroundColor: 'transparent',
-                colors: [ "red", "orange", "blue", "green" ]
+                colors: [ "blue", "green", "red", "orange" ]
             };
 
             chart.draw(data, options);          //Draw the chart
@@ -904,7 +904,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 },
                 width: '100%',
                 height: '100%',
-                colors: [ "red", "orange", "blue", "green" ]
+                colors: [ "blue", "green", "red", "orange" ]
             };
 
             var chart = new google.visualization.LineChart(document.getElementById(divName));
