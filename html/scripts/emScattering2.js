@@ -14,7 +14,7 @@ Layer Object
 ------------------------------------------------------------------------------------
 */
 
-/*
+/**
 Represents a single material layer in a 1D photonic crystal. 'epsilon' and 'mu' 
 represent the relative electric permittivity and the relative magnetic permeability, 
 respectively, of the material. Currently, only isotropic materals are suported, so 'epsilon' 
@@ -32,7 +32,7 @@ GENERAL FUNCTIONS
 ------------------------------------------------------------------------------------
 */
 
-/*
+/**
  Expects array of epsilon values, array of mu values, and the scalar number of layers,
  Parses user input from web into a usable standardized format
  Outputs Array containing arrays of real and imaginary parts for epsilon and mu
@@ -60,7 +60,7 @@ emScattering2.Parse = function(eArray,mArray,numLayers){
 };
 
 
-/*
+/**
 Generates an array of layer objects. Expects array of Epsilon Matrices,
 Mu Matrices, and lengths.
 */
@@ -73,7 +73,7 @@ emScattering2.createLayers = function(eMat,mMat, lengths) {
     return layers;
 };
 
-/*
+/**
  Takes an epislon matrix, mu matrix, scalar kx, and scalar ky
  Generates the anisotropic maxwell matrix for the given values.
  This matrix is found on page 9, slide 17 from the following link
@@ -81,7 +81,6 @@ emScattering2.createLayers = function(eMat,mMat, lengths) {
 
  The actual matrix in the Maxwell ODE system is the output of this function times omega.
  */
-
 emScattering2.Maxwell = function(eMat, mMat, kx, ky){
     var i = math.complex('i'), exx = eMat[0][0], exy = eMat[0][1], exz = eMat[0][2], eyx = eMat[1][0], eyy = eMat[1][1],
         eyz = eMat[1][2], ezx = eMat[2][0], ezy = eMat[2][1], ezz = eMat[2][2],mxx = mMat[0][0], mxy = mMat[0][1], 
@@ -111,7 +110,7 @@ emScattering2.Maxwell = function(eMat, mMat, kx, ky){
     
 };
 
-/*
+/**
  Calculates the four eigenvalues for the 4x4 matrix of a single layer using the
  C++ wrapped function complex_eigenvalues. Expects a maxwell matrix,
  and the wrapped complex_eigenvalues function. 
@@ -146,7 +145,7 @@ emScattering2.calcEigsVa = function(maxwell, complex_eigenvalues){
     return ret;
 };
 
-/*
+/**
  Calculates the eigenvectors of the complex 4x4 maxwell matrix using the C++ function 
  complex_eigenvectors.  Expects a maxwell matrix and the 
  wrapped complex_eigenvectors function. Outputs matrix of eigenvectors.
@@ -177,8 +176,24 @@ emScattering2.calcEigsVe = function (maxwell,complex_eigenvectors){
     return ret;
 };
 
+/**Calculate Eigenvectors
+ * ---------------------------------
+ * Takes the returned eigenvalues from the complex_eigenvalues function
+ * and computes the complex eigenvectors of the 4x4 maxwell matrix
+ * and returns the eigenvectors as a matrix.
+ * 
+ * TODO: Write out algorithm
+ */
+emScattering2.calculateEigenvectors = function(maxwell, eigenvalues){
+    var i, j, retMatrix = math.matrix();
 
-/*
+    // TODO: WRITE OUT ALGORITHM HERE
+
+    return retMatrix;
+}
+
+
+/**
  Expects a diagonal matrix of eigenvalues, and a znorm
  Returns a diagonal matrix where each element on the diagonal is of the form: exp[eigenvalue * znorm]
  */
@@ -187,7 +202,7 @@ emScattering2.expEigenvaluesDiag = function(eigenvalues,znorm){
    return math.diag(math.exp(math.multiply(tmp,znorm)));
 };
 
-//Calculates the Constants for the Scattering problem
+/**Calculates the Constants for the Scattering problem*/
 emScattering2.calculateConstants = function(S,Modes,T0) {
     var a = math.zeros(S._data.length),tmp,b0, bN, unknown_c, c = math.zeros(S._data.length + 3);
 
@@ -237,12 +252,11 @@ emScattering2.calculateConstants = function(S,Modes,T0) {
 //=====================================================================================================================================
 
 
-/*
+/**
 Eigenpair Object and Methods
 ------------------------------------------------------------------------------------
 An Eigenpair is a pairing between an eigenvalue and eigenvector that has either rightward or leftward propagation
 */
-
 emScattering2.Eigenpair = function(eigenvalue, eigenvector) {
     this.eigenvalue = eigenvalue;
     this.eigenvector = eigenvector;
@@ -265,16 +279,11 @@ emScattering2.Eigenpair.prototype.setOrientation = function(orientation){
 //=====================================================================================================================================
 
 
-/*
+/**
 Struct Object and Methods
 ------------------------------------------------------------------------------------
 A Struct is a collection of layers and values corresponding to each layer. Methods included are used to solve the scattering problem.
 */
-
-
-
-
-
 emScattering2.Struct = function(layers, lengths, kx, ky, omega, Modes) {
     this.layers = layers;
     this.lengths = lengths;
@@ -292,7 +301,7 @@ emScattering2.Struct = function(layers, lengths, kx, ky, omega, Modes) {
 };
 
 
-/*
+/**
  Constructor for structure, expects matrix of epsilon matrices, matrix of mu matrices, kx, ky and omega scalars
  returns object of type Struct
  */
@@ -302,7 +311,7 @@ emScattering2.makeStructure = function(eMat,mMat,length, kx, ky ,omega,Modes) {
 
 };
 
-/*
+/**
  Creates the anisotropic maxwell matrix for each layer and stores in Struct object.
  The output of emScattering2.Maxwell needs to be multiplied by this.omega to obtain the matrix for the Maxwell ODE system.
  */
@@ -314,7 +323,7 @@ emScattering2.Struct.prototype.makeMaxwell = function(){
     
 };
 
-/*
+/**
 Calculates Eigenvalues and Eigenvectors for each layer and returns them in an array.
 */
 emScattering2.Struct.prototype.calcEigs = function(){
@@ -326,17 +335,18 @@ emScattering2.Struct.prototype.calcEigs = function(){
         maxwell = this.maxwellMatrices[i];
         ret_values[i] = emScattering2.calcEigsVa(maxwell, complex_eigenvalues);
         ret_vectors[i] = emScattering2.calcEigsVe(maxwell, complex_eigenvectors);
+
+        //console.log(emScattering2.calculateEigenvectors(maxwell, ret_values[i]));                     //Calculates eigenvectors using returned eigenvalues - currently printed to console to check for correction
     }
     return [ret_values, ret_vectors];
 };
 
-/*
+/**
  For each layer sorts eigenvalues according to the parity of their real and imaginary parts into rightward and leftward pointing modes
  If re(eigenvlaue) > 0 the eigenvalue is considered leftward, if re(eigenvalue) < 0 then it is considered rightward
  If |re(eigenvalue)| < 10^-14 then we consider the imaginary part of the eigenvalue. If im(eigenvalue) > 0 then right, otherwise left.
  Each layer has exactly 2 right and 2 left. Stores in the structure data struct
  */
-
 emScattering2.Struct.prototype.organizeEigenvalues = function(){
     var rightward, leftward;
     for(var i = 0; i < this.numLayers; i++){
@@ -375,8 +385,9 @@ emScattering2.Struct.prototype.organizeEigenvalues = function(){
     }
 };
 
-//Calculates the eigensystem for each layer where an Eigensystem is a collection of Eigenpairs 
-//Stores the completed system in the Struct object.
+/**Calculates the eigensystem for each layer where an Eigensystem is a collection of Eigenpairs 
+* Stores the completed system in the Struct object.
+*/
 emScattering2.Struct.prototype.calcEigensystems = function(){
     var tmp, esystem = new Array(this.numLayers), pairs = new Array(4), eva, eve;
     tmp = this.calcEigs(math);
@@ -393,7 +404,7 @@ emScattering2.Struct.prototype.calcEigensystems = function(){
     this.organizeEigenvalues();
 };
 
-/*
+/**
   Calculates the transfer matrices for the interface between each layer
   Stores in Struct object
  */
@@ -417,7 +428,7 @@ emScattering2.Struct.prototype.calcTransfer = function(){
 
 };
 
-/*
+/**
 Constructs the matrix used to solve the scattering problem (i.e. finding the unknown constants governing propagation
 given the incoming constants and the calculated transfer matrices) and stored in Struct 
  */
