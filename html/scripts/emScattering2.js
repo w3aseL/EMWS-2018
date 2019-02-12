@@ -530,7 +530,6 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
             currentLeftZ += this.Struct.layers[i].length;
             currentRightZ += this.Struct.layers[i+1].length;
             current_c = c._data.slice(4+4*i,8+4*i);
-            
         } 
     }
     
@@ -544,23 +543,44 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
  * will allow for much more efficient Transmission calculations
  */
 emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint){
-    var W, lambda, c, current_c, expDiag, result, currentLayer;
+    var W, lambda, c, current_c, expDiag, result, currentLayer, zIntoLayer = zPoint, normZ, interfaces = this.materialInterfaces();
 
     for(var i = 0; i < this.Struct.numLayers; i++){
-        var interfaces = this.materialInterfaces();
+        if(zPoint == 0 && i == 0) currentLayer = i;
 
-        if(interfaces[i] <= zPoint && interfaces[i+1] >= zPoint) currentLayer = i;
+        if(interfaces[i] < zPoint && interfaces[i+1] >= zPoint) currentLayer = i;
     }
+
+    //console.log("Layer: " + currentLayer);
+
+    for(var i = 0; i < currentLayer; i++){
+        zIntoLayer -= this.Struct.layers[i].length;
+    }
+
+    //console.log("Z-Point in Layer: " + zIntoLayer);
+
+    if (this.Struct.omega < 0){
+        if(currentLayer === 0) normZ = (-this.Struct.omega * this.Struct.layers[currentLayer].length) - math.abs(zIntoLayer * this.Struct.omega);
+        else normZ = (this.Struct.omega * this.Struct.layers[currentLayer].length) + math.abs((zIntoLayer - this.Struct.layers[currentLayer].length) * this.Struct.omega);
+    } else if(this.Struct.omega > 0) {
+        if(currentLayer === 0) normZ = (-this.Struct.omega * this.Struct.layers[currentLayer].length) + math.abs(zIntoLayer * this.Struct.omega);
+        else normZ = (this.Struct.omega * this.Struct.layers[currentLayer].length) - math.abs((zIntoLayer - this.Struct.layers[currentLayer].length) * this.Struct.omega);
+    }
+
+    //console.log("Value used to calculate: " + normZ);
     
     c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
     
-    if(currentLayer == 0) current_c = c._data.slice(0,4);
-    else current_c = c._data.slice(4+4*i,8+4*i);
+    current_c = c._data.slice(0,4);
+
+    for(var i = 0; (i < currentLayer) && (i < this.Struct.numLayers - 1); i++){
+        current_c = c._data.slice(4+4*i,8+4*i);
+    }
 
     W = this.Struct.eigenvectors[currentLayer];
     lambda = this.Struct.eigenvalues[currentLayer];
     
-    expDiag = emScattering2.expEigenvaluesDiag(lambda, zPoint);
+    expDiag = emScattering2.expEigenvaluesDiag(lambda, normZ);
     result =  math.multiply(W,(math.multiply(expDiag,current_c)));
 
     return {Ex: result._data[0].re, Ey: result._data[1].re, Hx: result._data[2].re, Hy: result._data[3].re};
@@ -905,8 +925,6 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
 
     //console.log(omegaInterval);
 
-    var zIndex = zPoint * 100;
-
     for(var i = 0; i <= omegaPoints; i++) {
         var tempOmega = omegaLow + (omegaInterval * i);
 
@@ -921,29 +939,33 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
 
         //checkBoxesForModes(crystal);                      Disabled until we can come up with an algoritm to correct modes throughout all crystals
 
+        //DetermineField Method
+        /*
+        var zIndex = zPoint * 100;
+
         var interfaces = crystal.materialInterfaces();
 
         if(zPoint == interfaces[interfaces.length - 1]) zIndex--;
 
-        //DetermineField Method
-        ///*
         var fields = crystal.determineField();
+
+        console.log(crystal.determineFieldAtZPoint(zPoint));
 
         _Ex.push(fields.Ex[zIndex]);
         _Ey.push(fields.Hx[zIndex]);
         _Hx.push(fields.Hx[zIndex]);
         _Hy.push(fields.Hy[zIndex]);
-        //*/
+        */
 
         //DetermineFieldAtZPoint Method
-        /*
+        ///*
         var field = crystal.determineFieldAtZPoint(zPoint);
 
         _Ex.push(field.Ex);
         _Ey.push(field.Ey);
         _Hx.push(field.Hx);
         _Hy.push(field.Hy);
-        */
+        //*/
     }
 
     return {omegas: _omegas, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
