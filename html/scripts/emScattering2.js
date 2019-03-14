@@ -125,7 +125,6 @@ emScattering2.calcEigsVa = function(maxwell, complex_eigenvalues){
             foo.push(maxwell._data[i][j].im);
         }
     }
-    
    
     buf = Module._malloc(foo.length*8);
     Module.HEAPF64.set(new Float64Array(foo),buf/8);
@@ -159,6 +158,7 @@ emScattering2.calcEigsVe = function (maxwell,complex_eigenvectors){
             foo.push(maxwell._data[i][j].im);
         }
     }
+
     buf = Module._malloc(foo.length*8);
     Module.HEAPF64.set(new Float64Array(foo),buf/8);
     
@@ -166,32 +166,17 @@ emScattering2.calcEigsVe = function (maxwell,complex_eigenvectors){
         tmp = Module.getValue(complex_eigenvectors(buf) + (8*i),'double');
         arr.push(tmp);
     }
+
     tmp = 0;
     for( i = 0; i < 4; i++){
         for( j = 0; j < 4; j++, tmp = tmp + 2){
             ret.set([i,j], math.complex(arr[tmp],arr[tmp+1]));
         }
     }
+
     Module._free(buf);
     return ret;
 };
-
-/**Calculate Eigenvectors
- * ---------------------------------
- * Takes the returned eigenvalues from the complex_eigenvalues function
- * and computes the complex eigenvectors of the 4x4 maxwell matrix
- * and returns the eigenvectors as a matrix.
- * 
- * TODO: Write out algorithm
- */
-emScattering2.calculateEigenvectors = function(maxwell, eigenvalues){
-    var i, j, retMatrix = math.matrix();
-
-    // TODO: WRITE OUT ALGORITHM HERE
-
-    return retMatrix;
-}
-
 
 /**
  Expects a diagonal matrix of eigenvalues, and a znorm
@@ -333,10 +318,17 @@ emScattering2.Struct.prototype.calcEigs = function(){
     complex_eigenvectors = Module.cwrap('complex_eigenvectors','number',['number']);
     for( i = 0; i<this.numLayers; i++){
         maxwell = this.maxwellMatrices[i];
-        ret_values[i] = emScattering2.calcEigsVa(maxwell, complex_eigenvalues);
-        ret_vectors[i] = emScattering2.calcEigsVe(maxwell, complex_eigenvectors);
+        //ret_values[i] = emScattering2.calcEigsVa(maxwell, complex_eigenvalues);
+        //ret_vectors[i] = emScattering2.calcEigsVe(maxwell, complex_eigenvectors);
 
-        //console.log(emScattering2.calculateEigenvectors(maxwell, ret_values[i]));                     //Calculates eigenvectors using returned eigenvalues - currently printed to console to check for correction
+        var eigResults = EigenCalc.getEigenvaluesAndEigenvectors(maxwell);
+
+        console.log({maxwell, eigResults});
+
+        ret_values[i] = eigResults.eigenvalues;
+        ret_vectors[i] = eigResults.eigenvectors;
+
+        //console.log(EigenCalc.getEigenvaluesAndEigenvectors(maxwell));                     //Calculates eigenvectors using returned eigenvalues - currently printed to console to check for correction
     }
     return [ret_values, ret_vectors];
 };
