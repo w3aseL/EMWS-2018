@@ -142,7 +142,7 @@ function getEigValsAndVecsOf2x2(mat) {
         var i = math.divide(math.sqrt(math.multiply(-1, discriminant)), 2);
 
         var complexStr1 = real.re + " + " + i.re + "i";
-        var complexStr2 = real.re + " + " + i.re + "i";
+        var complexStr2 = real.re + " - " + i.re + "i";
 
         eigvals.push(math.complex(complexStr1));
         eigvals.push(math.complex(complexStr2));
