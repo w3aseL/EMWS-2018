@@ -214,6 +214,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 let j = 0;                                              //Counter for setting text in coefficients section (should be only 0 and then 1)
 
                 var backArr = $scope.crystal.Struct.eigenvalues[0];     //Gets eigenvalues of first layer
+                var backVecArr = $scope.crystal.Struct.eigenvectors[0]._data;
 
                 //Loops through check boxes
                 for(let i = 1; i <= 4; i++){
@@ -222,6 +223,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         //arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 
                         backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+                        backVecArr.splice(j, 0, backVecArr.splice(i-1, 1)[0]);      //Swap eigenvectors around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
                         document.getElementById(incStr + j).innerHTML = $scope.modesBack[i-1].toString();
@@ -259,17 +261,19 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             if(forChecked == 2){
                 let j = 2;                                                          //Counter for setting text in coefficients section (should be only 2 and then 3)
 
-                var lastEigenvalue = $scope.crystal.Struct.eigenvalues.length - 1;  //Gets value of last set of eigenvalues
-                var forArr = $scope.crystal.Struct.eigenvalues[lastEigenvalue];     //Gets eigenvalues of last layer
+                var lastLayer = $scope.crystal.Struct.eigenvalues.length - 1;  //Gets value of last set of eigenvalues
+                var forArr = $scope.crystal.Struct.eigenvalues[lastLayer];     //Gets eigenvalues of last layer
+                var forVecArr = $scope.crystal.Struct.eigenvectors[lastLayer]._data;     //Gets eigenvalues of last layer
 
                 //Loop through the check boxes
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById(forChkStr + i).checked == false) { document.getElementById(forChkStr + i).disabled = true;  }      //If box is not checked, disable it
                     else {
                         forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+                        forVecArr.splice(j, 0, forVecArr.splice(i-1, 1)[0]);        //Swap eigenvectors around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
-                        document.getElementById(incStr + j).innerHTML = $scope.modesForward[i-1].toString();;
+                        document.getElementById(incStr + j).innerHTML = $scope.modesForward[i-1].toString();
 
                         /*
                         if(i == 1){
