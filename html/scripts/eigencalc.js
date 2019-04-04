@@ -42,7 +42,7 @@ EigenCalc.getEigenvaluesAndEigenvectors = function(a) {
             eigenvector = math.subset(eigenvector, math.index(2, 0), math.subset(u, math.index(0,0)));
             eigenvector = math.subset(eigenvector, math.index(3, 0), math.subset(u, math.index(1,0)));
 
-            eigenvector = math.divide(eigenvector, vectorNorm(eigenvector));            //Divides the norm out of the vector
+            eigenvector = math.divide(eigenvector, complexVectorNorm(eigenvector));            //Divides the norm out of the vector
 
             eigenvectors.push(math.transpose(eigenvector).toArray()[0]);                //Pushes eigenvector to array
         }
@@ -153,8 +153,15 @@ function getEigValsAndVecsOf2x2(mat) {
     eigvecs[0] = math.zeros(2, 1);
     eigvecs[1] = math.zeros(2, 1);
 
-    eigvecs[0] = findEigenvector(eigvecs[0], lambda1, mat);
-    eigvecs[1] = findEigenvector(eigvecs[1], lambda2, mat);
+    if(b != 0 || c != 0) {
+        eigvecs[0] = findEigenvector(eigvecs[0], lambda1, mat);
+        eigvecs[1] = findEigenvector(eigvecs[1], lambda2, mat);
+    } else if(b == 0 && c == 0) {
+        eigvecs[0].set([0,0], math.complex(1));
+        eigvecs[0].set([1,0], math.complex(0));
+        eigvecs[1].set([0,0], math.complex(0));
+        eigvecs[1].set([1,0], math.complex(1));
+    }
 
     return {eigenvalues: eigvals, eigenvectors: eigvecs};
 }
@@ -178,10 +185,21 @@ function findEigenvector(vector, lambda, mat) {
         c = math.subset(mat, math.index(1, 0)),
         d = math.subset(mat, math.index(1, 1));
 
-    var v1 = 1, v2 = math.divide(math.subtract(lambda, a), b);
+    var v1 = math.complex(-b), v2 = math.subtract(a, lambda);
+
+    var norm = math.sqrt(math.add(math.pow(v1.re, 2), math.pow(v1.im, 2), math.pow(v2.re, 2), math.pow(v2.im, 2)));
+
+    vector = math.subset(vector, math.index(0,0), v1);
+    vector = math.subset(vector, math.index(1,0), v2);
+
+    vector = math.divide(vector, norm);
+
+    return vector;
+
+    //Old Code (UNUSED)
 
     if(b == 0 && c == 0) {
-        v2 = 0;
+        v2 = math.complex(0);
 
         if(lambda.re > 0 || lambda.im > 0) {
             vector = math.subset(vector, math.index(0,0), v1);
@@ -194,19 +212,20 @@ function findEigenvector(vector, lambda, mat) {
         return vector;
     } else if(b == 0 && c != 0) {
         v1 = math.subtract(lambda, d);
-        v2 = c;
+        v2 = math.complex(c);
     } else if(b != 0 && c == 0) {
-        v1 = b;
+        v1 = math.complex(b);
         v2 = math.subtract(lambda, a);
     }
 
     var norm = math.sqrt(math.add(math.pow(v1, 2), math.pow(v2, 2)));
 
-    v1 = math.divide(v1, norm);
-    v2 = math.divide(v2, norm);
+    console.log("v1=" + v1 + " v2=" + v2 + " norm=" + norm);
 
     vector = math.subset(vector, math.index(0,0), v1);
     vector = math.subset(vector, math.index(1,0), v2);
+
+    vector = math.divide(vector, norm);
 
     return vector;
 }
@@ -271,6 +290,36 @@ function vectorNorm(v) {
     } else if(n == 1 && m >= 1) {
         for(var i = 0; i < m; i++) {
             sum = math.add(sum, math.pow(math.abs(math.subset(v, math.index(i, 0))), 2));
+        }
+    } else { throw "The provided matrix is not a valid vector!" }
+
+    var ret = math.sqrt(sum);
+
+    return ret;
+}
+
+/**
+ * Calculate L1 Norm of A Complex Vector
+ * -----------------------------
+ * Calculatest the L1 norm of a provided
+ * vector.
+ * 
+ * @param Vector v 
+ */
+function complexVectorNorm(v) {
+    var m = v.size()[0], n = v.size()[1], sum = 0;
+
+    if(m == 1 && n >= 1) {
+        for(var i = 0; i < n; i++) {
+            var complexVal = v.get([0, i]);
+
+            sum = math.add(sum, math.pow(complexVal.re, 2), math.pow(complexVal.im, 2));
+        }
+    } else if(n == 1 && m >= 1) {
+        for(var i = 0; i < m; i++) {
+            var complexVal = v.get([i, 0]);
+
+            sum = math.add(sum, math.pow(complexVal.re, 2), math.pow(complexVal.im, 2));
         }
     } else { throw "The provided matrix is not a valid vector!" }
 
