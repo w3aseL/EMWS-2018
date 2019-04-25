@@ -321,9 +321,9 @@ emScattering2.Struct.prototype.calcEigs = function(){
         //ret_values[i] = emScattering2.calcEigsVa(maxwell, complex_eigenvalues);
         //ret_vectors[i] = emScattering2.calcEigsVe(maxwell, complex_eigenvectors);
 
-        var eigResults = EigenCalc.getEigenvaluesAndEigenvectors(maxwell);
+        var eigResults = EigenCalc.getEigenvaluesAndEigenvectors(maxwell), omega = this.omega;
 
-        console.log({maxwell, eigResults});
+        console.log({omega, maxwell, eigResults});
 
         ret_values[i] = eigResults.eigenvalues;
         ret_vectors[i] = eigResults.eigenvectors;
@@ -929,7 +929,7 @@ emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLay
         var constants = [k1, k2, tempOmega];
         var crystal = this.Driver(eArray, mArray, length, numLayers, constants, modes);
 
-        //checkBoxesForModes(crystal);                      Disabled until we can come up with an algoritm to correct modes throughout all crystals
+        checkBoxesForModes(crystal);                      //Disabled until we can come up with an algoritm to correct modes throughout all crystals
 
         //DetermineField Method
         /*
@@ -983,13 +983,18 @@ function checkBoxesForModes(crystal) {
     }
 
     var backArr = crystal.Struct.eigenvalues[0];
+    var backVecArr = crystal.Struct.eigenvectors[0]._data;
     var forArr = crystal.Struct.eigenvalues[crystal.Struct.eigenvalues.length-1];
+    var forVecArr = crystal.Struct.eigenvectors[crystal.Struct.eigenvalues.length-1]._data;
 
     if(backChecked == 2){
         let j = 0;
 
         for(let i = 1; i <= 4; i++){
-            if(document.getElementById("backModeChkT" + i).checked == true) backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+            if(document.getElementById("backModeChkT" + i).checked == true){
+                backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+                backVecArr.splice(j, 0, backVecArr.splice(i-1, 1)[0]);      //Swap eigenvectors around based on order of checked boxes
+            }
         }
     }
 
@@ -997,7 +1002,10 @@ function checkBoxesForModes(crystal) {
         let j = 0;
 
         for(let i = 1; i <= 4; i++){
-            if(document.getElementById("forModeChkT" + i).checked == true) forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+            if(document.getElementById("forModeChkT" + i).checked == true) {
+                forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+                forVecArr.splice(j, 0, forVecArr.splice(i-1, 1)[0]);        //Swap eigenvectors around based on order of checked boxes
+            }
         }
     }
 }

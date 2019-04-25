@@ -493,13 +493,14 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 hAxis: {
                     gridlines: {
                         color: 'transparent'  
-                   },
-                   ticks: interfaces
+                    },
+                    ticks: interfaces
                 },
                 vAxis:{
                     gridlines: {
                         color: 'transparent'  
-                   }
+                    },
+                    viewWindowMode: 'maximized'
                 },
                 width: "100%",
                 height: "100%",
