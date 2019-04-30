@@ -98,10 +98,14 @@ emScattering2.Maxwell = function(eMat, mMat, kx, ky){
 
     m.set([2,0],math.subtract(math.add(math.divide(math.multiply(kx,ky),mzz),eyx),math.divide(math.multiply(eyz,ezx),ezz)));
     m.set([2,1],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(kx,2),mzz)),eyy),math.divide(math.multiply(eyz,ezy),ezz)));
+    //m.set([2,0],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),mzz)),eyx),math.divide(math.multiply(eyz,ezx),ezz)));    --Keep just incase
+    //m.set([2,1],math.add(math.subtract(math.divide(math.pow(kx,2),mzz),eyy),math.divide(math.multiply(eyz,ezy),ezz)));
     m.set([2,2],math.multiply(math.unaryMinus(i),math.add(math.multiply(ky,math.divide(eyz,ezz)),math.multiply(math.divide(mzx,mzz),kx))));
     m.set([2,3],math.multiply(i,math.multiply(kx,math.subtract(math.divide(eyz,ezz),math.divide(mzy,mzz)))));
     m.set([3,0],math.add(math.subtract(math.divide(math.pow(ky,2),mzz),exx),math.divide(math.multiply(exz,ezx),ezz)));
     m.set([3,1],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),mzz)),exy),math.divide(math.multiply(exz,ezy),ezz)));
+    //m.set([3,0],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(ky,2),mzz)),exx),math.divide(math.multiply(exz,ezx),ezz)));
+    //m.set([3,1],math.subtract(math.add(math.divide(math.multiply(kx,ky),mzz),exy),math.divide(math.multiply(exz,ezy),ezz)));
     m.set([3,2],math.multiply(i,math.multiply(ky,math.subtract(math.divide(exz,ezz),math.divide(mzx,mzz)))));
     m.set([3,3],math.multiply(math.unaryMinus(i),math.add(math.multiply(kx,math.divide(exz,ezz)),math.multiply(math.divide(mzy,mzz),ky))));
     
