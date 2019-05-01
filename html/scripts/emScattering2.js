@@ -87,31 +87,30 @@ emScattering2.Maxwell = function(eMat, mMat, kx, ky){
         mxz = mMat[0][2], myx = mMat[1][0], myy = mMat[1][1], myz = mMat[1][2], mzx = mMat[2][0], mzy = mMat[2][1], mzz = mMat[2][2],
         m = math.matrix();
                                                                         
-    m.set([0,0],math.multiply(math.unaryMinus(i),math.add(math.multiply(ky,math.divide(myz,mzz)),math.multiply(math.divide(ezx,ezz),kx))));
-    m.set([0,1],math.multiply(i,math.multiply(kx,math.subtract(math.divide(myz,mzz),math.divide(ezy,ezz)))));
+    m.set([0,0],math.add(math.multiply(ky,math.divide(myz,mzz)),math.multiply(math.divide(ezx,ezz),kx)));
+    m.set([0,1],math.multiply(kx,math.subtract(math.divide(myz,mzz),math.divide(ezy,ezz))));
     m.set([0,2],math.subtract(math.add(math.divide(math.multiply(kx,ky),ezz),myx),math.divide(math.multiply(myz,mzx),mzz)));
     m.set([0,3],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(kx,2),ezz)),myy),math.divide(math.multiply(myz,mzy),mzz)));
-    m.set([1,0],math.multiply(i,math.multiply(ky,math.subtract(math.divide(mxz,mzz),math.divide(ezx,ezz)))));
-    m.set([1,1],math.multiply(math.unaryMinus(i),math.add(math.multiply(kx,math.divide(mxz,mzz)),math.multiply(math.divide(ezy,ezz),ky))));
+    m.set([1,0],math.multiply(ky,math.subtract(math.divide(mxz,mzz),math.divide(ezx,ezz))));
+    m.set([1,1],math.add(math.multiply(kx,math.divide(mxz,mzz)),math.multiply(math.divide(ezy,ezz),ky)));
     m.set([1,2],math.add(math.subtract(math.divide(math.pow(ky,2),ezz),mxx),math.divide(math.multiply(mxz,mzx),mzz)));
     m.set([1,3],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),ezz)),mxy),math.divide(math.multiply(mxz,mzy),mzz)));
 
-    m.set([2,0],math.subtract(math.add(math.divide(math.multiply(kx,ky),mzz),eyx),math.divide(math.multiply(eyz,ezx),ezz)));
-    m.set([2,1],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(kx,2),mzz)),eyy),math.divide(math.multiply(eyz,ezy),ezz)));
-    //m.set([2,0],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),mzz)),eyx),math.divide(math.multiply(eyz,ezx),ezz)));    --Keep just incase
-    //m.set([2,1],math.add(math.subtract(math.divide(math.pow(kx,2),mzz),eyy),math.divide(math.multiply(eyz,ezy),ezz)));
-    m.set([2,2],math.multiply(math.unaryMinus(i),math.add(math.multiply(ky,math.divide(eyz,ezz)),math.multiply(math.divide(mzx,mzz),kx))));
-    m.set([2,3],math.multiply(i,math.multiply(kx,math.subtract(math.divide(eyz,ezz),math.divide(mzy,mzz)))));
-    m.set([3,0],math.add(math.subtract(math.divide(math.pow(ky,2),mzz),exx),math.divide(math.multiply(exz,ezx),ezz)));
-    m.set([3,1],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),mzz)),exy),math.divide(math.multiply(exz,ezy),ezz)));
-    //m.set([3,0],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(ky,2),mzz)),exx),math.divide(math.multiply(exz,ezx),ezz)));
-    //m.set([3,1],math.subtract(math.add(math.divide(math.multiply(kx,ky),mzz),exy),math.divide(math.multiply(exz,ezy),ezz)));
-    m.set([3,2],math.multiply(i,math.multiply(ky,math.subtract(math.divide(exz,ezz),math.divide(mzx,mzz)))));
-    m.set([3,3],math.multiply(math.unaryMinus(i),math.add(math.multiply(kx,math.divide(exz,ezz)),math.multiply(math.divide(mzy,mzz),ky))));
+    //m.set([2,0],math.subtract(math.add(math.divide(math.multiply(kx,ky),mzz),eyx),math.divide(math.multiply(eyz,ezx),ezz)));              //Old
+    //m.set([2,1],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(kx,2),mzz)),eyy),math.divide(math.multiply(eyz,ezy),ezz)));
+    m.set([2,0],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),mzz)),eyx),math.divide(math.multiply(eyz,ezx),ezz)));//New
+    m.set([2,1],math.add(math.subtract(math.divide(math.pow(kx,2),mzz),eyy),math.divide(math.multiply(eyz,ezy),ezz)));
+    m.set([2,2],math.add(math.multiply(ky,math.divide(eyz,ezz)),math.multiply(math.divide(mzx,mzz),kx)));
+    m.set([2,3],math.multiply(kx,math.subtract(math.divide(eyz,ezz),math.divide(mzy,mzz))));
+    //m.set([3,0],math.add(math.subtract(math.divide(math.pow(ky,2),mzz),exx),math.divide(math.multiply(exz,ezx),ezz)));                      //Old
+    //m.set([3,1],math.add(math.subtract(math.unaryMinus(math.divide(math.multiply(kx,ky),mzz)),exy),math.divide(math.multiply(exz,ezy),ezz)));
+    m.set([3,0],math.subtract(math.add(math.unaryMinus(math.divide(math.pow(ky,2),mzz)),exx),math.divide(math.multiply(exz,ezx),ezz)));   //New
+    m.set([3,1],math.subtract(math.add(math.divide(math.multiply(kx,ky),mzz),exy),math.divide(math.multiply(exz,ezy),ezz)));
+    m.set([3,2],math.multiply(ky,math.subtract(math.divide(exz,ezz),math.divide(mzx,mzz))));
+    m.set([3,3],math.add(math.multiply(kx,math.divide(exz,ezz)),math.multiply(math.divide(mzy,mzz),ky)));
     
     
-    return m;
-    
+    return math.multiply(m, i);
 };
 
 /**
@@ -499,6 +498,9 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
     
     c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+
+    console.log(c);
+
     current_c = c._data.slice(0,4);
     for(var i = 0; i < numLayers; i++){
         if(i === 0){
