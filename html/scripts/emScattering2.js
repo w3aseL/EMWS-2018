@@ -497,37 +497,37 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     expDiag, result, currentLeftZ = 0, currentRightZ = this.Struct.layers[0].length,
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
     
-    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
 
-    console.log(c);
+    //console.log(c);
 
-    current_c = c._data.slice(0,4);
+    current_c = c._data.slice(0,4);                                                                         //Slices the constant vector to a smaller vector
     for(var i = 0; i < numLayers; i++){
         if(i === 0){
             layerNormZ = numeric.linspace(-this.Struct.omega*this.Struct.layers[i].length,0, 
-                                 Math.floor(this.Struct.layers[i].length)*numPoints);
+                                 Math.floor(this.Struct.layers[i].length)*numPoints);                       //Creates an array of Z values (with omega taken into account) with the size of the length and number of points per Z value (Ex. 10 size of layer * 100 points)
         }
         else{
             layerNormZ = numeric.linspace(0, this.Struct.omega*this.Struct.layers[i].length,
                                  Math.floor(this.Struct.layers[i].length)*numPoints);
         }
         
-        W = this.Struct.eigenvectors[i];
-        lambda = this.Struct.eigenvalues[i];
+        W = this.Struct.eigenvectors[i];                                                                //Sets W to the current layer eigenvector matrix
+        lambda = this.Struct.eigenvalues[i];                                                            //Sets lambda to the current layer eigenvalues
         for(var j = 0; j < layerNormZ.length; j++){
-            expDiag = emScattering2.expEigenvaluesDiag(lambda, layerNormZ[j]);
-            result = math.multiply(W,(math.multiply(expDiag,current_c)));
+            expDiag = emScattering2.expEigenvaluesDiag(lambda, layerNormZ[j]);                          //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
+            result = math.multiply(W,(math.multiply(expDiag,current_c)));                               //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
             _Ex.push(result._data[0].re);
             _Ey.push(result._data[1].re);
             _Hx.push(result._data[2].re);
             _Hy.push(result._data[3].re);
         }    
          _z = _z.concat(numeric.linspace(currentLeftZ, currentRightZ, 
-                        numPoints*Math.floor(this.Struct.layers[i].length)));
+                        numPoints*Math.floor(this.Struct.layers[i].length)));                           //Adds Z values to an array (Z values are DIFFERENT from calculated above)
          if (i+1 < numLayers) {
-            currentLeftZ += this.Struct.layers[i].length;
-            currentRightZ += this.Struct.layers[i+1].length;
-            current_c = c._data.slice(4+4*i,8+4*i);
+            currentLeftZ += this.Struct.layers[i].length;                                               //Extends lower layer limit
+            currentRightZ += this.Struct.layers[i+1].length;                                            //Extends upper layer limit
+            current_c = c._data.slice(4+4*i,8+4*i);                                                     //Shifts constant vector
         } 
     }
     
