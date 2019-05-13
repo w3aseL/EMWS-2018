@@ -16,7 +16,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
         $scope.wPoints = 10;                                                   //Number of points for transmissions graph (Default)
         $scope.zPoint = 0;                                                      //Point for each array to pull for transmissions graph
-        $scope.incoming = [1, 0, 0, 0];                                         //Incoming coefficients (Defaults)
+        $scope.incoming = [0, 1, 0, 0];                                         //Incoming coefficients (Defaults)
         $scope.eArray = [];                                                     //Epsilon Array for Layers
         $scope.muArray = [];                                                    //Mu Array for Layers
         $scope.lArray = [];                                                     //Length Array for Layers
