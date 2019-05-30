@@ -227,7 +227,7 @@ emScattering2.calculateConstants = function(S,Modes,T0) {
     
     for(var i = 0; i < unknown_c._data.length; i++)
         c._data[i + 2] = unknown_c._data[i][0];
-    
+
     return c;
 };
 
@@ -499,7 +499,7 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
     
     c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
 
-    //console.log(c);
+    console.log(c);
 
     current_c = c._data.slice(0,4);                                                                         //Slices the constant vector to a smaller vector
     for(var i = 0; i < numLayers; i++){
