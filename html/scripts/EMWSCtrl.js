@@ -52,7 +52,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.mBack4;
         */
 
-        $scope.crystal;                                                         //The Photonic Crystal created in emScattering2.js
+        $scope.crystal;                                                         //The Photonic Crystal created in emScattering3.js
         $scope.field;                                                           //The field determined using the Photonic Crystal
         $scope.dispersion;                                                      
         $scope.EX = 'Eₓ';                                                       //Label for Ex
@@ -385,7 +385,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         /** Updates the Photonic Crystal. */
         function updateCrystal(){
             var k = [Number($scope.k1),Number($scope.k2),Number($scope.o)];
-            $scope.crystal = emScattering2.Driver(
+            $scope.crystal = emScattering3.Driver(
                     $scope.eArray,$scope.muArray,$scope.lArray,$scope.NumLayers,k,$scope.incoming);
             };
         
@@ -408,7 +408,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             console.log($scope.crystal);
             var fields = $scope.field;                                  //Takes field and puts it to a variable
             console.log(fields);
-            var interfaces = $scope.crystal.materialInterfaces();       //Takes interfaces and puts it to a variable
+            var interfaces = $scope.crystal.Struct.materialInterfaces();       //Takes interfaces and puts it to a variable
 
             var data = new google.visualization.DataTable();            //Creates a data table
             data.addColumn('number', 'z');                              //Adds z column to data table
@@ -560,7 +560,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var hXmax = 1;
             var endRange = $scope.totalLength;
             var canvasElement = "testcanvas";
-            var interfaces = $scope.crystal.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfaces();
             var elem = document.getElementById(canvasElement);
             var jelem = $("#" + canvasElement);
             var rgbColor = jelem.parent().css("background-color");
@@ -857,7 +857,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var divName = "transmissionView";
             //console.log(kZsList);
             console.time("Transmission Graph");
-            var transmission = emScattering2.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering2!
+            var transmission = emScattering3.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering3!
             console.timeEnd("Transmission Graph");
             console.log(transmission);
             var data = new google.visualization.DataTable();
@@ -932,7 +932,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var fields = $scope.field;
             var epsilon = $scope.epsilon2D;
             var mu = $scope.mu2D;
-            var interfaces = $scope.crystal.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfaces();
             var elem = document.getElementById(canvasElement);
             var jelem = $("#" + canvasElement);
             console.log("canvas element jquer:" + jelem.parent().css("background-color"));
@@ -1502,7 +1502,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         function _createFieldChart_DEPRECATED() {
             var fields = $scope.field;
-            var interfaces = $scope.crystal.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfaces();
 
 
 
@@ -1626,7 +1626,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Creates the chart for the Structures tab. */
         function createStructureChart() {
-            var interfaces = $scope.crystal.materialInterfaces();               //Gets the interfaces
+            var interfaces = $scope.crystal.Struct.materialInterfaces();               //Gets the interfaces
             var interfaceLength = interfaces[interfaces.length - 1];            //Gets highest interface
 
             //Creates a data table
