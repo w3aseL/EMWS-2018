@@ -465,25 +465,36 @@ emScattering3.Struct.prototype.calcScattering = function(){
 };
 
 emScattering3.Struct.prototype.calculateScattering = function() {
-    var L = this.numLayers, N = this.numLayers - 1, S = math.zeros(4*N, 4*(N+1)), interfaces = this.materialInterfaces();
+    var L = this.numLayers, N = this.numLayers - 1, S = math.zeros(4*N, 4*(N+1)), interfaces = [], leftPsi = [], rightPsi = [];
+
+    for(var z = 0; z <= N; z++) {
+        var ifaces = this.materialInterfaces();
+
+        if(z < N) interfaces[z] = 0;
+        else interfaces[z] = ifaces[z] - ifaces[z-1];
+    }
+
+    console.log(interfaces);
     
-    for(var l = 1; l < L; l++) {
-        var zeroMat = emScattering3.calcExpDiagMatrix(math.complex(0), this.eigenvectors[l], this.eigenvalues[l]);
-        var wMat = emScattering3.calcExpDiagMatrix(math.complex(interfaces[l+1] - interfaces[l]), this.eigenvectors[l-1], this.eigenvalues[l-1]);
+    for(var l = 0; l < N; l++) {
+        leftPsi[l] = math.multiply(this.eigenvectors[l],emScattering3.calcExpDiagMatrix(math.multiply(this.omega, math.subtract(interfaces[l+1], interfaces[l])), this.eigenvalues[l]));
+        rightPsi[l] = this.eigenvectors[l+1];
+    }
 
-        console.log({ zeroMatrix: zeroMat, wMatrix: wMat });
-
+    for(var l = 0; l < N; l++) {
         for(var i = 0; i < 4; i++) {
             for(var j = 0; j < 4; j++) {
-                S.set([(4*(l-1))+i,(4*(l-1))+j], wMat.get([i,j]));
-                S.set([(4*(l-1))+i,(4*l)+j], math.unaryMinus(zeroMat.get([i,j])));
+                S.set([(4*l)+i,(4*l)+j], leftPsi[l].get([i,j]));
+                S.set([(4*l)+i,(4*(l+1))+j], math.unaryMinus(rightPsi[l].get([i,j])));
             }
         }
     }
 
-    //this.calculateConstantVector([0,1,0,0],S);
+    console.log(S);
 
-    this.scatteringMatrix = S;
+    this.calculateConstantVector([0,1,0,0],S);
+
+    //this.scatteringMatrix = S;
 }
 
 emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scatteringMatrix) {
@@ -519,9 +530,9 @@ emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scat
     return b;
 }
 
-emScattering3.calcExpDiagMatrix = function(w, eVecs, eVals) {
-    var expDiag = emScattering3.expEigenvaluesDiag(eVals, w);
-    return math.multiply(eVecs, expDiag);
+emScattering3.calcExpDiagMatrix = function(w, eVals) {
+    var eigs = [eVals[0],eVals[1],eVals[2],eVals[3]];
+    return math.diag(math.exp(math.multiply(eigs,w)));
 }
 
 
@@ -860,7 +871,7 @@ emScattering3.computeStructure = function(eArray, mArray, length, numLayers, con
     struct.calcEigensystems();
     struct.calcTransfer();
     struct.calcScattering();
-    //struct.calculateScattering();
+    struct.calculateScattering();
     return struct;
 };    
 
