@@ -294,6 +294,7 @@ emScattering3.Struct = function(layers, lengths, kx, ky, omega, Modes) {
     this.omega = omega;
     this.Modes = Modes;
     this.scatteringMatrix;
+    this.constants;
 };
 
 
@@ -473,13 +474,13 @@ emScattering3.Struct.prototype.calculateScattering = function() {
         if(z < N) interfaces[z] = 0;
         else interfaces[z] = ifaces[z] - ifaces[z-1];
     }
-
-    console.log(interfaces);
     
     for(var l = 0; l < N; l++) {
-        leftPsi[l] = math.multiply(this.eigenvectors[l],emScattering3.calcExpDiagMatrix(math.multiply(this.omega, math.subtract(interfaces[l+1], interfaces[l])), this.eigenvalues[l]));
+        leftPsi[l] = math.multiply(this.eigenvectors[l],math.diag(math.exp(math.multiply(this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])))));
         rightPsi[l] = this.eigenvectors[l+1];
     }
+
+    console.log({LeftPsi: leftPsi, RightPsi: rightPsi});
 
     for(var l = 0; l < N; l++) {
         for(var i = 0; i < 4; i++) {
@@ -490,11 +491,9 @@ emScattering3.Struct.prototype.calculateScattering = function() {
         }
     }
 
-    console.log(S);
+    //console.log(S);
 
-    this.calculateConstantVector([0,1,0,0],S);
-
-    //this.scatteringMatrix = S;
+    this.scatteringMatrix = S;
 }
 
 emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scatteringMatrix) {
@@ -507,7 +506,7 @@ emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scat
         }
     }
 
-    //Find f vector using the incoming and condensed scattering matrix
+    //Find f vector using the incoming and full scattering matrix
     for(var i = 0; i < 4; i++) {
         f.set([i], math.subtract(math.unaryMinus(math.multiply(scatteringMatrix.get([i,0]),incoming[0])),math.multiply(scatteringMatrix.get([i,1]),incoming[1])));
         f.set([4*(N-1)+i], math.subtract(math.unaryMinus(math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-2]),incoming[2])),math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-1]),incoming[3])));
@@ -527,7 +526,12 @@ emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scat
 
     console.log({tildeS: tildeS, f: f, tildeB: tildeB, b: b});
 
-    return b;
+    this.constants = b;
+}
+
+emScattering3.Struct.prototype.updateScattering = function() {
+    this.calculateScattering();
+    this.calculateConstantVector(this.Modes, this.scatteringMatrix);
 }
 
 emScattering3.calcExpDiagMatrix = function(w, eVals) {
@@ -570,8 +574,8 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
     expDiag, result, currentLeftZ = 0, currentRightZ = this.Struct.layers[0].length,
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
     
-    c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
-    //c = this.Struct.calculateConstantVector(this.Struct.Modes,this.Struct.scatteringMatrix);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
+    c = this.Struct.constants;
 
     console.log(c);
 
@@ -641,8 +645,8 @@ emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
 
     //console.log("Value used to calculate: " + normZ);
     
-    c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
-    //c = this.Struct.calculateConstantVector(this.Struct.Modes,this.Struct.scatteringMatrix);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = this.Struct.constants;
 
     console.log(c);
     
@@ -670,9 +674,8 @@ emScattering3.PhotonicCrystal.prototype.mathboxSetupEf = function() {
     tmpRX = [],tmpPhiX = [],Ex = [],Ey = [],ExR = [],EyR = [],ExPhi = [],EyPhi = [],
     tmpRY = [],tmpPhiY = [];
     
-    
-    c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
-    //c = this.Struct.calculateConstantVector(this.Struct.Modes,this.Struct.scatteringMatrix);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = this.Struct.constants;
     current_c = c._data.slice(0,4);
     
     for(var i = 0; i < numLayers; i++){
@@ -755,8 +758,8 @@ emScattering3.PhotonicCrystal.prototype.mathboxSetupHf = function() {
     tmpRX = [],tmpPhiX = [],Hx = [],Hy = [],HxR = [],HyR = [],HxPhi = [],HyPhi = [],
     tmpRY = [],tmpPhiY = [];
     
-    c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
-    //c = this.Struct.calculateConstantVector(this.Struct.Modes,this.Struct.scatteringMatrix);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = this.Struct.constants;
     current_c = c._data.slice(0,4);
     
     for(var i = 0; i < numLayers; i++){
@@ -870,8 +873,9 @@ emScattering3.computeStructure = function(eArray, mArray, length, numLayers, con
     struct.makeMaxwell();
     struct.calcEigensystems();
     struct.calcTransfer();
-    struct.calcScattering();
+    //struct.calcScattering();
     struct.calculateScattering();
+    struct.calculateConstantVector(struct.Modes, struct.scatteringMatrix);
     return struct;
 };    
 

@@ -391,6 +391,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         
         /** Updates the field using the Photonic Crystal. */
         function updateFields(){
+            $scope.crystal.Struct.updateScattering();
             $scope.field = $scope.crystal.determineField();
         }
         
