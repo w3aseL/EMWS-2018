@@ -1,5 +1,6 @@
 import math
 
+# Call 'python3 scattering.py' from terminal to run code
 
 class Maxwell:
     def buildLayers(self, num_layers, z_values):
