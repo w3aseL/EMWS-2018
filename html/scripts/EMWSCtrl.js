@@ -73,7 +73,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             {
                 "layerName": "Layer 1",
                 "epsilon": [2, 2, 3, 6],
-                "epsilonA": [[8, 0, 0], [0, 1, 0], [0, 0, 1]],
+                "epsilonA": [[8, 0, 0], [0, 1.5, 0], [0, 0, 1]],
                 "mu": [2, 2, 3, 6],
                 "muA": [[1,0,0],[0,4,0], [0, 0, 1]],
                 "length": 7
