@@ -1,6 +1,8 @@
 import math
+import numpy as np
 
 # Call 'python3 scattering.py' from terminal to run code
+
 
 class Maxwell:
     def buildLayers(self, num_layers, z_values):
@@ -8,11 +10,11 @@ class Maxwell:
             # layer_name = "layer_" + str(l)
             # print(layer_name + ": ")
             if l != 1:  # guide layers
-                layer = Layer(10, [[1.5, 0, 0], [0, 8, 0], [0, 0, 1]], [
-                              [4, 0, 0], [0, 1, 0], [0, 0, 1]])
+                layer = Layer(10, np.array([[1.5, 0, 0], [0, 8, 0], [0, 0, 1]]),
+                              np.array([[4, 0, 0], [0, 1, 0], [0, 0, 1]]))
             else:  # slab layer
-                layer = Layer(7, [[8, 0, 0], [0, 1.5, 0], [0, 0, 1]], [
-                              [1, 0, 0], [0, 4, 0], [0, 0, 1]])
+                layer = Layer(7, np.array([[8, 0, 0], [0, 1.5, 0], [0, 0, 1]]),
+                              np.array([[1, 0, 0], [0, 4, 0], [0, 0, 1]]))
 
             # layer = Layer(input("   Enter Length of layer: "),
             #               input("   Enter epsilon values: "),
@@ -30,7 +32,7 @@ class Maxwell:
             layer = layers[num]
             e = layer.epsilon
             u = layer.mu
-            imaginary = complex(0,1)
+            imaginary = complex(0, 1)
             omega = omega * imaginary
             maxwell_matrices = []
             m11 = omega * (-(e[2][0]*k1/e[2][2]) - (k2*u[1][2]/u[2][2]))
@@ -57,10 +59,10 @@ class Maxwell:
                                       e[2][2]) + (k1*k2/u[2][2]))
             m43 = omega * ((e[0][2]*k2/e[2][2]) - (k2*u[2][0]/u[2][2]))
             m44 = omega * (-(e[0][2]*k1/e[2][2]) - (k2*u[2][1]/u[2][2]))
-            maxwell_matrix = [[m11,  m12, m13, m14],
-                              [m21,  m22, m23, m24],
-                              [m31,  m32, m33, m34],
-                              [m41,  m42, m43, m44]]
+            maxwell_matrix = np.array([[m11,  m12, m13, m14],
+                                       [m21,  m22, m23, m24],
+                                       [m31,  m32, m33, m34],
+                                       [m41,  m42, m43, m44]])
             # maxwell_matrix = map(lambda x: x * omega, maxwell_matrix)
             # maxwell_matrix = map(lambda x: map(
             #     lambda y: complex(y, 1), x), maxwell_matrix)
