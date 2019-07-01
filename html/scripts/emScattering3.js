@@ -198,48 +198,6 @@ emScattering3.expEigenvaluesDiag = function(eigenvalues,znorm){
    return math.diag(math.exp(math.multiply(tmp,znorm)));
 };
 
-/**Calculates the Constants for the Scattering problem*/
-emScattering3.calculateConstants = function(S,Modes,T0) {
-    var a = math.zeros(S._data.length),tmp,b0, bN, unknown_c, c = math.zeros(S._data.length + 3);
-
-    c._data[0] = Modes[0];
-    c._data[1] = Modes[1];
-    c._data[c._data.length - 1] = Modes[2];
-    c._data[c._data.length] = Modes[3];
-    
-    tmp = math.matrix([
-                       [T0._data[0][0],T0._data[0][1]],
-                       [T0._data[1][0],T0._data[1][1]],
-                       [T0._data[2][0],T0._data[2][1]],
-                       [T0._data[3][0],T0._data[3][1]]
-                      ]);
-    
-    b0 = math.multiply(tmp,math.matrix([[Modes[0]],[Modes[1]]]));
-    for(var i = 0; i < b0._data.length; i++ )
-        a._data[i] = b0._data[i];
-    
-    tmp = math.matrix([
-                       [0,0],
-                       [0,0],
-                       [-1,0],
-                       [0,-1]
-                     ]);
-    
-    bN = math.multiply(tmp,math.matrix([[Modes[2]],[Modes[3]]]));
-    for(var i = 0; i < bN._data.length; i++)
-        a._data[a._data.length - bN._data.length + i] = bN._data[i];
-
-    unknown_c = math.lusolve(S,math.unaryMinus(a._data));
-
-
-    
-    for(var i = 0; i < unknown_c._data.length; i++)
-        c._data[i + 2] = unknown_c._data[i][0];
-
-    return c;
-};
-
-
 
 //=====================================================================================================================================
 //=====================================================================================================================================
@@ -465,6 +423,47 @@ emScattering3.Struct.prototype.calcScattering = function(){
     this.scatteringMatrix = S;
 };
 
+/**Calculates the Constants for the Scattering problem*/
+emScattering3.Struct.prototype.calculateConstants = function(S,Modes,T0) {
+    var a = math.zeros(S._data.length),tmp,b0, bN, unknown_c, c = math.zeros(S._data.length + 3);
+
+    c._data[0] = Modes[0];
+    c._data[1] = Modes[1];
+    c._data[c._data.length - 1] = Modes[2];
+    c._data[c._data.length] = Modes[3];
+    
+    tmp = math.matrix([
+                       [T0._data[0][0],T0._data[0][1]],
+                       [T0._data[1][0],T0._data[1][1]],
+                       [T0._data[2][0],T0._data[2][1]],
+                       [T0._data[3][0],T0._data[3][1]]
+                      ]);
+    
+    b0 = math.multiply(tmp,math.matrix([[Modes[0]],[Modes[1]]]));
+    for(var i = 0; i < b0._data.length; i++ )
+        a._data[i] = b0._data[i];
+    
+    tmp = math.matrix([
+                       [0,0],
+                       [0,0],
+                       [-1,0],
+                       [0,-1]
+                     ]);
+    
+    bN = math.multiply(tmp,math.matrix([[Modes[2]],[Modes[3]]]));
+    for(var i = 0; i < bN._data.length; i++)
+        a._data[a._data.length - bN._data.length + i] = bN._data[i];
+
+    unknown_c = math.lusolve(S,math.unaryMinus(a._data));
+
+
+    
+    for(var i = 0; i < unknown_c._data.length; i++)
+        c._data[i + 2] = unknown_c._data[i][0];
+
+    this.constants = c;
+};
+
 emScattering3.Struct.prototype.calculateScattering = function() {
     var L = this.numLayers, N = this.numLayers - 1, S = math.zeros(4*N, 4*(N+1)), interfaces = [], leftPsi = [], rightPsi = [];
 
@@ -532,6 +531,11 @@ emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scat
 }
 
 emScattering3.Struct.prototype.updateScattering = function() {
+    this.calcTransfer();
+
+    //this.calcScattering();
+    //this.calculateConstants(this.scatteringMatrix, this.Modes, this.transferMatrices[0]);
+
     this.calculateScattering();
     this.calculateConstantVector(this.Modes, this.scatteringMatrix);
 }
@@ -874,10 +878,7 @@ emScattering3.computeStructure = function(eArray, mArray, length, numLayers, con
     struct = new emScattering3.makeStructure(values[0],values[1],length,constants[0],constants[1],constants[2], Modes);
     struct.makeMaxwell();
     struct.calcEigensystems();
-    struct.calcTransfer();
-    //struct.calcScattering();
-    struct.calculateScattering();
-    struct.calculateConstantVector(struct.Modes, struct.scatteringMatrix);
+    struct.updateScattering();
     return struct;
 };    
 
