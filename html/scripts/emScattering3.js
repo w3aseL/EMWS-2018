@@ -376,8 +376,8 @@ emScattering3.Struct.prototype.calcTransfer = function(){
     if (this.numLayers > 1){
         for(var i = 0, N = this.transferMatrices.length; i < N; i ++){
             var w, wNext, tmp, zNorm, expDiagonal;
-            wNext = math.inv(this.eigenvectors[i+1]);
-            w = this.eigenvectors[i];
+            wNext = math.inv(math.transpose(this.eigenvectors[i+1]));
+            w = math.transpose(this.eigenvectors[i]);
             if (i === 0)
                 zNorm = 0;
             else
@@ -475,10 +475,12 @@ emScattering3.Struct.prototype.calculateScattering = function() {
     }
     
     for(var l = 0; l < N; l++) {
-        console.log(math.diag(math.exp(math.multiply(math.complex("i"),this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])))));
+        var expVec = math.exp(math.multiply(math.complex("i"),this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])));
 
-        leftPsi[l] = math.multiply(this.eigenvectors[l],math.diag(math.exp(math.multiply(math.complex("i"),this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])))));
-        rightPsi[l] = this.eigenvectors[l+1];
+        console.log(expVec);
+
+        leftPsi[l] = math.multiply(math.transpose(this.eigenvectors[l]),math.diag(expVec));
+        rightPsi[l] = math.transpose(this.eigenvectors[l+1]);
     }
 
     console.log({LeftPsi: leftPsi, RightPsi: rightPsi});
@@ -596,7 +598,7 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
                                  Math.floor(this.Struct.layers[i].length)*numPoints);
         }
         
-        W = this.Struct.eigenvectors[i];                                                                //Sets W to the current layer eigenvector matrix
+        W = math.transpose(this.Struct.eigenvectors[i]);                                                 //Sets W to the current layer eigenvector matrix
         lambda = this.Struct.eigenvalues[i];                                                            //Sets lambda to the current layer eigenvalues
         for(var j = 0; j < layerNormZ.length; j++){
             expDiag = emScattering3.expEigenvaluesDiag(lambda, layerNormZ[j]);                          //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
@@ -662,7 +664,7 @@ emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
         current_c = c._data.slice(4+4*i,8+4*i);
     }
 
-    W = this.Struct.eigenvectors[currentLayer];
+    W = math.transpose(this.Struct.eigenvectors[currentLayer]);                                                
     lambda = this.Struct.eigenvalues[currentLayer];
     
     expDiag = emScattering3.expEigenvaluesDiag(lambda, normZ);
@@ -770,7 +772,7 @@ emScattering3.PhotonicCrystal.prototype.mathboxSetupHf = function() {
     
     for(var i = 0; i < numLayers; i++){
         lambda = this.Struct.eigenvalues[i];
-        W = this.Struct.eigenvectors[i];
+        W = math.transpose(this.Struct.eigenvectors[i]);
         Hx = math.dotMultiply(current_c,W._data[2]);
         Hy = math.dotMultiply(current_c,W._data[3]);
         for(var k = 0; k < Hx.length; k++) {
