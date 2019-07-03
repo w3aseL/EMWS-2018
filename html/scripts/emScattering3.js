@@ -475,7 +475,11 @@ emScattering3.Struct.prototype.calculateScattering = function() {
     }
     
     for(var l = 0; l < N; l++) {
-        leftPsi[l] = math.multiply(this.eigenvectors[l],math.diag(math.exp(math.multiply(this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])))));
+        var expVec = math.exp(math.multiply(math.complex("i"),this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])));
+
+        console.log(expVec);
+
+        leftPsi[l] = math.multiply(this.eigenvectors[l],math.diag(expVec));
         rightPsi[l] = this.eigenvectors[l+1];
     }
 
