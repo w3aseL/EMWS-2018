@@ -21,8 +21,10 @@ EigenCalc.getEigenvaluesAndEigenvectors = function(a) {
         //Eigenvalues and eigenvectors of AB
         var eigen = getEigValsAndVecsOf2x2(math.multiply(A, B));
 
+        console.log(eigen);
+
         //For loop does 1-4
-        for(let i = 1; i <= 4; i++) {
+        /*for(let i = 1; i <= 4; i++) {
             var index = Math.floor((i-1)/2);                                            //Gets index 0 for i=1,2 and 1 for i=3,4
 
             var eigenvalue = eigen.eigenvalues[index];                                  //Gets eigenvalue of AB
@@ -32,19 +34,40 @@ EigenCalc.getEigenvaluesAndEigenvectors = function(a) {
 
             var eigenvector = math.zeros(a.size()[0], 1);                               //Creates eigenvector format
 
-            var u = matrixMultiplication(B, eigen.eigenvectors[index]);                 //u = B * vi
+            var u = matrixMultiplication(math.matrix(eigen.eigenvectors), math.transpose(B));                 //u = B * vi
 
-            var lambdaV = math.multiply(eigenvalues[i-1], eigen.eigenvectors[index]);   //λi*vi
+            console.log(u);
+
+            var lambdaV = scalarVecMultiplication(eigenvalues[i-1], eigen.eigenvectors[index]);   //λi*vi
 
             //Sets λi*vi/u to vector
-            eigenvector = math.subset(eigenvector, math.index(0, 0), math.subset(lambdaV, math.index(0,0)));
-            eigenvector = math.subset(eigenvector, math.index(1, 0), math.subset(lambdaV, math.index(1,0)));
-            eigenvector = math.subset(eigenvector, math.index(2, 0), math.subset(u, math.index(0,0)));
-            eigenvector = math.subset(eigenvector, math.index(3, 0), math.subset(u, math.index(1,0)));
+            eigenvector = math.subset(eigenvector, math.index(0, 0), lambdaV[0]);
+            eigenvector = math.subset(eigenvector, math.index(1, 0), lambdaV[1]);
+            eigenvector = math.subset(eigenvector, math.index(2, 0), math.subset(u, math.index(index,0)));
+            eigenvector = math.subset(eigenvector, math.index(3, 0), math.subset(u, math.index(index,1)));
 
             eigenvector = math.divide(eigenvector, complexVectorNorm(eigenvector));            //Divides the norm out of the vector
 
             eigenvectors.push(math.transpose(eigenvector).toArray()[0]);                //Pushes eigenvector to array
+        }*/
+
+        var u = matrixMultiplication(math.matrix(eigen.eigenvectors), math.transpose(B));
+        eigenvalues = [ math.sqrt(eigen.eigenvalues[0]), math.unaryMinus(math.sqrt(eigen.eigenvalues[1])), math.unaryMinus(math.sqrt(eigen.eigenvalues[0])), math.sqrt(eigen.eigenvalues[1]) ];
+        eigenvectors = [];
+
+        for(let i = 1; i <= 4; i++) {
+            var index = ((i > 2) ? i - 2 : i) - 1;
+
+            var temp = math.zeros(a.size()[0], 1);
+
+            temp.set([0,0], math.multiply(eigenvalues[i-1], eigen.eigenvectors[index][0]));
+            temp.set([1,0], math.multiply(eigenvalues[i-1], eigen.eigenvectors[index][1]));
+            temp.set([2,0], math.subset(u, math.index(index,0)));
+            temp.set([3,0], math.subset(u, math.index(index,1)));
+
+            temp = math.divide(temp, complexVectorNorm(temp));
+
+            eigenvectors[i-1] = math.transpose(temp).toArray()[0];
         }
 
         eigenvectors = math.matrix(eigenvectors);                                       //Converts the eigenvectors to a dense matrix
@@ -127,8 +150,8 @@ function getEigValsAndVecsOf2x2(mat) {
     var discriminant = math.subtract(math.pow(T, 2), math.multiply(4, D));
 
     if(math.compare(discriminant.re, 0) > 0){
-        var root1 = math.divide(math.add(math.multiply(-1, T), math.sqrt(discriminant)), 2);
-        var root2 = math.divide(math.subtract(math.multiply(-1, T), math.sqrt(discriminant)), 2);
+        var root1 = math.divide(math.subtract(math.multiply(-1, T), math.sqrt(discriminant)), 2);
+        var root2 = math.divide(math.add(math.multiply(-1, T), math.sqrt(discriminant)), 2);
 
         eigvals.push(math.complex(root1));
         eigvals.push(math.complex(root2));
@@ -150,20 +173,48 @@ function getEigValsAndVecsOf2x2(mat) {
 
     var lambda1 = eigvals[0], lambda2 = eigvals[1];
 
-    eigvecs[0] = math.zeros(2, 1);
-    eigvecs[1] = math.zeros(2, 1);
+    eigvecs[0] = new Array();
+    eigvecs[1] = new Array();
 
     if(b != 0 || c != 0) {
-        eigvecs[0] = findEigenvector(eigvecs[0], lambda1, mat);
-        eigvecs[1] = findEigenvector(eigvecs[1], lambda2, mat);
+        eigvecs[0][0] = math.complex(-b);
+        eigvecs[0][1] = math.subtract(a, lambda1);
+        eigvecs[1][0] = math.complex(b);
+        eigvecs[1][1] = math.subtract(lambda2, a);
+
+        eigvecs[0] = math.divide(eigvecs[0], math.sqrt(math.add(math.pow(eigvecs[0][0].re, 2), math.pow(eigvecs[0][0].im, 2), math.pow(eigvecs[0][1].re, 2), math.pow(eigvecs[0][1].im, 2))));
+        eigvecs[1] = math.divide(eigvecs[1], math.sqrt(math.add(math.pow(eigvecs[1][0].re, 2), math.pow(eigvecs[1][0].im, 2), math.pow(eigvecs[1][1].re, 2), math.pow(eigvecs[1][1].im, 2))));
     } else if(b == 0 && c == 0) {
-        eigvecs[0].set([0,0], math.complex(1));
-        eigvecs[0].set([1,0], math.complex(0));
-        eigvecs[1].set([0,0], math.complex(0));
-        eigvecs[1].set([1,0], math.complex(1));
+        eigvecs[0][0] = math.complex(1);
+        eigvecs[0][1] = math.complex(0);
+        eigvecs[1][0] = math.complex(0);
+        eigvecs[1][1] = math.complex(1);
     }
 
+    var vecMat = math.zeros(2,2);
+
+    vecMat.set([0,0], eigvecs[0][0]);
+    vecMat.set([1,0], eigvecs[0][1]);
+    vecMat.set([0,1], eigvecs[1][0]);
+    vecMat.set([1,1], eigvecs[1][1]);
+
     return {eigenvalues: eigvals, eigenvectors: eigvecs};
+}
+
+/**
+ * Scalar-Vector Multiplication
+ * ----------------------------
+ * Takes a scalar and vector value and multiplies the vector array by the scalar value.
+ * 
+ * @param {*} scalarVal 
+ * @param Array vecArr 
+ */
+function scalarVecMultiplication(scalarVal, vecArr) {
+    for(var i = 0; i < vecArr.length; i++) {
+        vecArr[i] = math.multiply(vecArr[i], scalarVal);
+    }
+
+    return vecArr;
 }
 
 /**
@@ -185,12 +236,12 @@ function findEigenvector(vector, lambda, mat) {
         c = math.subset(mat, math.index(1, 0)),
         d = math.subset(mat, math.index(1, 1));
 
-    var v1 = math.complex(-b), v2 = math.subtract(a, lambda);
+    var v1 = math.complex(b), v2 = math.subtract(lambda, a);
 
     var norm = math.sqrt(math.add(math.pow(v1.re, 2), math.pow(v1.im, 2), math.pow(v2.re, 2), math.pow(v2.im, 2)));
 
-    vector = math.subset(vector, math.index(0,0), v1);
-    vector = math.subset(vector, math.index(1,0), v2);
+    vector[0] = v1;
+    vector[1] = v2;
 
     vector = math.divide(vector, norm);
 
