@@ -455,8 +455,6 @@ emScattering3.Struct.prototype.calculateConstants = function(S,Modes,T0) {
         a._data[a._data.length - bN._data.length + i] = bN._data[i];
 
     unknown_c = math.lusolve(S,math.unaryMinus(a._data));
-
-
     
     for(var i = 0; i < unknown_c._data.length; i++)
         c._data[i + 2] = unknown_c._data[i][0];
@@ -542,9 +540,9 @@ emScattering3.Struct.prototype.updateScattering = function() {
     this.calculateConstantVector(this.Modes, this.scatteringMatrix);
 }
 
-emScattering3.calcExpDiagMatrix = function(w, eVals) {
+emScattering3.calcExpDiagMatrix = function(k, eVals, z) {
     var eigs = [eVals[0],eVals[1],eVals[2],eVals[3]];
-    return math.diag(math.exp(math.multiply(eigs,w)));
+    return math.diag(math.exp(math.multiply(k,eigs,z)));
 }
 
 
@@ -590,19 +588,19 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
     current_c = c._data.slice(0,4);                                                                         //Slices the constant vector to a smaller vector
     for(var i = 0; i < numLayers; i++){
         if(i === 0){
-            layerNormZ = numeric.linspace(-this.Struct.omega*this.Struct.layers[i].length,0, 
+            layerNormZ = numeric.linspace(this.Struct.layers[i].length,0, 
                                  Math.floor(this.Struct.layers[i].length)*numPoints);                       //Creates an array of Z values (with omega taken into account) with the size of the length and number of points per Z value (Ex. 10 size of layer * 100 points)
         }
         else{
-            layerNormZ = numeric.linspace(0, this.Struct.omega*this.Struct.layers[i].length,
+            layerNormZ = numeric.linspace(0,this.Struct.layers[i].length,
                                  Math.floor(this.Struct.layers[i].length)*numPoints);
         }
         
-        W = math.transpose(this.Struct.eigenvectors[i]);                                                 //Sets W to the current layer eigenvector matrix
+        W = math.transpose(this.Struct.eigenvectors[i]);                                                //Sets W to the current layer eigenvector matrix
         lambda = this.Struct.eigenvalues[i];                                                            //Sets lambda to the current layer eigenvalues
         for(var j = 0; j < layerNormZ.length; j++){
-            expDiag = emScattering3.expEigenvaluesDiag(lambda, layerNormZ[j]);                          //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
-            result = math.multiply(W,(math.multiply(expDiag,current_c)));                               //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
+            expDiag = emScattering3.calcExpDiagMatrix(this.Struct.omega, lambda, layerNormZ[j]);        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
+            result = math.multiply(W, expDiag ,current_c);                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
             _Ex.push(result._data[0].re);
             _Ey.push(result._data[1].re);
             _Hx.push(result._data[2].re);
@@ -644,11 +642,11 @@ emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
     //console.log("Z-Point in Layer: " + zIntoLayer);
 
     if (this.Struct.omega < 0){
-        if(currentLayer === 0) normZ = (-this.Struct.omega * this.Struct.layers[currentLayer].length) - math.abs(zIntoLayer * this.Struct.omega);
-        else normZ = (this.Struct.omega * this.Struct.layers[currentLayer].length) + math.abs((zIntoLayer - this.Struct.layers[currentLayer].length) * this.Struct.omega);
+        if(currentLayer === 0) normZ = this.Struct.layers[currentLayer].length - zIntoLayer;
+        else normZ = this.Struct.layers[currentLayer].length + math.abs((zIntoLayer - this.Struct.layers[currentLayer].length));
     } else if(this.Struct.omega > 0) {
-        if(currentLayer === 0) normZ = (-this.Struct.omega * this.Struct.layers[currentLayer].length) + math.abs(zIntoLayer * this.Struct.omega);
-        else normZ = (this.Struct.omega * this.Struct.layers[currentLayer].length) - math.abs((zIntoLayer - this.Struct.layers[currentLayer].length) * this.Struct.omega);
+        if(currentLayer === 0) normZ = this.Struct.layers[currentLayer].length + zIntoLayer;
+        else normZ = this.Struct.layers[currentLayer].length - math.abs((zIntoLayer - this.Struct.layers[currentLayer].length));
     }
 
     //console.log("Value used to calculate: " + normZ);
@@ -667,8 +665,8 @@ emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
     W = math.transpose(this.Struct.eigenvectors[currentLayer]);                                                
     lambda = this.Struct.eigenvalues[currentLayer];
     
-    expDiag = emScattering3.expEigenvaluesDiag(lambda, normZ);
-    result =  math.multiply(W,(math.multiply(expDiag,current_c)));
+    expDiag = emScattering3.calcExpDiagMatrix(this.Struct.omega, lambda, normZ);        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
+    result = math.multiply(W, expDiag, current_c);                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
 
     return {Ex: result._data[0].re, Ey: result._data[1].re, Hx: result._data[2].re, Hy: result._data[3].re};
 }
