@@ -471,14 +471,17 @@ emScattering3.Struct.prototype.calculateScattering = function() {
         if(z < N) interfaces[z] = 0;
         else interfaces[z] = ifaces[z] - ifaces[z-1];
     }
+
+    console.log(interfaces);
     
     for(var l = 0; l < N; l++) {
-        var expVec = math.exp(math.multiply(math.complex("i"),this.omega,this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])));
+        var expVecLeft = math.exp(math.multiply(this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])));
+        var expVecRight = math.exp(math.multiply(this.eigenvalues[l+1],math.subtract(interfaces[l+1],interfaces[l+1])));
 
-        console.log(expVec);
+        console.log({leftExpVec: expVecLeft, rightExpVec: expVecRight});
 
-        leftPsi[l] = math.multiply(math.transpose(this.eigenvectors[l]),math.diag(expVec));
-        rightPsi[l] = math.transpose(this.eigenvectors[l+1]);
+        leftPsi[l] = math.multiply(math.transpose(this.eigenvectors[l]),math.diag(expVecLeft));
+        rightPsi[l] = math.multiply(math.transpose(this.eigenvectors[l+1]),math.diag(expVecRight));
     }
 
     console.log({LeftPsi: leftPsi, RightPsi: rightPsi});
@@ -509,8 +512,8 @@ emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scat
 
     //Find f vector using the incoming and full scattering matrix
     for(var i = 0; i < 4; i++) {
-        f.set([i], math.subtract(math.unaryMinus(math.multiply(scatteringMatrix.get([i,0]),incoming[0])),math.multiply(scatteringMatrix.get([i,1]),incoming[1])));
-        f.set([4*(N-1)+i], math.subtract(math.unaryMinus(math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-2]),incoming[2])),math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-1]),incoming[3])));
+        f.set([i], math.subtract(f.get([i]),math.subtract(math.multiply(scatteringMatrix.get([i,0]),incoming[0]),math.multiply(scatteringMatrix.get([i,1]),incoming[1]))));
+        f.set([4*(N-1)+i], math.subtract(f.get([4*(N-1)+i]),math.subtract(math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-2]),incoming[2]),math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-1]),incoming[3]))));
     }
 
     var tildeB = math.lusolve(tildeS, f);
@@ -585,8 +588,11 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
 
     console.log(c);
 
-    current_c = c._data.slice(0,4);                                                                         //Slices the constant vector to a smaller vector
     for(var i = 0; i < numLayers; i++){
+        current_c = c._data.slice(i*4,4+(i*4));
+
+        console.log(current_c);
+
         if(i === 0){
             layerNormZ = numeric.linspace(this.Struct.layers[i].length,0, 
                                  Math.floor(this.Struct.layers[i].length)*numPoints);                       //Creates an array of Z values (with omega taken into account) with the size of the length and number of points per Z value (Ex. 10 size of layer * 100 points)
@@ -599,8 +605,8 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
         W = math.transpose(this.Struct.eigenvectors[i]);                                                //Sets W to the current layer eigenvector matrix
         lambda = this.Struct.eigenvalues[i];                                                            //Sets lambda to the current layer eigenvalues
         for(var j = 0; j < layerNormZ.length; j++){
-            expDiag = emScattering3.calcExpDiagMatrix(this.Struct.omega, lambda, layerNormZ[j]);        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
-            result = math.multiply(W, expDiag ,current_c);                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
+            expDiag = math.diag(math.exp(math.multiply(lambda, layerNormZ[j])));                        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
+            result = math.multiply(W, expDiag, math.transpose(current_c));                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
             _Ex.push(result._data[0].re);
             _Ey.push(result._data[1].re);
             _Hx.push(result._data[2].re);
@@ -611,8 +617,7 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
          if (i+1 < numLayers) {
             currentLeftZ += this.Struct.layers[i].length;                                               //Extends lower layer limit
             currentRightZ += this.Struct.layers[i+1].length;                                            //Extends upper layer limit
-            current_c = c._data.slice(4+4*i,8+4*i);                                                     //Shifts constant vector
-        } 
+         } 
     }
     
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
@@ -670,6 +675,49 @@ emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
 
     return {Ex: result._data[0].re, Ey: result._data[1].re, Hx: result._data[2].re, Hy: result._data[3].re};
 }
+
+/**
+Returns the field values in all the layers given the coefficients of the incoming modes.
+Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
+and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
+*/
+emScattering3.PhotonicCrystal.prototype.determineField2 = function() {
+    var numLayers = this.Struct.numLayers, N = numLayers - 1, numPoints = 100, interfaces = [],
+    _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
+    
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
+    c = this.Struct.constants;
+
+    var zEnds = this.Struct.materialInterfaces();
+
+    for(var z = 0; z <= N; z++) {
+        if(z < N) interfaces[z] = 0;
+        else interfaces[z] = zEnds[z] - zEnds[z-1];
+    }
+
+    //console.log(c);
+
+    for(var layer = 0; layer < numLayers; layer++){
+        var length = zEnds[layer+1] - zEnds[layer];
+
+        current_c = c._data.slice(layer*4, 4+(layer*4));
+
+        console.log(current_c);
+
+        for(var i = 0; i <= numPoints; i++) {
+            var z = zEnds[layer] + (i*length)/numPoints;
+            var field = math.multiply(math.transpose(this.Struct.eigenvectors[layer]), math.diag(math.exp(math.multiply(this.Struct.eigenvalues[layer], math.subtract(z, interfaces[layer])))), current_c);
+
+            _z.push(z);
+            _Ex.push(field._data[0].re);
+            _Ey.push(field._data[1].re);
+            _Hx.push(field._data[2].re);
+            _Hy.push(field._data[3].re);
+        }
+    }
+    
+    return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
+};
 
 /**
 Setup for Electric Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set

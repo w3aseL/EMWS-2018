@@ -16,7 +16,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
         $scope.wPoints = 10;                                                   //Number of points for transmissions graph (Default)
         $scope.zPoint = 0;                                                      //Point for each array to pull for transmissions graph
-        $scope.incoming = [0, 1, 0, 0];                                         //Incoming coefficients (Defaults)
+        $scope.incoming = [1, 0, 0, 0];                                         //Incoming coefficients (Defaults)
         $scope.eArray = [];                                                     //Epsilon Array for Layers
         $scope.muArray = [];                                                    //Mu Array for Layers
         $scope.lArray = [];                                                     //Length Array for Layers
@@ -301,8 +301,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     if(document.getElementById(forChkStr + i).disabled == true) { document.getElementById(forChkStr + i).disabled = false; }          //If check box is disabled, enable it
                 }
 
-                document.getElementById(incStr + "2").innerHTML = $scope.modesForward[0].toString();               //Set incoming2 element text to default mode
-                document.getElementById(incStr + "3").innerHTML = $scope.modesForward[1].toString();               //Set incoming3 element text to default mode
+                document.getElementById(incStr + "2").innerHTML = $scope.modesForward[2].toString();               //Set incoming2 element text to default mode
+                document.getElementById(incStr + "3").innerHTML = $scope.modesForward[3].toString();               //Set incoming3 element text to default mode
             }
         }
         
