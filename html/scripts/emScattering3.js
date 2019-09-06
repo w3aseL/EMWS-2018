@@ -578,7 +578,7 @@ Returns the field values in all the layers given the coefficients of the incomin
 Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
 and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
 */
-emScattering3.PhotonicCrystal.prototype.determineField = function() {
+emScattering3.PhotonicCrystal.prototype.determineField2 = function() {
     var numLayers = this.Struct.numLayers, numPoints = 100, layerNormZ, W, lambda, c, current_c,
     expDiag, result, currentLeftZ = 0, currentRightZ = this.Struct.layers[0].length,
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
@@ -604,9 +604,12 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
         
         W = math.transpose(this.Struct.eigenvectors[i]);                                                //Sets W to the current layer eigenvector matrix
         lambda = this.Struct.eigenvalues[i];                                                            //Sets lambda to the current layer eigenvalues
+        var scalar = math.exp(math.divide(math.multiply(math.complex("i"), Math.PI), 3));
         for(var j = 0; j < layerNormZ.length; j++){
+            if(j === 0) console.log(layerNormZ[j]);
+
             expDiag = math.diag(math.exp(math.multiply(lambda, layerNormZ[j])));                        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
-            result = math.multiply(W, expDiag, math.transpose(current_c));                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
+            result = math.multiply(scalar, W, expDiag, math.transpose(current_c));                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
             _Ex.push(result._data[0].re);
             _Ey.push(result._data[1].re);
             _Hx.push(result._data[2].re);
@@ -681,7 +684,7 @@ Returns the field values in all the layers given the coefficients of the incomin
 Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
 and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
 */
-emScattering3.PhotonicCrystal.prototype.determineField2 = function() {
+emScattering3.PhotonicCrystal.prototype.determineField = function() {
     var numLayers = this.Struct.numLayers, N = numLayers - 1, numPoints = 100, interfaces = [],
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
     
@@ -697,18 +700,24 @@ emScattering3.PhotonicCrystal.prototype.determineField2 = function() {
 
     //console.log(c);
 
+    console.log({ zz: interfaces, zzz: zEnds });
+
     for(var layer = 0; layer < numLayers; layer++){
-        var length = zEnds[layer+1] - zEnds[layer];
+        var length = this.Struct.layers[layer].length;
 
         current_c = c._data.slice(layer*4, 4+(layer*4));
 
         console.log(current_c);
 
-        for(var i = 0; i <= numPoints; i++) {
-            var z = zEnds[layer] + (i*length)/numPoints;
-            var field = math.multiply(math.transpose(this.Struct.eigenvectors[layer]), math.diag(math.exp(math.multiply(this.Struct.eigenvalues[layer], math.subtract(z, interfaces[layer])))), current_c);
+        for(var i = 0; i < numPoints; i++) {
+            var z = (zEnds[layer] - length) + (i*length)/numPoints;
 
-            _z.push(z);
+            if(i === 0) console.log({ z: z, layerLength: length });
+
+            var scalar = math.exp(math.divide(math.multiply(math.complex("i"), Math.PI), 3));
+            var field = math.multiply(scalar, math.transpose(this.Struct.eigenvectors[layer]), math.diag(math.exp(math.multiply(this.Struct.eigenvalues[layer], (z - interfaces[layer])))), current_c);
+
+            _z.push(z + length);
             _Ex.push(field._data[0].re);
             _Ey.push(field._data[1].re);
             _Hx.push(field._data[2].re);
