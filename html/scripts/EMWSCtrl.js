@@ -561,7 +561,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var hXmax = 1;
             var endRange = $scope.totalLength;
             var canvasElement = "testcanvas";
-            var interfaces = $scope.crystal.Struct.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfacesStartZero();
             var elem = document.getElementById(canvasElement);
             var jelem = $("#" + canvasElement);
             var rgbColor = jelem.parent().css("background-color");

@@ -685,7 +685,7 @@ Returned object has properties z for the coordinates used, Ex, Ey, Hx,
 and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
 */
 emScattering3.PhotonicCrystal.prototype.determineField = function() {
-    var numLayers = this.Struct.numLayers, N = numLayers - 1, numPoints = 100, interfaces = [],
+    var numLayers = this.Struct.numLayers, N = numLayers - 1, numPoints = 200, interfaces = [],
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
     
     //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
@@ -698,26 +698,24 @@ emScattering3.PhotonicCrystal.prototype.determineField = function() {
         else interfaces[z] = zEnds[z] - zEnds[z-1];
     }
 
-    //console.log(c);
-
     console.log({ zz: interfaces, zzz: zEnds });
 
     for(var layer = 0; layer < numLayers; layer++){
-        var length = this.Struct.layers[layer].length;
+        var length = zEnds[layer+1] - zEnds[layer];
 
         current_c = c._data.slice(layer*4, 4+(layer*4));
 
         console.log(current_c);
 
         for(var i = 0; i < numPoints; i++) {
-            var z = (zEnds[layer] - length) + (i*length)/numPoints;
+            var z = zEnds[layer] + (i*length)/numPoints;
 
             if(i === 0) console.log({ z: z, layerLength: length });
 
-            var scalar = math.exp(math.divide(math.multiply(math.complex("i"), Math.PI), 3));
+            var scalar = math.exp(math.multiply(math.complex("i"), 0.4, Math.PI));
             var field = math.multiply(scalar, math.transpose(this.Struct.eigenvectors[layer]), math.diag(math.exp(math.multiply(this.Struct.eigenvalues[layer], (z - interfaces[layer])))), current_c);
 
-            _z.push(z + length);
+            _z.push(z);
             _Ex.push(field._data[0].re);
             _Ey.push(field._data[1].re);
             _Hx.push(field._data[2].re);
@@ -908,7 +906,7 @@ coordinate system used to plot the field values and in other methods of this obj
 */
 emScattering3.Struct.prototype.materialInterfaces = function() {
     var interfaces = new Array();
-    interfaces.push(0);
+    interfaces.push(-this.layers[0].length);
     for (var i = 0; i < this.numLayers; i++){
         interfaces.push(interfaces[i] + this.layers[i].length);
     }
@@ -916,6 +914,15 @@ emScattering3.Struct.prototype.materialInterfaces = function() {
     return interfaces;
 };
 
+emScattering3.Struct.prototype.materialInterfacesStartZero = function() {
+    var interfaces = new Array();
+    interfaces.push(0);
+    for (var i = 0; i < this.numLayers; i++){
+        interfaces.push(interfaces[i] + this.layers[i].length);
+    }
+    //console.log(interfaces);
+    return interfaces;
+};
 
 
 //=====================================================================================================================================
