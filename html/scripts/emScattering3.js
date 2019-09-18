@@ -636,7 +636,7 @@ emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
     var W, lambda, c, current_c, expDiag, result, currentLayer, zIntoLayer = zPoint, normZ, interfaces = this.Struct.materialInterfaces();
 
     for(var i = 0; i < this.Struct.numLayers; i++){
-        if(zPoint == 0 && i == 0) currentLayer = i;
+        if(zPoint == interfaces[0] && i == 0) currentLayer = i;
 
         if(interfaces[i] < zPoint && interfaces[i+1] >= zPoint) currentLayer = i;
     }

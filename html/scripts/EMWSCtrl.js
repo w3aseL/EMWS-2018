@@ -105,6 +105,36 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
 
             //$(".p1").addClass("ng-hide");
+
+            setTimeout(hideIfInDevMode, 250);
+        }
+
+        function getQueryVariable(variable)
+        {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+
+            for (var i = 0;i < vars.length; i++) {
+                var pair = vars[i].split("=");
+
+                if(pair[0] == variable) return pair[1];
+            }
+            
+            return false;
+        }
+
+        function hideIfInDevMode() {
+            var devMode = false;
+
+            if(getQueryVariable("devMode") === "true") devMode = true;
+
+            $scope.runMathBoxField = devMode;
+
+            if(!devMode) {
+                document.getElementById("mathbox-field-box").classList.add("ng-hide");
+                document.getElementById("nav-tab3").classList.add("ng-hide");
+                document.getElementById("nav-tab4").classList.add("ng-hide");
+            }
         }
 
         function addHide() {
@@ -557,6 +587,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Creates the MathBox animation on the Field tab. */
         function createAnim() {
+            $scope.runMathBoxField = true;
+
             var eXmax = 1;
             var hXmax = 1;
             var endRange = $scope.totalLength;
@@ -798,7 +830,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     visible = true;
                     
                 }
-                else if(parentVisibility == 'hidden'){
+                else if(parentVisibility == 'hidden' || !$scope.runMathBoxField){
                     visible = false;
 
                     requestAnimationFrame(frame);
@@ -1662,8 +1694,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         color: 'transparent'
                     },
                     viewWindow: {
-                        min: 0,
-                        max: $scope.totalLength //modify max by adding layer lengths, then apply to buildstructure button, then set up value placement of layers, then custom overlays
+                        min: interfaces[0],
+                        max: interfaces[interfaces.length - 1] //modify max by adding layer lengths, then apply to buildstructure button, then set up value placement of layers, then custom overlays
                     },
                     ticks: interfaces
                 },
