@@ -134,6 +134,9 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 document.getElementById("mathbox-field-box").classList.add("ng-hide");
                 document.getElementById("nav-tab3").classList.add("ng-hide");
                 document.getElementById("nav-tab4").classList.add("ng-hide");
+
+                document.getElementsByClassName("dropdown-menu")[0].getElementsByClassName("col-xs-6")[2].classList.add("ng-hide");
+                document.getElementsByClassName("dropdown-menu")[0].getElementsByClassName("col-xs-6")[3].classList.add("ng-hide");
             }
         }
 
