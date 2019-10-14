@@ -463,6 +463,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 var cli = this.getChartLayoutInterface();
                 var chartArea = cli.getChartAreaBoundingBox();
                 var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+                var oddColors = [ '#FFFFE0', '#FFFF00', '#FEDF00' ];
+                var evenColors = [ '#999999', ' #777777', '#555555' ];
                 var w = cli.getXLocation(interfaces[1]) - cli.getXLocation(interfaces[0]);
                 var y = cli.getChartAreaBoundingBox().height;
                 // console.log(interfaces);
@@ -484,7 +486,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     var w = cli.getXLocation(interfaces[i + 1]) - cli.getXLocation(interfaces[i]);
 
                     // document.getElementsByClassName('overlay' + i).remove();
-                    addStruct(htmlClass, i, cols[i % 5], w, y);
+                    addStruct(htmlClass, i, (i % 2 === 0 ? evenColors : oddColors)[i % 3], w, y);
                     
                     // document.querySelector('.overlay').style.position = 'absolute';
                     // document.querySelector('.overlay').style.opacity = '.5';
@@ -543,7 +545,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     top: 40
                 },
                 backgroundColor: 'transparent',
-                colors: [ "blue", "green", "red", "orange" ]
+                colors: [ "red", "orange", "green", "blue" ]
             };
 
             chart.draw(data, options);          //Draw the chart
@@ -558,12 +560,19 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             var chartView = new google.visualization.DataView(data);                    //Creates a new data view variable based on the data
 
+            function removeElem(arr, elem) {
+                for(var i = 0; i < arr.length; i++) {
+                    if(arr[i] === elem) arr.splice(i, 1);
+                }
+            }
+
             /** Shows and hides columns based on id.
              * 
              * @param id - The column id to show/hide.
              */
             $scope.toggleLine = function(id) {
                 var columns = chartView.getViewColumns();               //Gets the array of visible columns
+                var fullColorsArr = [ "red", "orange", "green", "blue" ];
                 var isHidden = true;                                    //Creates flag if column specified is hidden
 
                 //Loop through visible columns
@@ -573,9 +582,11 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
                 if(isHidden == true){
                     columns.splice(id, 0, id);                          //If column is not visible, add it back to the visible column array.
+                    options.colors.splice(id - 1, 0, fullColorsArr[id - 1]);    //Add color back to visible arr
                     chartView.setColumns(columns);                      //Set visible columns to column array
                 }else{
                     chartView.hideColumns([id]);                        //If column is visible, hide the column
+                    removeElem(options.colors, fullColorsArr[id - 1]);
                 }
 
                 chart.draw(chartView, options);                         //Draw the updated chart
@@ -584,6 +595,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             /** Resets the columns of the field chart. */
             $scope.resetFieldChart = function() {
                 chartView.setColumns([0, 1, 2, 3, 4]);                  //Reset to show all visible columns
+                options.colors = [ "red", "orange", "green", "blue" ];  //Reset colors
                 chart.draw(chartView, options);                         //Draw the updated chart
             }
         }
