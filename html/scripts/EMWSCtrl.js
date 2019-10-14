@@ -463,8 +463,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 var cli = this.getChartLayoutInterface();
                 var chartArea = cli.getChartAreaBoundingBox();
                 var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
-                var oddColors = [ '#FFFFE0', '#FFFF00', '#FEDF00' ];
-                var evenColors = [ '#999999', ' #777777', '#555555' ];
+                var oddColors = '#FFFF00';
+                var evenColors = '#888888';
                 var w = cli.getXLocation(interfaces[1]) - cli.getXLocation(interfaces[0]);
                 var y = cli.getChartAreaBoundingBox().height;
                 // console.log(interfaces);
@@ -486,7 +486,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     var w = cli.getXLocation(interfaces[i + 1]) - cli.getXLocation(interfaces[i]);
 
                     // document.getElementsByClassName('overlay' + i).remove();
-                    addStruct(htmlClass, i, (i % 2 === 0 ? evenColors : oddColors)[i % 3], w, y);
+                    addStruct(htmlClass, i, (i % 2 === 0 ? evenColors : oddColors), w, y);
                     
                     // document.querySelector('.overlay').style.position = 'absolute';
                     // document.querySelector('.overlay').style.opacity = '.5';
@@ -545,7 +545,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     top: 40
                 },
                 backgroundColor: 'transparent',
-                colors: [ "red", "orange", "green", "blue" ]
+                colors: [ "red", "orange", "blue", "green" ]
             };
 
             chart.draw(data, options);          //Draw the chart
@@ -572,7 +572,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
              */
             $scope.toggleLine = function(id) {
                 var columns = chartView.getViewColumns();               //Gets the array of visible columns
-                var fullColorsArr = [ "red", "orange", "green", "blue" ];
+                var fullColorsArr = [ "red", "orange", "blue", "green" ];
                 var isHidden = true;                                    //Creates flag if column specified is hidden
 
                 //Loop through visible columns
@@ -595,7 +595,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             /** Resets the columns of the field chart. */
             $scope.resetFieldChart = function() {
                 chartView.setColumns([0, 1, 2, 3, 4]);                  //Reset to show all visible columns
-                options.colors = [ "red", "orange", "green", "blue" ];  //Reset colors
+                options.colors = [ "red", "orange", "blue", "green" ];  //Reset colors
                 chart.draw(chartView, options);                         //Draw the updated chart
             }
         }
@@ -1741,6 +1741,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 var cli = this.getChartLayoutInterface();
                 var chartArea = cli.getChartAreaBoundingBox();
                 var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+                var oddColors = '#FFFF00';
+                var evenColors = '#888888';
                 var w = cli.getXLocation(interfaces[1]) - cli.getXLocation(interfaces[0]);
                 var y = cli.getChartAreaBoundingBox().height;
                 // console.log(interfaces);
@@ -1755,7 +1757,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 for (var i = 0; i < interfaces.length - 1; i++) {
                     var w = cli.getXLocation(interfaces[i + 1]) - cli.getXLocation(interfaces[i]);
 
-                    addStruct(htmlClass, i, cols[i % 5], w, y);
+                    addStruct(htmlClass, i, (i % 2 === 0 ? evenColors : oddColors), w, y);
                 };
                 if (htmlClass == "addHere3") {
                     var overlays = document.querySelectorAll('.overlay3');
