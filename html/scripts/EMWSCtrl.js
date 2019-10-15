@@ -16,7 +16,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.wRight = 5;                                                      //Right bound for transmissions graph (Default)
         $scope.wPoints = 10;                                                   //Number of points for transmissions graph (Default)
         $scope.zPoint = 0;                                                      //Point for each array to pull for transmissions graph
-        $scope.incoming = [0, 1, 0, 0];                                         //Incoming coefficients (Defaults)
+        $scope.incoming = [1, 0, 0, 0];                                         //Incoming coefficients (Defaults)
         $scope.eArray = [];                                                     //Epsilon Array for Layers
         $scope.muArray = [];                                                    //Mu Array for Layers
         $scope.lArray = [];                                                     //Length Array for Layers
@@ -52,7 +52,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         $scope.mBack4;
         */
 
-        $scope.crystal;                                                         //The Photonic Crystal created in emScattering2.js
+        $scope.crystal;                                                         //The Photonic Crystal created in emScattering3.js
         $scope.field;                                                           //The field determined using the Photonic Crystal
         $scope.dispersion;                                                      
         $scope.EX = 'Eₓ';                                                       //Label for Ex
@@ -105,6 +105,39 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
 
             //$(".p1").addClass("ng-hide");
+
+            setTimeout(hideIfInDevMode, 250);
+        }
+
+        function getQueryVariable(variable)
+        {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+
+            for (var i = 0;i < vars.length; i++) {
+                var pair = vars[i].split("=");
+
+                if(pair[0] == variable) return pair[1];
+            }
+            
+            return false;
+        }
+
+        function hideIfInDevMode() {
+            var devMode = false;
+
+            if(getQueryVariable("devMode") === "true") devMode = true;
+
+            $scope.runMathBoxField = devMode;
+
+            if(!devMode) {
+                document.getElementById("mathbox-field-box").classList.add("ng-hide");
+                document.getElementById("nav-tab3").classList.add("ng-hide");
+                document.getElementById("nav-tab4").classList.add("ng-hide");
+
+                document.getElementsByClassName("dropdown-menu")[0].getElementsByClassName("col-xs-6")[2].classList.add("ng-hide");
+                document.getElementsByClassName("dropdown-menu")[0].getElementsByClassName("col-xs-6")[3].classList.add("ng-hide");
+            }
         }
 
         function addHide() {
@@ -214,6 +247,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 let j = 0;                                              //Counter for setting text in coefficients section (should be only 0 and then 1)
 
                 var backArr = $scope.crystal.Struct.eigenvalues[0];     //Gets eigenvalues of first layer
+                var backVecArr = $scope.crystal.Struct.eigenvectors[0]._data;
 
                 //Loops through check boxes
                 for(let i = 1; i <= 4; i++){
@@ -222,6 +256,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         //arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 
                         backArr.splice(j, 0, backArr.splice(i-1, 1)[0]);            //Swap array around based on order of checked boxes
+                        backVecArr.splice(j, 0, backVecArr.splice(i-1, 1)[0]);      //Swap eigenvectors around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
                         document.getElementById(incStr + j).innerHTML = $scope.modesBack[i-1].toString();
@@ -259,17 +294,19 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             if(forChecked == 2){
                 let j = 2;                                                          //Counter for setting text in coefficients section (should be only 2 and then 3)
 
-                var lastEigenvalue = $scope.crystal.Struct.eigenvalues.length - 1;  //Gets value of last set of eigenvalues
-                var forArr = $scope.crystal.Struct.eigenvalues[lastEigenvalue];     //Gets eigenvalues of last layer
+                var lastLayer = $scope.crystal.Struct.eigenvalues.length - 1;  //Gets value of last set of eigenvalues
+                var forArr = $scope.crystal.Struct.eigenvalues[lastLayer];     //Gets eigenvalues of last layer
+                var forVecArr = $scope.crystal.Struct.eigenvectors[lastLayer]._data;     //Gets eigenvalues of last layer
 
                 //Loop through the check boxes
                 for(let i = 1; i <= 4; i++){
                     if(document.getElementById(forChkStr + i).checked == false) { document.getElementById(forChkStr + i).disabled = true;  }      //If box is not checked, disable it
                     else {
                         forArr.splice(j, 0, forArr.splice(i-1, 1)[0]);              //Swap array around based on order of checked boxes
+                        forVecArr.splice(j, 0, forVecArr.splice(i-1, 1)[0]);        //Swap eigenvectors around based on order of checked boxes
 
                         //Depending on i value, change text of incomingj element to that mode
-                        document.getElementById(incStr + j).innerHTML = $scope.modesForward[i-1].toString();;
+                        document.getElementById(incStr + j).innerHTML = $scope.modesForward[i-1].toString();
 
                         /*
                         if(i == 1){
@@ -297,8 +334,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     if(document.getElementById(forChkStr + i).disabled == true) { document.getElementById(forChkStr + i).disabled = false; }          //If check box is disabled, enable it
                 }
 
-                document.getElementById(incStr + "2").innerHTML = $scope.modesForward[0].toString();               //Set incoming2 element text to default mode
-                document.getElementById(incStr + "3").innerHTML = $scope.modesForward[1].toString();               //Set incoming3 element text to default mode
+                document.getElementById(incStr + "2").innerHTML = $scope.modesForward[2].toString();               //Set incoming2 element text to default mode
+                document.getElementById(incStr + "3").innerHTML = $scope.modesForward[3].toString();               //Set incoming3 element text to default mode
             }
         }
         
@@ -381,12 +418,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         /** Updates the Photonic Crystal. */
         function updateCrystal(){
             var k = [Number($scope.k1),Number($scope.k2),Number($scope.o)];
-            $scope.crystal = emScattering2.Driver(
+            $scope.crystal = emScattering3.Driver(
                     $scope.eArray,$scope.muArray,$scope.lArray,$scope.NumLayers,k,$scope.incoming);
             };
         
         /** Updates the field using the Photonic Crystal. */
         function updateFields(){
+            $scope.crystal.Struct.updateScattering();
             $scope.field = $scope.crystal.determineField();
         }
         
@@ -404,7 +442,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             console.log($scope.crystal);
             var fields = $scope.field;                                  //Takes field and puts it to a variable
             console.log(fields);
-            var interfaces = $scope.crystal.materialInterfaces();       //Takes interfaces and puts it to a variable
+            var interfaces = $scope.crystal.Struct.materialInterfaces();       //Takes interfaces and puts it to a variable
 
             var data = new google.visualization.DataTable();            //Creates a data table
             data.addColumn('number', 'z');                              //Adds z column to data table
@@ -425,6 +463,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 var cli = this.getChartLayoutInterface();
                 var chartArea = cli.getChartAreaBoundingBox();
                 var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+                var oddColors = '#FFFF00';
+                var evenColors = '#888888';
                 var w = cli.getXLocation(interfaces[1]) - cli.getXLocation(interfaces[0]);
                 var y = cli.getChartAreaBoundingBox().height;
                 // console.log(interfaces);
@@ -446,7 +486,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     var w = cli.getXLocation(interfaces[i + 1]) - cli.getXLocation(interfaces[i]);
 
                     // document.getElementsByClassName('overlay' + i).remove();
-                    addStruct(htmlClass, i, cols[i % 5], w, y);
+                    addStruct(htmlClass, i, (i % 2 === 0 ? evenColors : oddColors), w, y);
                     
                     // document.querySelector('.overlay').style.position = 'absolute';
                     // document.querySelector('.overlay').style.opacity = '.5';
@@ -489,13 +529,14 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 hAxis: {
                     gridlines: {
                         color: 'transparent'  
-                   },
-                   ticks: interfaces
+                    },
+                    ticks: interfaces
                 },
                 vAxis:{
                     gridlines: {
                         color: 'transparent'  
-                   }
+                    },
+                    viewWindowMode: 'maximized'
                 },
                 width: "100%",
                 height: "100%",
@@ -504,7 +545,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     top: 40
                 },
                 backgroundColor: 'transparent',
-                colors: [ "blue", "green", "red", "orange" ]
+                colors: [ "red", "orange", "blue", "green" ]
             };
 
             chart.draw(data, options);          //Draw the chart
@@ -519,12 +560,19 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             var chartView = new google.visualization.DataView(data);                    //Creates a new data view variable based on the data
 
+            function removeElem(arr, elem) {
+                for(var i = 0; i < arr.length; i++) {
+                    if(arr[i] === elem) arr.splice(i, 1);
+                }
+            }
+
             /** Shows and hides columns based on id.
              * 
              * @param id - The column id to show/hide.
              */
             $scope.toggleLine = function(id) {
                 var columns = chartView.getViewColumns();               //Gets the array of visible columns
+                var fullColorsArr = [ "red", "orange", "blue", "green" ];
                 var isHidden = true;                                    //Creates flag if column specified is hidden
 
                 //Loop through visible columns
@@ -534,9 +582,11 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
                 if(isHidden == true){
                     columns.splice(id, 0, id);                          //If column is not visible, add it back to the visible column array.
+                    options.colors.splice(id - 1, 0, fullColorsArr[id - 1]);    //Add color back to visible arr
                     chartView.setColumns(columns);                      //Set visible columns to column array
                 }else{
                     chartView.hideColumns([id]);                        //If column is visible, hide the column
+                    removeElem(options.colors, fullColorsArr[id - 1]);
                 }
 
                 chart.draw(chartView, options);                         //Draw the updated chart
@@ -545,17 +595,20 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             /** Resets the columns of the field chart. */
             $scope.resetFieldChart = function() {
                 chartView.setColumns([0, 1, 2, 3, 4]);                  //Reset to show all visible columns
+                options.colors = [ "red", "orange", "blue", "green" ];  //Reset colors
                 chart.draw(chartView, options);                         //Draw the updated chart
             }
         }
 
         /** Creates the MathBox animation on the Field tab. */
         function createAnim() {
+            $scope.runMathBoxField = true;
+
             var eXmax = 1;
             var hXmax = 1;
             var endRange = $scope.totalLength;
             var canvasElement = "testcanvas";
-            var interfaces = $scope.crystal.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfacesStartZero();
             var elem = document.getElementById(canvasElement);
             var jelem = $("#" + canvasElement);
             var rgbColor = jelem.parent().css("background-color");
@@ -792,7 +845,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     visible = true;
                     
                 }
-                else if(parentVisibility == 'hidden'){
+                else if(parentVisibility == 'hidden' || !$scope.runMathBoxField){
                     visible = false;
 
                     requestAnimationFrame(frame);
@@ -852,7 +905,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var divName = "transmissionView";
             //console.log(kZsList);
             console.time("Transmission Graph");
-            var transmission = emScattering2.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering2!
+            var transmission = emScattering3.createTransmissionArrays($scope.eArray, $scope.muArray, $scope.lArray, $scope.NumLayers, $scope.k1, $scope.k2, $scope.incoming ,$scope.wLeft, $scope.wRight, $scope.wPoints, $scope.zPoint);        //Method needs to be created in emScattering3!
             console.timeEnd("Transmission Graph");
             console.log(transmission);
             var data = new google.visualization.DataTable();
@@ -927,7 +980,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var fields = $scope.field;
             var epsilon = $scope.epsilon2D;
             var mu = $scope.mu2D;
-            var interfaces = $scope.crystal.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfaces();
             var elem = document.getElementById(canvasElement);
             var jelem = $("#" + canvasElement);
             console.log("canvas element jquer:" + jelem.parent().css("background-color"));
@@ -1497,7 +1550,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         function _createFieldChart_DEPRECATED() {
             var fields = $scope.field;
-            var interfaces = $scope.crystal.materialInterfaces();
+            var interfaces = $scope.crystal.Struct.materialInterfaces();
 
 
 
@@ -1621,7 +1674,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
         /** Creates the chart for the Structures tab. */
         function createStructureChart() {
-            var interfaces = $scope.crystal.materialInterfaces();               //Gets the interfaces
+            var interfaces = $scope.crystal.Struct.materialInterfaces();               //Gets the interfaces
             var interfaceLength = interfaces[interfaces.length - 1];            //Gets highest interface
 
             //Creates a data table
@@ -1656,8 +1709,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                         color: 'transparent'
                     },
                     viewWindow: {
-                        min: 0,
-                        max: $scope.totalLength //modify max by adding layer lengths, then apply to buildstructure button, then set up value placement of layers, then custom overlays
+                        min: interfaces[0],
+                        max: interfaces[interfaces.length - 1] //modify max by adding layer lengths, then apply to buildstructure button, then set up value placement of layers, then custom overlays
                     },
                     ticks: interfaces
                 },
@@ -1688,6 +1741,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 var cli = this.getChartLayoutInterface();
                 var chartArea = cli.getChartAreaBoundingBox();
                 var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+                var oddColors = '#FFFF00';
+                var evenColors = '#888888';
                 var w = cli.getXLocation(interfaces[1]) - cli.getXLocation(interfaces[0]);
                 var y = cli.getChartAreaBoundingBox().height;
                 // console.log(interfaces);
@@ -1702,7 +1757,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 for (var i = 0; i < interfaces.length - 1; i++) {
                     var w = cli.getXLocation(interfaces[i + 1]) - cli.getXLocation(interfaces[i]);
 
-                    addStruct(htmlClass, i, cols[i % 5], w, y);
+                    addStruct(htmlClass, i, (i % 2 === 0 ? evenColors : oddColors), w, y);
                 };
                 if (htmlClass == "addHere3") {
                     var overlays = document.querySelectorAll('.overlay3');
