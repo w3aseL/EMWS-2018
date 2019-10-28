@@ -704,7 +704,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     divideY: 10,
                 })
 
-            var colorCoords = []; //possibly remove, replace with just applying interfaces to arrays
+            // var colorCoords = []; //possibly remove, replace with just applying interfaces to arrays
             var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
             for (var i = 0; i < interfaces.length - 1; i++) {
                 var array1 = [ //only x changes on all shapes coordinates
@@ -788,16 +788,16 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             var E1,E2,H1,H2;
             view.interval({
                 id: 'ElectricFieldPlot',
-                width: endRange * 10, //fields.Ex.length,
+                width: endRange, //fields.Ex.length,
                 expr: function(emit, z, i, t) {
-                    if(z<=endRange){
+                    // if(z<=endRange){
                     if (runsetup) {
                         E1 = $scope.crystal.mathboxSetupEf();
                     };                    
                     E2 = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,t,z,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
                     emit(z, E2.Ex, E2.Ey);
-                    emit(z, 0, 0);
-                    }
+                    // emit(z, 0, 0);
+                    // }
                 },
                 items: 2,
                 channels: 3,
@@ -812,17 +812,17 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             view.interval({
                 id: 'MagneticFieldPlot',
-                width: endRange * 10, //fields.Ex.length,
+                width: endRange, //fields.Ex.length,
                 expr: function(emit, z, i, t) {
-                    if(z <= endRange){
+                    // if(z <= endRange){
                     if (runsetup) {
                         H1 = $scope.crystal.mathboxSetupHf();
                         runsetup = false;
                     };
                     H2 = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,t,z,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
                     emit(z, H2.Hx, H2.Hy);
-                    emit(z, 0, 0);
-                    }
+                    // emit(z, 0, 0);
+                    // }
                 },
                 items: 2,
                 channels: 3,
@@ -858,7 +858,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     madeVisible = true;
                 }
                 
-
+//?
                 if(!visible)
                 renderer.setSize(WIDTH, HEIGHT);
                 $scope.context.frame();
