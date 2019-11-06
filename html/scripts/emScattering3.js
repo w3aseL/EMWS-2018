@@ -1062,7 +1062,7 @@ emScattering3.Driver = function(eArray, mArray, length, numLayers,constants,Mode
  * 
  */
 emScattering3.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
-    var _omegas = new Array(), _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array();
+    var _omegas = new Array(), c1Arr = new Array() /*_Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array()*/;
 
     omegaHigh = Number(omegaHigh);
     omegaLow = Number(omegaLow);
@@ -1106,22 +1106,80 @@ emScattering3.createTransmissionArrays = function(eArray, mArray, length, numLay
         */
 
         //DetermineFieldAtZPoint Method
-        ///*
+        /*
         var field = crystal.determineFieldAtZPoint(zPoint);
 
         _Ex.push(field.Ex);
         _Ey.push(field.Ey);
         _Hx.push(field.Hx);
         _Hy.push(field.Hy);
-        //*/
+        */
+
+        var constantVec = crystal.Struct.constants._data;
+
+        var lambda1 = crystal.Struct.eigenvalues[0][0];
+        var lambda2 = crystal.Struct.eigenvalues[0][1];
+
+        if((isImaginary(lambda1) && !isReal(lambda1)) && (isReal(lambda2) && !isImaginary(lambda2))) {
+            var a = math.complex(constantVec[0]);
+            var c = constantVec[(crystal.Struct.numLayers-1)*4];
+
+            var plot = math.divide(math.add(math.pow(c.re, 2), math.pow(c.im, 2)), math.add(math.pow(a.re, 2), math.pow(a.im, 2)));
+
+            c1Arr.push(plot);
+        } else if((isImaginary(lambda1) && isImaginary(lambda2)) || (isFullyComplex(lambda1) && isFullyComplex(lambda2))) {
+            var a = math.complex(constantVec[0]);
+            var b = math.complex(constantVec[1]);
+
+            var c = constantVec[(crystal.Struct.numLayers-1)*4];
+            var d = constantVec[(crystal.Struct.numLayers-1)*4+1];
+
+            var plot = math.divide(math.add(math.multiply(lambda1, (c.re^2 + c.im^2)), math.multiply(lambda2, (d.re^2 + d.im^2))), math.add(math.multiply(lambda1, (a.re^2 + a.im^2)), math.multiply(lambda2, (b.re^2 + b.im^2))));
+
+            c1Arr.push(plot.re);
+        }
     }
 
-    return {omegas: _omegas, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
+    return {omegas: _omegas, cArr: c1Arr /*Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy*/};
 }
+
 /* TODO (Transmission Arrays):
 *   - Make method more efficient for higher precision calculations
 *   - Hope numbers are correct when issue with calculations is fixed
 */
+
+/**
+ * IsImaginary
+ * ------
+ * Returns if a complex number is imaginary
+ * 
+ * @param ComplexNumber val 
+ */
+function isImaginary(val) {
+    return val.im > 0 || val.im < 0;
+}
+
+/**
+ * IsReal
+ * ------
+ * Returns if a complex number is real
+ * 
+ * @param ComplexNumber val 
+ */
+function isReal(val) {
+    return val.re > 0 || val.re < 0;
+}
+
+/**
+ * IsFullyComplex
+ * ------
+ * Returns if a complex number has imaginary and real parts
+ * 
+ * @param ComplexNumber val 
+ */
+function isFullyComplex(val) {
+    return isReal(val) && isImaginary(val);
+}
 
 /**CheckBoxesForModes
  * ------------

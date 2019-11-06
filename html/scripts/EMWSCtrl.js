@@ -124,7 +124,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         }
 
         function hideIfInDevMode() {
-            var devMode = false;
+            var devMode = true;        //Change if making developmental changes!!
 
             if(getQueryVariable("devMode") === "true") devMode = true;
 
@@ -910,10 +910,13 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             console.log(transmission);
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'omega');                          //Adds Omega column to data table
+            data.addColumn('number', 'c');                              //Adds const transmission to data table
+            /*
             data.addColumn('number', $scope.EX);                        //Adds Ex column to data table
             data.addColumn('number', $scope.EY);                        //Adds Ey column to data table
             data.addColumn('number', $scope.HX);                        //Adds Hx column to data table
             data.addColumn('number', $scope.HY);                        //Adds Hy column to data table
+            */
 
             /*
             for (var i = 0; i < transmissionGraph.kzList.length; i++) {
@@ -935,7 +938,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             for (var i = 0; i < $scope.wPoints; i++) {
                 data.addRows([
-                    [transmission.omegas[i], transmission.Ex[i], transmission.Ey[i], transmission.Hx[i], transmission.Hy[i]]
+                    [transmission.omegas[i], transmission.cArr[i] /*transmission.Ex[i], transmission.Ey[i], transmission.Hx[i], transmission.Hy[i]*/]
                 ]);
             }
             var options = {
