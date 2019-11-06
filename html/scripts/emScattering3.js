@@ -1,13 +1,21 @@
+/**emScattering3.js
+ * 
+ * This is a third iteration of the Electromagnetic Scattering problem. It is a direct copy
+ * of emScattering2.js. However, it has different methologies for solving the Scattering problem
+ * and finding the fields and constants.
+ * 
+ */
+
 // Global namespace
-var emScattering2 = emScattering2 || {};
+var emScattering3 = emScattering3 || {};
 
 
 // Intrinsic impedance of free space in Ohms
-emScattering2.ETTA_0 = 376.73031;
+emScattering3.ETTA_0 = 376.73031;
 
 // Speed of light in free space in m/s -- CURRENTLY IN UNITS WHERE THE NUMERICAL VALUE IS 1
-// emScattering2.C = 299792458.0; // m/s
-emScattering2.C = 1;
+// emScattering3.C = 299792458.0; // m/s
+emScattering3.C = 1;
 
 /*
 Layer Object
@@ -20,7 +28,7 @@ represent the relative electric permittivity and the relative magnetic permeabil
 respectively, of the material. Currently, only isotropic materals are suported, so 'epsilon' 
 and 'mu' are scalars. 'length' represents the length of the layer.
 */
-emScattering2.Layer = function(eMat, mMat, length) {
+emScattering3.Layer = function(eMat, mMat, length) {
     this.epsilon = eMat;
     this.mu = mMat;
     this.length = length;
@@ -37,7 +45,7 @@ GENERAL FUNCTIONS
  Parses user input from web into a usable standardized format
  Outputs Array containing arrays of real and imaginary parts for epsilon and mu
  */
-emScattering2.Parse = function(eArray,mArray,numLayers){
+emScattering3.Parse = function(eArray,mArray,numLayers){
     var i,j,k, tmpe, tmpm, eParse = [], mParse = [];            
     for( i = 0; i < numLayers; i++){
         tmpm = mArray[i];
@@ -64,10 +72,10 @@ emScattering2.Parse = function(eArray,mArray,numLayers){
 Generates an array of layer objects. Expects array of Epsilon Matrices,
 Mu Matrices, and lengths.
 */
-emScattering2.createLayers = function(eMat,mMat, lengths) {
+emScattering3.createLayers = function(eMat,mMat, lengths) {
     var layers = [];
     for (var i = 0; i < eMat.length; i++) {
-        var layer = new emScattering2.Layer(eMat[i], mMat[i], lengths[i]);
+        var layer = new emScattering3.Layer(eMat[i], mMat[i], lengths[i]);
         layers.push(layer);
     }
     return layers;
@@ -81,7 +89,7 @@ emScattering2.createLayers = function(eMat,mMat, lengths) {
 
  The actual matrix in the Maxwell ODE system is the output of this function times omega.
  */
-emScattering2.Maxwell = function(eMat, mMat, kx, ky){
+emScattering3.Maxwell = function(eMat, mMat, kx, ky){
     var i = math.complex('i'), exx = eMat[0][0], exy = eMat[0][1], exz = eMat[0][2], eyx = eMat[1][0], eyy = eMat[1][1],
         eyz = eMat[1][2], ezx = eMat[2][0], ezy = eMat[2][1], ezz = eMat[2][2],mxx = mMat[0][0], mxy = mMat[0][1], 
         mxz = mMat[0][2], myx = mMat[1][0], myy = mMat[1][1], myz = mMat[1][2], mzx = mMat[2][0], mzy = mMat[2][1], mzz = mMat[2][2],
@@ -119,7 +127,7 @@ emScattering2.Maxwell = function(eMat, mMat, kx, ky){
  and the wrapped complex_eigenvalues function. 
  Outputs array containing the complex eigenvalues.
 */
-emScattering2.calcEigsVa = function(maxwell, complex_eigenvalues){
+emScattering3.calcEigsVa = function(maxwell, complex_eigenvalues){
     var i,j, buf, tmp, foo = [], arr = [], ret = [];
     
     for( i = 0; i < maxwell._size[0]; i++){
@@ -152,7 +160,7 @@ emScattering2.calcEigsVa = function(maxwell, complex_eigenvalues){
  complex_eigenvectors.  Expects a maxwell matrix and the 
  wrapped complex_eigenvectors function. Outputs matrix of eigenvectors.
  */
-emScattering2.calcEigsVe = function (maxwell,complex_eigenvectors){
+emScattering3.calcEigsVe = function (maxwell,complex_eigenvectors){
     var i,j, buf, tmp, ret, arr = [], foo = [];
     ret = math.matrix();
     for( i = 0; i < maxwell._size[0]; i++){
@@ -185,52 +193,10 @@ emScattering2.calcEigsVe = function (maxwell,complex_eigenvectors){
  Expects a diagonal matrix of eigenvalues, and a znorm
  Returns a diagonal matrix where each element on the diagonal is of the form: exp[eigenvalue * znorm]
  */
-emScattering2.expEigenvaluesDiag = function(eigenvalues,znorm){
+emScattering3.expEigenvaluesDiag = function(eigenvalues,znorm){
    var tmp = [eigenvalues[0],eigenvalues[1],eigenvalues[2],eigenvalues[3]];
    return math.diag(math.exp(math.multiply(tmp,znorm)));
 };
-
-/**Calculates the Constants for the Scattering problem*/
-emScattering2.calculateConstants = function(S,Modes,T0) {
-    var a = math.zeros(S._data.length),tmp,b0, bN, unknown_c, c = math.zeros(S._data.length + 3);
-
-    c._data[0] = Modes[0];
-    c._data[1] = Modes[1];
-    c._data[c._data.length - 1] = Modes[2];
-    c._data[c._data.length] = Modes[3];
-    
-    tmp = math.matrix([
-                       [T0._data[0][0],T0._data[0][1]],
-                       [T0._data[1][0],T0._data[1][1]],
-                       [T0._data[2][0],T0._data[2][1]],
-                       [T0._data[3][0],T0._data[3][1]]
-                      ]);
-    
-    b0 = math.multiply(tmp,math.matrix([[Modes[0]],[Modes[1]]]));
-    for(var i = 0; i < b0._data.length; i++ )
-        a._data[i] = b0._data[i];
-    
-    tmp = math.matrix([
-                       [0,0],
-                       [0,0],
-                       [-1,0],
-                       [0,-1]
-                     ]);
-    
-    bN = math.multiply(tmp,math.matrix([[Modes[2]],[Modes[3]]]));
-    for(var i = 0; i < bN._data.length; i++)
-        a._data[a._data.length - bN._data.length + i] = bN._data[i];
-
-    unknown_c = math.lusolve(S,math.unaryMinus(a._data));
-
-
-    
-    for(var i = 0; i < unknown_c._data.length; i++)
-        c._data[i + 2] = unknown_c._data[i][0];
-
-    return c;
-};
-
 
 
 //=====================================================================================================================================
@@ -245,13 +211,13 @@ Eigenpair Object and Methods
 ------------------------------------------------------------------------------------
 An Eigenpair is a pairing between an eigenvalue and eigenvector that has either rightward or leftward propagation
 */
-emScattering2.Eigenpair = function(eigenvalue, eigenvector) {
+emScattering3.Eigenpair = function(eigenvalue, eigenvector) {
     this.eigenvalue = eigenvalue;
     this.eigenvector = eigenvector;
     this.isRightward = false;      //if 1, rightward, if 0, leftward
 };
 
-emScattering2.Eigenpair.prototype.setOrientation = function(orientation){
+emScattering3.Eigenpair.prototype.setOrientation = function(orientation){
     if(orientation === true || orientation === false)
         this.isRightward = orientation;
     else
@@ -272,7 +238,7 @@ Struct Object and Methods
 ------------------------------------------------------------------------------------
 A Struct is a collection of layers and values corresponding to each layer. Methods included are used to solve the scattering problem.
 */
-emScattering2.Struct = function(layers, lengths, kx, ky, omega, Modes) {
+emScattering3.Struct = function(layers, lengths, kx, ky, omega, Modes) {
     this.layers = layers;
     this.lengths = lengths;
     this.numLayers = layers.length;
@@ -286,6 +252,7 @@ emScattering2.Struct = function(layers, lengths, kx, ky, omega, Modes) {
     this.omega = omega;
     this.Modes = Modes;
     this.scatteringMatrix;
+    this.constants;
 };
 
 
@@ -293,20 +260,20 @@ emScattering2.Struct = function(layers, lengths, kx, ky, omega, Modes) {
  Constructor for structure, expects matrix of epsilon matrices, matrix of mu matrices, kx, ky and omega scalars
  returns object of type Struct
  */
-emScattering2.makeStructure = function(eMat,mMat,length, kx, ky ,omega,Modes) {
-    var Structure = new emScattering2.Struct(emScattering2.createLayers(eMat, mMat, length),length,kx ,ky ,omega, Modes);
+emScattering3.makeStructure = function(eMat,mMat,length, kx, ky ,omega,Modes) {
+    var Structure = new emScattering3.Struct(emScattering3.createLayers(eMat, mMat, length),length,kx ,ky ,omega, Modes);
     return Structure;   
 
 };
 
 /**
  Creates the anisotropic maxwell matrix for each layer and stores in Struct object.
- The output of emScattering2.Maxwell needs to be multiplied by this.omega to obtain the matrix for the Maxwell ODE system.
+ The output of emScattering3.Maxwell needs to be multiplied by this.omega to obtain the matrix for the Maxwell ODE system.
  */
-emScattering2.Struct.prototype.makeMaxwell = function(){
+emScattering3.Struct.prototype.makeMaxwell = function(){
     var tmp, kx_ = this.kx/this.omega, ky_ = this.ky/this.omega;
     for( var i = 0; i < this.numLayers; i++){
-        this.maxwellMatrices[i] = math.multiply(emScattering2.Maxwell(this.layers[i].epsilon._data, this.layers[i].mu._data, kx_, ky_), this.omega);
+        this.maxwellMatrices[i] = math.multiply(emScattering3.Maxwell(this.layers[i].epsilon._data, this.layers[i].mu._data, kx_, ky_), this.omega);
     }
     
 };
@@ -314,15 +281,15 @@ emScattering2.Struct.prototype.makeMaxwell = function(){
 /**
 Calculates Eigenvalues and Eigenvectors for each layer and returns them in an array.
 */
-emScattering2.Struct.prototype.calcEigs = function(){
+emScattering3.Struct.prototype.calcEigs = function(){
     var i, maxwell, complex_eigenvalues, complex_eigenvectors;
     var ret_values = new Array(this.numLayers), ret_vectors = new Array(this.numLayers);
     complex_eigenvalues = Module.cwrap('complex_eigenvalues','number',['number']);
     complex_eigenvectors = Module.cwrap('complex_eigenvectors','number',['number']);
     for( i = 0; i<this.numLayers; i++){
         maxwell = this.maxwellMatrices[i];
-        //ret_values[i] = emScattering2.calcEigsVa(maxwell, complex_eigenvalues);
-        //ret_vectors[i] = emScattering2.calcEigsVe(maxwell, complex_eigenvectors);
+        //ret_values[i] = emScattering3.calcEigsVa(maxwell, complex_eigenvalues);
+        //ret_vectors[i] = emScattering3.calcEigsVe(maxwell, complex_eigenvectors);
 
         var eigResults = EigenCalc.getEigenvaluesAndEigenvectors(maxwell), omega = this.omega;
 
@@ -342,7 +309,7 @@ emScattering2.Struct.prototype.calcEigs = function(){
  If |re(eigenvalue)| < 10^-14 then we consider the imaginary part of the eigenvalue. If im(eigenvalue) > 0 then right, otherwise left.
  Each layer has exactly 2 right and 2 left. Stores in the structure data struct
  */
-emScattering2.Struct.prototype.organizeEigenvalues = function(){
+emScattering3.Struct.prototype.organizeEigenvalues = function(){
     var rightward, leftward;
     for(var i = 0; i < this.numLayers; i++){
         rightward = 0;
@@ -383,13 +350,13 @@ emScattering2.Struct.prototype.organizeEigenvalues = function(){
 /**Calculates the eigensystem for each layer where an Eigensystem is a collection of Eigenpairs 
 * Stores the completed system in the Struct object.
 */
-emScattering2.Struct.prototype.calcEigensystems = function(){
+emScattering3.Struct.prototype.calcEigensystems = function(){
     var tmp, esystem = new Array(this.numLayers), pairs = new Array(4), eva, eve;
     tmp = this.calcEigs(math);
     eva = tmp[0], eve = tmp[1];
     for(var j = 0; j < this.numLayers; j++){
         for(var i = 0; i < 4; i++){
-            pairs[i] = new emScattering2.Eigenpair(eva[j][i],eve[j]._data[i]);
+            pairs[i] = new emScattering3.Eigenpair(eva[j][i],eve[j]._data[i]);
         }
         esystem[j] = pairs;
     }
@@ -404,18 +371,18 @@ emScattering2.Struct.prototype.calcEigensystems = function(){
   Stores in Struct object
  */
 
-emScattering2.Struct.prototype.calcTransfer = function(){
+emScattering3.Struct.prototype.calcTransfer = function(){
     //Matrices per interface
     if (this.numLayers > 1){
         for(var i = 0, N = this.transferMatrices.length; i < N; i ++){
             var w, wNext, tmp, zNorm, expDiagonal;
-            wNext = math.inv(this.eigenvectors[i+1]);
-            w = this.eigenvectors[i];
+            wNext = math.inv(math.transpose(this.eigenvectors[i+1]));
+            w = math.transpose(this.eigenvectors[i]);
             if (i === 0)
                 zNorm = 0;
             else
                 zNorm = math.multiply (this.omega,this.layers[i].length);
-            expDiagonal = emScattering2.expEigenvaluesDiag(this.eigenvalues[i], zNorm);
+            expDiagonal = emScattering3.expEigenvaluesDiag(this.eigenvalues[i], zNorm);
             tmp = math.multiply(w,expDiagonal);
             this.transferMatrices[i] = math.multiply(wNext,tmp);
         }
@@ -428,7 +395,7 @@ Constructs the matrix used to solve the scattering problem (i.e. finding the unk
 given the incoming constants and the calculated transfer matrices) and stored in Struct 
  */
 
-emScattering2.Struct.prototype.calcScattering = function(){
+emScattering3.Struct.prototype.calcScattering = function(){
     var tm = this.transferMatrices, S = math.zeros(tm.length*4,tm.length*4);
 
     //Set -1's
@@ -452,15 +419,134 @@ emScattering2.Struct.prototype.calcScattering = function(){
             }
         }
     }
-    
-   
-    this.scatteringMatrix = S;
 
+    this.scatteringMatrix = S;
 };
 
+/**Calculates the Constants for the Scattering problem*/
+emScattering3.Struct.prototype.calculateConstants = function(S,Modes,T0) {
+    var a = math.zeros(S._data.length),tmp,b0, bN, unknown_c, c = math.zeros(S._data.length + 3);
 
+    c._data[0] = Modes[0];
+    c._data[1] = Modes[1];
+    c._data[c._data.length - 1] = Modes[2];
+    c._data[c._data.length] = Modes[3];
+    
+    tmp = math.matrix([
+                       [T0._data[0][0],T0._data[0][1]],
+                       [T0._data[1][0],T0._data[1][1]],
+                       [T0._data[2][0],T0._data[2][1]],
+                       [T0._data[3][0],T0._data[3][1]]
+                      ]);
+    
+    b0 = math.multiply(tmp,math.matrix([[Modes[0]],[Modes[1]]]));
+    for(var i = 0; i < b0._data.length; i++ )
+        a._data[i] = b0._data[i];
+    
+    tmp = math.matrix([
+                       [0,0],
+                       [0,0],
+                       [-1,0],
+                       [0,-1]
+                     ]);
+    
+    bN = math.multiply(tmp,math.matrix([[Modes[2]],[Modes[3]]]));
+    for(var i = 0; i < bN._data.length; i++)
+        a._data[a._data.length - bN._data.length + i] = bN._data[i];
 
+    unknown_c = math.lusolve(S,math.unaryMinus(a._data));
+    
+    for(var i = 0; i < unknown_c._data.length; i++)
+        c._data[i + 2] = unknown_c._data[i][0];
 
+    this.constants = c;
+};
+
+emScattering3.Struct.prototype.calculateScattering = function() {
+    var L = this.numLayers, N = this.numLayers - 1, S = math.zeros(4*N, 4*(N+1)), interfaces = [], leftPsi = [], rightPsi = [];
+
+    for(var z = 0; z <= N; z++) {
+        var ifaces = this.materialInterfaces();
+
+        if(z < N) interfaces[z] = 0;
+        else interfaces[z] = ifaces[z] - ifaces[z-1];
+    }
+
+    console.log(interfaces);
+    
+    for(var l = 0; l < N; l++) {
+        var expVecLeft = math.exp(math.multiply(this.eigenvalues[l],math.subtract(interfaces[l+1],interfaces[l])));
+        var expVecRight = math.exp(math.multiply(this.eigenvalues[l+1],math.subtract(interfaces[l+1],interfaces[l+1])));
+
+        console.log({leftExpVec: expVecLeft, rightExpVec: expVecRight});
+
+        leftPsi[l] = math.multiply(math.transpose(this.eigenvectors[l]),math.diag(expVecLeft));
+        rightPsi[l] = math.multiply(math.transpose(this.eigenvectors[l+1]),math.diag(expVecRight));
+    }
+
+    console.log({LeftPsi: leftPsi, RightPsi: rightPsi});
+
+    for(var l = 0; l < N; l++) {
+        for(var i = 0; i < 4; i++) {
+            for(var j = 0; j < 4; j++) {
+                S.set([(4*l)+i,(4*l)+j], leftPsi[l].get([i,j]));
+                S.set([(4*l)+i,(4*(l+1))+j], math.unaryMinus(rightPsi[l].get([i,j])));
+            }
+        }
+    }
+
+    //console.log(S);
+
+    this.scatteringMatrix = S;
+}
+
+emScattering3.Struct.prototype.calculateConstantVector = function(incoming, scatteringMatrix) {
+    var L = this.numLayers, N = this.numLayers - 1, tildeS = math.zeros(4*N, 4*N), f = math.zeros(4*N);
+
+    //Condense the scattering matrix
+    for(var i = 0; i < 4*N; i++) {
+        for(var j = 0; j < 4*N; j++){
+            tildeS.set([i,j], scatteringMatrix.get([i,j+2]));
+        }
+    }
+
+    //Find f vector using the incoming and full scattering matrix
+    for(var i = 0; i < 4; i++) {
+        f.set([i], math.subtract(f.get([i]),math.subtract(math.multiply(scatteringMatrix.get([i,0]),incoming[0]),math.multiply(scatteringMatrix.get([i,1]),incoming[1]))));
+        f.set([4*(N-1)+i], math.subtract(f.get([4*(N-1)+i]),math.subtract(math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-2]),incoming[2]),math.multiply(scatteringMatrix.get([4*(N-1)+i,4*(N+1)-1]),incoming[3]))));
+    }
+
+    var tildeB = math.lusolve(tildeS, f);
+
+    var b = math.zeros(4*(N+1));
+    b.set([0], incoming[0]);
+    b.set([1], incoming[1]);
+    b.set([4*(N+1)-2], incoming[2]);
+    b.set([4*(N+1)-1], incoming[3]);
+
+    for(var i = 0; i < 4*N; i++) {
+        b.set([i+2], tildeB.get([i,0]));
+    }
+
+    console.log({tildeS: tildeS, f: f, tildeB: tildeB, b: b});
+
+    this.constants = b;
+}
+
+emScattering3.Struct.prototype.updateScattering = function() {
+    this.calcTransfer();
+
+    //this.calcScattering();
+    //this.calculateConstants(this.scatteringMatrix, this.Modes, this.transferMatrices[0]);
+
+    this.calculateScattering();
+    this.calculateConstantVector(this.Modes, this.scatteringMatrix);
+}
+
+emScattering3.calcExpDiagMatrix = function(k, eVals, z) {
+    var eigs = [eVals[0],eVals[1],eVals[2],eVals[3]];
+    return math.diag(math.exp(math.multiply(k,eigs,z)));
+}
 
 
 
@@ -478,12 +564,12 @@ emScattering2.Struct.prototype.calcScattering = function(){
 ------------------------------------------------------------------------------------
 A Photonic Crystal is a wrapper object for a structure. Methods included are used to complete and display the experiment.
 */
-emScattering2.PhotonicCrystal = function(Struct){
+emScattering3.PhotonicCrystal = function(Struct){
     this.Struct = Struct;
 };
 
-emScattering2.createPhotonicCrystal = function(Struct){
-    var crystal = new emScattering2.PhotonicCrystal(Struct);
+emScattering3.createPhotonicCrystal = function(Struct){
+    var crystal = new emScattering3.PhotonicCrystal(Struct);
     return crystal;
 };
 
@@ -492,31 +578,38 @@ Returns the field values in all the layers given the coefficients of the incomin
 Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
 and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
 */
-emScattering2.PhotonicCrystal.prototype.determineField = function() {
+emScattering3.PhotonicCrystal.prototype.determineField2 = function() {
     var numLayers = this.Struct.numLayers, numPoints = 100, layerNormZ, W, lambda, c, current_c,
     expDiag, result, currentLeftZ = 0, currentRightZ = this.Struct.layers[0].length,
     _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
     
-    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
+    c = this.Struct.constants;
 
     console.log(c);
 
-    current_c = c._data.slice(0,4);                                                                         //Slices the constant vector to a smaller vector
     for(var i = 0; i < numLayers; i++){
+        current_c = c._data.slice(i*4,4+(i*4));
+
+        console.log(current_c);
+
         if(i === 0){
-            layerNormZ = numeric.linspace(-this.Struct.omega*this.Struct.layers[i].length,0, 
+            layerNormZ = numeric.linspace(this.Struct.layers[i].length,0, 
                                  Math.floor(this.Struct.layers[i].length)*numPoints);                       //Creates an array of Z values (with omega taken into account) with the size of the length and number of points per Z value (Ex. 10 size of layer * 100 points)
         }
         else{
-            layerNormZ = numeric.linspace(0, this.Struct.omega*this.Struct.layers[i].length,
+            layerNormZ = numeric.linspace(0,this.Struct.layers[i].length,
                                  Math.floor(this.Struct.layers[i].length)*numPoints);
         }
         
-        W = this.Struct.eigenvectors[i];                                                                //Sets W to the current layer eigenvector matrix
+        W = math.transpose(this.Struct.eigenvectors[i]);                                                //Sets W to the current layer eigenvector matrix
         lambda = this.Struct.eigenvalues[i];                                                            //Sets lambda to the current layer eigenvalues
+        var scalar = math.exp(math.divide(math.multiply(math.complex("i"), Math.PI), 3));
         for(var j = 0; j < layerNormZ.length; j++){
-            expDiag = emScattering2.expEigenvaluesDiag(lambda, layerNormZ[j]);                          //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
-            result = math.multiply(W,(math.multiply(expDiag,current_c)));                               //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
+            if(j === 0) console.log(layerNormZ[j]);
+
+            expDiag = math.diag(math.exp(math.multiply(lambda, layerNormZ[j])));                        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
+            result = math.multiply(scalar, W, expDiag, math.transpose(current_c));                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
             _Ex.push(result._data[0].re);
             _Ey.push(result._data[1].re);
             _Hx.push(result._data[2].re);
@@ -527,8 +620,7 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
          if (i+1 < numLayers) {
             currentLeftZ += this.Struct.layers[i].length;                                               //Extends lower layer limit
             currentRightZ += this.Struct.layers[i+1].length;                                            //Extends upper layer limit
-            current_c = c._data.slice(4+4*i,8+4*i);                                                     //Shifts constant vector
-        } 
+         } 
     }
     
     return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
@@ -540,11 +632,11 @@ emScattering2.PhotonicCrystal.prototype.determineField = function() {
  * that point. Extreme WIP - This code will need to be rewritten and, once working,
  * will allow for much more efficient Transmission calculations
  */
-emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint){
-    var W, lambda, c, current_c, expDiag, result, currentLayer, zIntoLayer = zPoint, normZ, interfaces = this.materialInterfaces();
+emScattering3.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint){
+    var W, lambda, c, current_c, expDiag, result, currentLayer, zIntoLayer = zPoint, normZ, interfaces = this.Struct.materialInterfaces();
 
     for(var i = 0; i < this.Struct.numLayers; i++){
-        if(zPoint == 0 && i == 0) currentLayer = i;
+        if(zPoint == interfaces[0] && i == 0) currentLayer = i;
 
         if(interfaces[i] < zPoint && interfaces[i+1] >= zPoint) currentLayer = i;
     }
@@ -558,16 +650,19 @@ emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
     //console.log("Z-Point in Layer: " + zIntoLayer);
 
     if (this.Struct.omega < 0){
-        if(currentLayer === 0) normZ = (-this.Struct.omega * this.Struct.layers[currentLayer].length) - math.abs(zIntoLayer * this.Struct.omega);
-        else normZ = (this.Struct.omega * this.Struct.layers[currentLayer].length) + math.abs((zIntoLayer - this.Struct.layers[currentLayer].length) * this.Struct.omega);
+        if(currentLayer === 0) normZ = this.Struct.layers[currentLayer].length - zIntoLayer;
+        else normZ = this.Struct.layers[currentLayer].length + math.abs((zIntoLayer - this.Struct.layers[currentLayer].length));
     } else if(this.Struct.omega > 0) {
-        if(currentLayer === 0) normZ = (-this.Struct.omega * this.Struct.layers[currentLayer].length) + math.abs(zIntoLayer * this.Struct.omega);
-        else normZ = (this.Struct.omega * this.Struct.layers[currentLayer].length) - math.abs((zIntoLayer - this.Struct.layers[currentLayer].length) * this.Struct.omega);
+        if(currentLayer === 0) normZ = this.Struct.layers[currentLayer].length + zIntoLayer;
+        else normZ = this.Struct.layers[currentLayer].length - math.abs((zIntoLayer - this.Struct.layers[currentLayer].length));
     }
 
     //console.log("Value used to calculate: " + normZ);
     
-    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = this.Struct.constants;
+
+    console.log(c);
     
     current_c = c._data.slice(0,4);
 
@@ -575,27 +670,73 @@ emScattering2.PhotonicCrystal.prototype.determineFieldAtZPoint = function(zPoint
         current_c = c._data.slice(4+4*i,8+4*i);
     }
 
-    W = this.Struct.eigenvectors[currentLayer];
+    W = math.transpose(this.Struct.eigenvectors[currentLayer]);                                                
     lambda = this.Struct.eigenvalues[currentLayer];
     
-    expDiag = emScattering2.expEigenvaluesDiag(lambda, normZ);
-    result =  math.multiply(W,(math.multiply(expDiag,current_c)));
+    expDiag = emScattering3.calcExpDiagMatrix(this.Struct.omega, lambda, normZ);        //Creates a diagonal matrix with the exponential of each eigenvalue times the current z value
+    result = math.multiply(W, expDiag, current_c);                                              //Multiplies the exponential diagonal times the eigenvector matrix times the constant vector
 
     return {Ex: result._data[0].re, Ey: result._data[1].re, Hx: result._data[2].re, Hy: result._data[3].re};
 }
 
 /**
+Returns the field values in all the layers given the coefficients of the incoming modes.
+Returned object has properties z for the coordinates used, Ex, Ey, Hx, 
+and Hy. There is a one-to-one correspondence between an element in z and the other 4 Arrays.
+*/
+emScattering3.PhotonicCrystal.prototype.determineField = function() {
+    var numLayers = this.Struct.numLayers, N = numLayers - 1, numPoints = 200, interfaces = [],
+    _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array(), _z = new Array();
+    
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);           //Creates a constant vector using the scattering matrix, coefficients, and transfer matrix
+    c = this.Struct.constants;
+
+    var zEnds = this.Struct.materialInterfaces();
+
+    for(var z = 0; z <= N; z++) {
+        if(z < N) interfaces[z] = 0;
+        else interfaces[z] = zEnds[z] - zEnds[z-1];
+    }
+
+    console.log({ zz: interfaces, zzz: zEnds });
+
+    for(var layer = 0; layer < numLayers; layer++){
+        var length = zEnds[layer+1] - zEnds[layer];
+
+        current_c = c._data.slice(layer*4, 4+(layer*4));
+
+        console.log(current_c);
+
+        for(var i = 0; i < numPoints; i++) {
+            var z = zEnds[layer] + (i*length)/numPoints;
+
+            if(i === 0) console.log({ z: z, layerLength: length });
+
+            var scalar = math.exp(math.multiply(math.complex("i"), 0.4, Math.PI));
+            var field = math.multiply(scalar, math.transpose(this.Struct.eigenvectors[layer]), math.diag(math.exp(math.multiply(this.Struct.eigenvalues[layer], (z - interfaces[layer])))), current_c);
+
+            _z.push(z);
+            _Ex.push(field._data[0].re);
+            _Ey.push(field._data[1].re);
+            _Hx.push(field._data[2].re);
+            _Hy.push(field._data[3].re);
+        }
+    }
+    
+    return {z: _z, Ex: _Ex, Ey: _Ey, Hx: _Hx, Hy: _Hy};
+};
+
+/**
 Setup for Electric Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Ex and Ey in complex polar form, where each part is a separate array output 
  */
-emScattering2.PhotonicCrystal.prototype.mathboxSetupEf = function() {
+emScattering3.PhotonicCrystal.prototype.mathboxSetupEf = function() {
     var numLayers = this.Struct.numLayers,W, lambda, c, current_c,
     tmpRX = [],tmpPhiX = [],Ex = [],Ey = [],ExR = [],EyR = [],ExPhi = [],EyPhi = [],
     tmpRY = [],tmpPhiY = [];
     
-    
-    c = emScattering2.calculateConstants(
-            this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = this.Struct.constants;
     current_c = c._data.slice(0,4);
     
     for(var i = 0; i < numLayers; i++){
@@ -640,7 +781,7 @@ Calculates the Ex and Ey bits for Mathbox graphing.
 Expects the array of layer lengths, the current timestamp t, the position z, 
 ExR, ExPhi, EyR, EyPhi.
  */
-emScattering2.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExPhi,EyR,EyPhi) {
+emScattering3.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExPhi,EyR,EyPhi) {
     var layerNum = 0, inf = 0, sup = lengths[0], lambdas = this.Struct.eigenvalues, omega = this.Struct.omega,
             Ex,Ex1,Ex2,Ex3,Ex4,Ey,Ey1,Ey2,Ey3,Ey4;
     for(var i = 0; i < lengths.length; i++){
@@ -673,17 +814,18 @@ emScattering2.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExP
 Setup for Magnetic Field for Mathbox that is run each time CreateAnim() is run with the runsetup flag set
 Outputs Hx and Hy in complex polar form, where each part is a separate array output 
  */
-emScattering2.PhotonicCrystal.prototype.mathboxSetupHf = function() {
+emScattering3.PhotonicCrystal.prototype.mathboxSetupHf = function() {
     var numLayers = this.Struct.numLayers,W, lambda, c, current_c,
     tmpRX = [],tmpPhiX = [],Hx = [],Hy = [],HxR = [],HyR = [],HxPhi = [],HyPhi = [],
     tmpRY = [],tmpPhiY = [];
     
-    c = emScattering2.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    //c = emScattering3.calculateConstants(this.Struct.scatteringMatrix,this.Struct.Modes,this.Struct.transferMatrices[0]);
+    c = this.Struct.constants;
     current_c = c._data.slice(0,4);
     
     for(var i = 0; i < numLayers; i++){
         lambda = this.Struct.eigenvalues[i];
-        W = this.Struct.eigenvectors[i];
+        W = math.transpose(this.Struct.eigenvectors[i]);
         Hx = math.dotMultiply(current_c,W._data[2]);
         Hy = math.dotMultiply(current_c,W._data[3]);
         for(var k = 0; k < Hx.length; k++) {
@@ -722,7 +864,7 @@ Calculates the Hx and Hy bits for Mathbox graphing.
 Expects the array of layer lengths, the current timestamp t, the position z, 
 HxR, HxPhi, HyR, HyPhi.
  */
-emScattering2.PhotonicCrystal.prototype.mathboxHf = function(lengths,t,z,HxR,HxPhi,HyR,HyPhi) {
+emScattering3.PhotonicCrystal.prototype.mathboxHf = function(lengths,t,z,HxR,HxPhi,HyR,HyPhi) {
     var layerNum = 0, inf = 0, sup = lengths[0],Hx,Hx1,Hx2,Hx3,Hx4,Hy,Hy1,Hy2,Hy3,Hy4,
             o = this.Struct.omega, lambdas = this.Struct.eigenvalues;
     for(var i = 0; i < lengths.length; i++){
@@ -762,16 +904,25 @@ ambient material on the right of the strucutre. The ith layer's leftmost extent 
 the ith position of the returned array. The returned coordinates correspond the the same 
 coordinate system used to plot the field values and in other methods of this object. 
 */
-emScattering2.PhotonicCrystal.prototype.materialInterfaces = function() {
+emScattering3.Struct.prototype.materialInterfaces = function() {
     var interfaces = new Array();
-    interfaces.push(0);
-    for (var i = 0; i < this.Struct.numLayers; i++){
-        interfaces.push(interfaces[i] + this.Struct.layers[i].length);
+    interfaces.push(-this.layers[0].length);
+    for (var i = 0; i < this.numLayers; i++){
+        interfaces.push(interfaces[i] + this.layers[i].length);
     }
     //console.log(interfaces);
     return interfaces;
 };
 
+emScattering3.Struct.prototype.materialInterfacesStartZero = function() {
+    var interfaces = new Array();
+    interfaces.push(0);
+    for (var i = 0; i < this.numLayers; i++){
+        interfaces.push(interfaces[i] + this.layers[i].length);
+    }
+    //console.log(interfaces);
+    return interfaces;
+};
 
 
 //=====================================================================================================================================
@@ -784,19 +935,18 @@ emScattering2.PhotonicCrystal.prototype.materialInterfaces = function() {
 
 
 /** Calls all structure functions in proper order and fills all structure variables, returns filled structure */
-emScattering2.computeStructure = function(eArray, mArray, length, numLayers, constants, Modes){
+emScattering3.computeStructure = function(eArray, mArray, length, numLayers, constants, Modes){
     var values,struct;
     Modes = math.complex(Modes);
-    values = emScattering2.Parse(eArray,mArray,numLayers);
-    struct = new emScattering2.makeStructure(values[0],values[1],length,constants[0],constants[1],constants[2], Modes);
+    values = emScattering3.Parse(eArray,mArray,numLayers);
+    struct = new emScattering3.makeStructure(values[0],values[1],length,constants[0],constants[1],constants[2], Modes);
     struct.makeMaxwell();
     struct.calcEigensystems();
-    struct.calcTransfer();
-    struct.calcScattering();
+    struct.updateScattering();
     return struct;
 };    
 
-//emScattering2.vectorL2Norm = function(vector){
+//emScattering3.vectorL2Norm = function(vector){
 //    var norm = 0 ;
 //   
 //    if(vector._data[0][0].__proto__.isComplex){
@@ -812,7 +962,7 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //    return math.sqrt(norm);
 //}
 //
-//emScattering2.unMinor = function(minor,size){
+//emScattering3.unMinor = function(minor,size){
 //    var matrix = math.zeros(size,size);
 //    var minor_size = minor._size[0];
 //    console.log(minor);
@@ -824,27 +974,27 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //    return matrix;
 //}
 //
-//emScattering2.computeQ = function(vector,e,size){
+//emScattering3.computeQ = function(vector,e,size){
 //    var u,v,transpose,Q;
 //    u = math.subtract(vector,e);
-//    v = math.divide(u,emScattering2.vectorL2Norm(u));
+//    v = math.divide(u,emScattering3.vectorL2Norm(u));
 //    if(v._data[0][0].__proto__.isComplex) {transpose = math.ctranspose(v);}
 //    else{transpose = math.transpose(v);}
 //    Q = math.subtract(math.identity(size),math.multiply(2,math.multiply(v,transpose)));
 //    return Q;
 //}
 //
-//emScattering2.houseHolder = function(matrix){
+//emScattering3.houseHolder = function(matrix){
 //    var size = matrix._size[0], index = [], u ,e = [],v, x, transpose,Q,M;
 //    
 //    for (var i = 0; i < size; i++) {index.push(i); e.push([0]);}
 //    
 //    x = math.subset(matrix,math.index(index,0));
-//    e[0] = [emScattering2.vectorL2Norm(x)];
+//    e[0] = [emScattering3.vectorL2Norm(x)];
 //    if(x._data[0][0].__proto__.isComplex){
 //        e[0][0] = math.multiply(math.unaryMinus(math.exp(math.multiply(math.complex("i") , math.arg(x._data[0][0])))),e[0][0]);
 //    }
-//    Q = emScattering2.computeQ(x,e,size);
+//    Q = emScattering3.computeQ(x,e,size);
 //    M = math.multiply(Q,matrix); 
 //   
 //    for(var i = 0; i < size; i++){
@@ -855,11 +1005,11 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //    return [M,Q]; 
 //};
 //
-//emScattering2.QR = function(matrix){
+//emScattering3.QR = function(matrix){
 //    var setup = true, size = matrix._size[0],M, Q = [], tmp, minor; 
 //    for(var i = 0; i < size - 1; i++){
 //        if(setup){
-//            tmp = emScattering2.houseHolder(matrix);
+//            tmp = emScattering3.houseHolder(matrix);
 //            setup = false;
 //        }
 //        else{
@@ -869,8 +1019,8 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //                index_col.push(j+i);
 //            }
 //            minor = math.subset(M,math.index(index_row,index_col));
-//            tmp = emScattering2.houseHolder(minor);
-//            tmp[1] = emScattering2.unMinor(tmp[1],size);
+//            tmp = emScattering3.houseHolder(minor);
+//            tmp[1] = emScattering3.unMinor(tmp[1],size);
 //        }
 //        M = tmp[0];
 //        Q.push(tmp[1]);
@@ -879,10 +1029,10 @@ emScattering2.computeStructure = function(eArray, mArray, length, numLayers, con
 //}
 
 /**Performs experiment when run, returns completed crystal*/
-emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Modes){
+emScattering3.Driver = function(eArray, mArray, length, numLayers,constants,Modes){
     var a,b,c ,d = [],struct, crystal;
-    struct = emScattering2.computeStructure(eArray, mArray, length, numLayers, constants, Modes);
-    crystal = emScattering2.createPhotonicCrystal(struct);
+    struct = emScattering3.computeStructure(eArray, mArray, length, numLayers, constants, Modes);
+    crystal = emScattering3.createPhotonicCrystal(struct);
     //crystal.determineField();  
     //console.log(crystal);
 //    c = math.complex("1 + i");
@@ -895,7 +1045,7 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
 //                     [c,c,c,c]]);
 //    b._datatype = "complex";
 //    
-//    emScattering2.QR(a);
+//    emScattering3.QR(a);
     
     
     return crystal;    
@@ -911,7 +1061,7 @@ emScattering2.Driver = function(eArray, mArray, length, numLayers,constants,Mode
  * and the method will continue. WIP - Extremely inefficient and can take minutes based on the value of omegaPoints
  * 
  */
-emScattering2.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
+emScattering3.createTransmissionArrays = function(eArray, mArray, length, numLayers, k1, k2, modes, omegaLow, omegaHigh, omegaPoints, zPoint) {
     var _omegas = new Array(), _Ex = new Array(), _Ey = new Array(), _Hx = new Array(), _Hy = new Array();
 
     omegaHigh = Number(omegaHigh);

@@ -86,3 +86,7 @@
  - **Transmission Tab**
    - Added text field to specify z for Transmission graph
    - Added functioning line graph
+   
+## **2.3.1**
+ - **Transmission Tab**
+   - Changed calculations to calculate by point rather than whole field

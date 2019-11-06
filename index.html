@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="refresh" content="0; html/dashboard.4.html"/>
+  <script>
+    var loc = window.location.href;
+
+    if(loc.endsWith("/index.html")) loc = loc.replace("/index.html", "/html/dashboard.4.html");
+    else {
+      var locSplit = loc.split("?");
+
+      if(locSplit > 1) loc = `${locSplit[0]}html/dashboard.4.html?${locSplit[1]}`;
+      else loc = `${locSplit[0]}html/dashboard.4.html`;
+    }
+
+    window.location.replace(loc);
+  </script>
 </head>
   <script src="libs/jquery/jquery/dist/jquery.js"></script>
   <script src="libs/jquery/tether/dist/js/tether.min.js"></script>
