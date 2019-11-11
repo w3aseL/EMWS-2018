@@ -675,41 +675,41 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 color: '#3090FF',
               });
               var points =
-            view.point({
-    size: 8,
-    color: '#3090FF',
-  });
-  var scale =
-  view.scale({
-    divide: 10,
-  });
-  var ticks =
-  view.ticks({
-    width: 5,
-    size: 15,
-    color: 'black',
-  });
-  var format =
-  view.format({
-    digits: 2,
-    weight: 'bold',
-  });
-  var labels =
-  view.label({
-    color: 'red',
-    zIndex: 1,
-  });
-  var play = mathbox.play({
-  target: 'cartesian',
-  pace: 5,
-  to: 2,
-  loop: true,
-  script: [
-    {props: {range: [[-2, 2], [-1, 1]]}},
-    {props: {range: [[-4, 4], [-2, 2]]}},
-    {props: {range: [[-2, 2], [-1, 1]]}},
-  ]
-});   
+                view.point({
+                    size: 8,
+                    color: '#3090FF',
+                });
+                var scale =
+                view.scale({
+                    divide: 10,
+                });
+                var ticks =
+                view.ticks({
+                    width: 5,
+                    size: 15,
+                    color: 'black',
+                });
+                var format =
+                view.format({
+                    digits: 2,
+                    weight: 'bold',
+                });
+                var labels =
+                view.label({
+                    color: 'red',
+                    zIndex: 1,
+                });
+                var play = mathbox.play({
+                target: 'cartesian',
+                pace: 5,
+                to: 2,
+                loop: true,
+                script: [
+                    {props: {range: [[-2, 2], [-1, 1]]}},
+                    {props: {range: [[-4, 4], [-2, 2]]}},
+                    {props: {range: [[-2, 2], [-1, 1]]}},
+                ]
+                });   
         }
 
         /** Creates the MathBox animation on the Field tab. */
