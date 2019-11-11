@@ -124,7 +124,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         }
 
         function hideIfInDevMode() {
-            var devMode = false;
+            var devMode = true; //DEVMODE
 
             if(getQueryVariable("devMode") === "true") devMode = true;
 
@@ -375,7 +375,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             /*
             $scope.mBack1x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
-            $scope.mBack1y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
+            $scope.mBack1y = parseFloat(madth.im($scope.crystal.Struct.Eigensystems[lastEigensystem][0].eigenvalue).toFixed(4));
             $scope.mBack2x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(4));
             $scope.mBack2y = parseFloat(math.im($scope.crystal.Struct.Eigensystems[lastEigensystem][1].eigenvalue).toFixed(4));
             $scope.mBack3x = parseFloat(math.re($scope.crystal.Struct.Eigensystems[lastEigensystem][2].eigenvalue).toFixed(4));
@@ -600,8 +600,120 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
-        /** Creates the MathBox animation on the Field tab. */
         function createAnim() {
+            $scope.runMathBoxField = true;
+            var eXmax = 1;
+            var hXmax = 1;
+            var endRange = $scope.totalLength;
+            var canvasElement = "testcanvas";
+            var interfaces = $scope.crystal.Struct.materialInterfacesStartZero();
+            var elem = document.getElementById(canvasElement);
+            var jelem = $("#" + canvasElement);
+            var rgbColor = jelem.parent().css("background-color");
+            var WIDTH = elem.offsetWidth;
+            var HEIGHT = elem.offsetHeight;
+            var w1 = WIDTH;
+            var h1 = HEIGHT;
+            var three = THREE.Bootstrap({
+                plugins: ['core', 'controls'],
+                controls: {
+                    klass: THREE.OrbitControls
+                },
+                size: {
+                    width: w1,
+                    height: h1,
+                },
+            });            
+            var renderer = three.renderer;
+            var scene = three.scene;
+            var camera = three.camera;
+            // Insert into document
+            elem.appendChild(renderer.domElement);
+            // MathBox $scope.context
+            $scope.context = new MathBox.Context(renderer, scene, camera).init();
+            var mathbox = $scope.context.api;
+            var camera = mathbox.camera({
+                proxy: true,
+                position: [0, 0, 3],
+              });
+              var view = mathbox.cartesian({
+                range: [[-2, 2], [-1, 1], [-3,3]],
+                scale: [2, 1, 1],
+              });
+              view
+              .axis({
+                axis: 1,
+                width: 3,
+              })
+              .axis({
+                axis: 2,
+                width: 3,
+              })
+              .axis({
+                axis: 3,
+                width: 3,
+              })
+              .grid({
+                width: 2,  
+                divideX: 20,
+                divideY: 10,
+                divideZ: 10,      
+              });
+              mathbox.select('axis').set('color', 'black');
+              mathbox.set('focus', 3);
+              var data =
+              view.interval({
+                expr: function (emit, x, i, t) {
+                  emit(x, Math.sin(x + t));
+                },
+                width: 64,
+                channels: 3,
+              });
+              var curve =
+              view.line({
+                width: 5,
+                color: '#3090FF',
+              });
+              var points =
+            view.point({
+    size: 8,
+    color: '#3090FF',
+  });
+  var scale =
+  view.scale({
+    divide: 10,
+  });
+  var ticks =
+  view.ticks({
+    width: 5,
+    size: 15,
+    color: 'black',
+  });
+  var format =
+  view.format({
+    digits: 2,
+    weight: 'bold',
+  });
+  var labels =
+  view.label({
+    color: 'red',
+    zIndex: 1,
+  });
+  var play = mathbox.play({
+  target: 'cartesian',
+  pace: 5,
+  to: 2,
+  loop: true,
+  script: [
+    {props: {range: [[-2, 2], [-1, 1]]}},
+    {props: {range: [[-4, 4], [-2, 2]]}},
+    {props: {range: [[-2, 2], [-1, 1]]}},
+  ]
+});   
+        }
+
+        /** Creates the MathBox animation on the Field tab. */
+        function createAnim1() {
             $scope.runMathBoxField = true;
 
             var eXmax = 1;
