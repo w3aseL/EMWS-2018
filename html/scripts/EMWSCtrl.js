@@ -700,10 +700,10 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
         /** Creates the MathBox animation on the Field tab. */
         function createAnim() {
             $scope.runMathBoxField = true;
-            // var E1 = $scope.crystal.mathboxSetupEf();
-            // var H1 = $scope.crystal.mathboxSetupHf();
-            // var hMaxCalc = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,1,1,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
-            // var eMaxCalc = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,1,1,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
+            var E1 = $scope.crystal.mathboxSetupEf();
+            var H1 = $scope.crystal.mathboxSetupHf();
+            var hMaxCalc = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,1,1,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
+            var eMaxCalc = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,1,1,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
             // console.log(hMaxCalc); console.log(eMaxCalc);
             var eXmax = 1;
             var hXmax = 1;
