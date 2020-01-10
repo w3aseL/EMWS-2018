@@ -782,8 +782,8 @@ Expects the array of layer lengths, the current timestamp t, the position z,
 ExR, ExPhi, EyR, EyPhi.
  */
 emScattering3.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExPhi,EyR,EyPhi) {
-    var layerNum = 0, inf = 0, sup = lengths[0], lambdas = this.Struct.eigenvalues, omega = this.Struct.omega, vecs = this.Struct.eigenvectors,
-            Ex,Ex1,Ex2,Ex3,Ex4,Ey,Ey1,Ey2,Ey3,Ey4;
+    var layerNum = 0, inf = 0, sup = lengths[0], lambdas = this.Struct.eigenvalues, omega = this.Struct.omega, Ex, Ey, 
+    // var vecs = this.Struct.eigenvectors,Ex1,Ex2,Ex3,Ex4,Ey1,Ey2,Ey3,Ey4;
     for(var i = 0; i < lengths.length; i++){
         if(inf <= z && z <= sup){
             layerNum = i;
@@ -794,27 +794,26 @@ emScattering3.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExP
             sup = sup + lengths[i + 1];
         }          
     }
+    // z = z - inf
+    // Ex1 = ExR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(ExPhi[layerNum][0] + math.im(lambdas[layerNum][0]) * z - omega * t);
+    // Ex2 = ExR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(ExPhi[layerNum][1] + math.im(lambdas[layerNum][1]) * z - omega * t);
+    // Ex3 = ExR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(ExPhi[layerNum][2] + math.im(lambdas[layerNum][2]) * z - omega * t);
+    // Ex4 = ExR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(ExPhi[layerNum][3] + math.im(lambdas[layerNum][3]) * z - omega * t);
+    // Ex = Ex1 + Ex2 + Ex3 + Ex4;
     
-    Ex1 = ExR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(ExPhi[layerNum][0] + math.im(lambdas[layerNum][0]) * z - omega * t);
-    Ex2 = ExR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(ExPhi[layerNum][1] + math.im(lambdas[layerNum][1]) * z - omega * t);
-    Ex3 = ExR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(ExPhi[layerNum][2] + math.im(lambdas[layerNum][2]) * z - omega * t);
-    Ex4 = ExR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(ExPhi[layerNum][3] + math.im(lambdas[layerNum][3]) * z - omega * t);
-    Ex = Ex1 + Ex2 + Ex3 + Ex4;
+    // Ey1 = EyR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(EyPhi[layerNum][0] + math.im(lambdas[layerNum][0]) * z - omega * t);
+    // Ey2 = EyR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(EyPhi[layerNum][1] + math.im(lambdas[layerNum][1]) * z - omega * t);
+    // Ey3 = EyR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(EyPhi[layerNum][2] + math.im(lambdas[layerNum][2]) * z - omega * t);
+    // Ey4 = EyR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(EyPhi[layerNum][3] + math.im(lambdas[layerNum][3]) * z - omega * t);
+    // Ey = Ey1 + Ey2 + Ey3 + Ey4;
     
-    Ey1 = EyR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(EyPhi[layerNum][0] + math.im(lambdas[layerNum][0]) * z - omega * t);
-    Ey2 = EyR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(EyPhi[layerNum][1] + math.im(lambdas[layerNum][1]) * z - omega * t);
-    Ey3 = EyR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(EyPhi[layerNum][2] + math.im(lambdas[layerNum][2]) * z - omega * t);
-    Ey4 = EyR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(EyPhi[layerNum][3] + math.im(lambdas[layerNum][3]) * z - omega * t);
-    Ey = Ey1 + Ey2 + Ey3 + Ey4;
-    
-    // Ex = 0;
-    // Ey = 0;
-    // for (i = 0; i < 4; i++){
-    //     Ex += ExR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(ExPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
-    //     Ey += EyR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(EyPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
-    //     // Ex += ExR[layerNum][i] * vecs[layerNum][i] * math.exp(lambdas[layerNum][i] * z) 
-    //     // Ey += EyR[layerNum][i] * vecs[layerNum][i] * math.exp(lambdas[layerNum][i] * z) 
-    // }
+    Ex = 0;
+    Ey = 0;
+    z = z - inf;
+    for (i = 0; i < 4; i++){
+        Ex += ExR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(ExPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
+        Ey += EyR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(EyPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
+    }
 
     return {Ex: Ex, Ey: Ey};
 };
@@ -874,8 +873,8 @@ Expects the array of layer lengths, the current timestamp t, the position z,
 HxR, HxPhi, HyR, HyPhi.
  */
 emScattering3.PhotonicCrystal.prototype.mathboxHf = function(lengths,t,z,HxR,HxPhi,HyR,HyPhi) {
-    var layerNum = 0, inf = 0, sup = lengths[0],Hx,Hx1,Hx2,Hx3,Hx4,Hy,Hy1,Hy2,Hy3,Hy4, vecs = this.Struct.eigenvectors,
-            o = this.Struct.omega, lambdas = this.Struct.eigenvalues;
+    var layerNum = 0, inf = 0, sup = lengths[0],Hx, Hy, omega = this.Struct.omega, lambdas = this.Struct.eigenvalues;
+    // var Hx1,Hx2,Hx3,Hx4,Hy1,Hy2,Hy3,Hy4, vecs = this.Struct.eigenvectors;
     for(var i = 0; i < lengths.length; i++){
         if(inf <= z && z <= sup){
             layerNum = i;
@@ -886,27 +885,27 @@ emScattering3.PhotonicCrystal.prototype.mathboxHf = function(lengths,t,z,HxR,HxP
             sup = sup + lengths[i + 1];
         }          
     }
-
-    Hx1 = HxR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(HxPhi[layerNum][0] + math.im(lambdas[layerNum][0])*z - o*t);
-    Hx2 = HxR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(HxPhi[layerNum][1] + math.im(lambdas[layerNum][1])*z - o*t);
-    Hx3 = HxR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(HxPhi[layerNum][2] + math.im(lambdas[layerNum][2])*z - o*t);
-    Hx4 = HxR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(HxPhi[layerNum][3] + math.im(lambdas[layerNum][3])*z - o*t);
-    Hx = Hx1+Hx2+Hx3+Hx4;
+    // z = z - inf;
+    // Hx1 = HxR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(HxPhi[layerNum][0] + math.im(lambdas[layerNum][0])*z - o*t);
+    // Hx2 = HxR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(HxPhi[layerNum][1] + math.im(lambdas[layerNum][1])*z - o*t);
+    // Hx3 = HxR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(HxPhi[layerNum][2] + math.im(lambdas[layerNum][2])*z - o*t);
+    // Hx4 = HxR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(HxPhi[layerNum][3] + math.im(lambdas[layerNum][3])*z - o*t);
+    // Hx = Hx1+Hx2+Hx3+Hx4;
    
-    Hy1 = HyR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(HyPhi[layerNum][0] + math.im(lambdas[layerNum][0])*z - o*t);
-    Hy2 = HyR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(HyPhi[layerNum][1] + math.im(lambdas[layerNum][1])*z - o*t);
-    Hy3 = HyR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(HyPhi[layerNum][2] + math.im(lambdas[layerNum][2])*z - o*t);
-    Hy4 = HyR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(HyPhi[layerNum][3] + math.im(lambdas[layerNum][3])*z - o*t);
-    Hy = Hy1+Hy2+Hy3+Hy4;
+    // Hy1 = HyR[layerNum][0] * math.exp(math.re(lambdas[layerNum][0]) * z) * math.cos(HyPhi[layerNum][0] + math.im(lambdas[layerNum][0])*z - o*t);
+    // Hy2 = HyR[layerNum][1] * math.exp(math.re(lambdas[layerNum][1]) * z) * math.cos(HyPhi[layerNum][1] + math.im(lambdas[layerNum][1])*z - o*t);
+    // Hy3 = HyR[layerNum][2] * math.exp(math.re(lambdas[layerNum][2]) * z) * math.cos(HyPhi[layerNum][2] + math.im(lambdas[layerNum][2])*z - o*t);
+    // Hy4 = HyR[layerNum][3] * math.exp(math.re(lambdas[layerNum][3]) * z) * math.cos(HyPhi[layerNum][3] + math.im(lambdas[layerNum][3])*z - o*t);
+    // Hy = Hy1+Hy2+Hy3+Hy4;
 
-    // Hx = 0;
-    // Hy = 0;
-    // for (i = 0; i < 4; i++){
-    //     Hx += HxR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(HxPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
-    //     Hy += HyR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(HyPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
-    //     // Hx += HxR[layerNum][i] * vecs[layerNum][i] * math.exp(lambdas[layerNum][i] * z) 
-    //     // Hy += HyR[layerNum][i] * vecs[layerNum][i] * math.exp(lambdas[layerNum][i] * z) 
-    // }
+    Hx = 0;
+    Hy = 0;
+    z = z - inf;
+    for (i = 0; i < 4; i++){
+        Hx += HxR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(HxPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
+        Hy += HyR[layerNum][i] * math.exp(math.re(lambdas[layerNum][i]) * z) * math.cos(HyPhi[layerNum][i] + math.im(lambdas[layerNum][i]) * z - omega * t);
+    }
+
 
     return {Hx: Hx, Hy: Hy};
 };

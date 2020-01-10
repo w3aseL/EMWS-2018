@@ -414,7 +414,6 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 );
             }
         }
-        
         /** Updates the Photonic Crystal. */
         function updateCrystal(){
             var k = [Number($scope.k1),Number($scope.k2),Number($scope.o)];
@@ -600,103 +599,103 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
-        function createAnimTest() {
-            $scope.runMathBoxField = true;
-            var mathbox = mathBox(options);
-            if (mathbox.fallback) throw "WebGL not supported";
-            var canvasElement = "testcanvas";
-            var interfaces = $scope.crystal.Struct.materialInterfacesStartZero();
-            var elem = document.getElementById(canvasElement);
-            var three = mathbox.three;
-            elem.appendChild(three.renderer.domElement);
-            $scope.context = new MathBox.Context(renderer, scene, camera).init();
-            var view = mathbox.set({
-                    focus: 3,
-                }).cartesian({
-                    range: [
-                        [0, endRange],
-                        [-eXmax, eXmax],
-                        [-hXmax, hXmax]
-                    ],
-                    scale: [2, 2, 2],
-                });
+        // function createAnimTest() {
+        //     $scope.runMathBoxField = true;
+        //     var mathbox = mathBox(options);
+        //     if (mathbox.fallback) throw "WebGL not supported";
+        //     var canvasElement = "testcanvas";
+        //     var interfaces = $scope.crystal.Struct.materialInterfacesStartZero();
+        //     var elem = document.getElementById(canvasElement);
+        //     var three = mathbox.three;
+        //     elem.appendChild(three.renderer.domElement);
+        //     $scope.context = new MathBox.Context(renderer, scene, camera).init();
+        //     var view = mathbox.set({
+        //             focus: 3,
+        //         }).cartesian({
+        //             range: [
+        //                 [0, endRange],
+        //                 [-eXmax, eXmax],
+        //                 [-hXmax, hXmax]
+        //             ],
+        //             scale: [2, 2, 2],
+        //         });
 
-                view.scale({ //adds "X-Axis" to the graph
-                divide: 1,
-                origin: [0, -2, 0, 0],
-                axis: "x",
-            }).text({
-                live: false,
-                data: ["Electric Field"]
-            }).label({
-                color: 0x0074D9,
-                offset: [75, 20]
-            })
+        //         view.scale({ //adds "X-Axis" to the graph
+        //         divide: 1,
+        //         origin: [0, -2, 0, 0],
+        //         axis: "x",
+        //     }).text({
+        //         live: false,
+        //         data: ["Electric Field"]
+        //     }).label({
+        //         color: 0x0074D9,
+        //         offset: [0, 0]
+        //     })
 
-            view.scale({ //adds "Y-Axis" to the graph
-                divide: 1,
-                origin: [0, 0, 2, 0],
-                axis: "y",
-            }).text({
-                live: false,
-                data: ["Magnetic Field"]
-            }).label({
-                color: 0xFF4136,
-                offset: [80, 20]
-            })
+        //     view.scale({ //adds "Y-Axis" to the graph
+        //         divide: 1,
+        //         origin: [0, 0, 2, 0],
+        //         axis: "y",
+        //     }).text({
+        //         live: false,
+        //         data: ["Magnetic Field"]
+        //     }).label({
+        //         color: 0xFF4136,
+        //         offset: [80, 20]
+        //     })
 
-            var runsetup = true;
-            var E1,E2,H1,H2;
-            view.interval({
-                id: 'ElectricFieldPlot',
-                width: endRange, //fields.Ex.length,
-                expr: function(emit, z, i, t) {
-                    // if(z<=endRange){
-                    if (runsetup) {
-                        E1 = $scope.crystal.mathboxSetupEf();
-                    };                    
-                    E2 = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,t,z,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
-                    emit(z, E2.Ex, E2.Ey);
-                    // emit(z, 0, 0);
-                    // }
-                },
-                items: 2,
-                channels: 3,
-                live: true,
-            });
-            view.vector({
-                points: '#ElectricFieldPlot',
-                color: 0x0074D9,
-                width: 1,
-                start: true,
-            });
+        //     var runsetup = true;
+        //     var E1,E2,H1,H2;
+        //     view.interval({
+        //         id: 'ElectricFieldPlot',
+        //         width: endRange, //fields.Ex.length,
+        //         expr: function(emit, z, i, t) {
+        //             // if(z<=endRange){
+        //             if (runsetup) {
+        //                 E1 = $scope.crystal.mathboxSetupEf();
+        //             };                    
+        //             E2 = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,t,z,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
+        //             emit(z, E2.Ex, E2.Ey);
+        //             // emit(z, 0, 0);
+        //             // }
+        //         },
+        //         items: 2,
+        //         channels: 3,
+        //         live: true,
+        //     });
+        //     view.vector({
+        //         points: '#ElectricFieldPlot',
+        //         color: 0x0074D9,
+        //         width: 1,
+        //         start: true,
+        //     });
 
-            view.interval({
-                id: 'MagneticFieldPlot',
-                width: endRange, //fields.Ex.length,
-                expr: function(emit, z, i, t) {
-                    // if(z <= endRange){
-                    if (runsetup) {
-                        H1 = $scope.crystal.mathboxSetupHf();
-                        runsetup = false;
-                    };
-                    H2 = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,t,z,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
-                    emit(z, H2.Hx, H2.Hy);
-                    // emit(z, 0, 0);
-                    // }
-                },
-                items: 2,
-                channels: 3,
-                live: true,
-            });
+        //     view.interval({
+        //         id: 'MagneticFieldPlot',
+        //         width: endRange, //fields.Ex.length,
+        //         expr: function(emit, z, i, t) {
+        //             // if(z <= endRange){
+        //             if (runsetup) {
+        //                 H1 = $scope.crystal.mathboxSetupHf();
+        //                 runsetup = false;
+        //             };
+        //             H2 = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,t,z,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
+        //             emit(z, H2.Hx, H2.Hy);
+        //             // emit(z, 0, 0);
+        //             // }
+        //         },
+        //         items: 2,
+        //         channels: 3,
+        //         live: true,
+        //     });
 
-            view.vector({
-                points: '#MagneticFieldPlot',
-                color: 0xFF4136,
-                width: 1,
-                start: true,
-            });
-        }
+        //     view.vector({
+        //         points: '#MagneticFieldPlot',
+        //         color: 0xFF4136,
+        //         width: 1,
+        //         start: true,
+        //     });
+        // }
 
         /** Creates the MathBox animation on the Field tab. */
         function createAnim() {
@@ -773,26 +772,24 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
 
             view.scale({ //adds "X-Axis" to the graph
                 divide: 1,
-                origin: [0, -2, 0, 0],
+                origin: [0, 1, 0, 0],
                 axis: "x",
             }).text({
                 live: false,
                 data: ["Electric Field"]
             }).label({
-                color: 0x0074D9,
-                offset: [75, 20]
+                color: 0x0074D9
             })
 
             view.scale({ //adds "Y-Axis" to the graph
                 divide: 1,
-                origin: [0, 0, 2, 0],
+                origin: [25, 0, 0, 0],
                 axis: "y",
             }).text({
                 live: false,
                 data: ["Magnetic Field"]
             }).label({
-                color: 0xFF4136,
-                offset: [80, 20]
+                color: 0xFF4136
             })
 
             view.grid({
@@ -896,12 +893,12 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     if(z<=endRange){
                     if (runsetup) {
                         E1 = $scope.crystal.mathboxSetupEf();
-                        console.log(E1)
+                        runsetup = false;
                     };                    
                     E2 = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,t,z,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
                     // console.log("z: " + z + "\nEx: " + E2.Ex + "\nEy: " + E2.Ey + "\n")
                     emit(z, E2.Ex, E2.Ey);
-                    // emit(z, 0, 0);
+                    emit(z, 0, 0);
                     }
                 },
                 items: 2,
@@ -926,9 +923,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     };
                     H2 = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,t,z,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
                     // console.log("z: " + z + "\nHx: " + H2.Hx + "\nHy: " + H2.Hy + "\n")
-                    // console.log(H2);
                     emit(z, H2.Hx, H2.Hy);
-                    // emit(z, 0, 0);
+                    emit(z, 0, 0);
                     }
                 },
                 items: 2,
@@ -1078,530 +1074,531 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
-        function _createAnim_DEPRECATED() {
-            var eXmax = 1;
-            var hXmax = 1;
-            var endRange = $scope.totalLength;
-            var canvasElement = "testcanvas";
-            var crystal1 = $scope.crystal;
-            var fields = $scope.field;
-            var epsilon = $scope.epsilon2D;
-            var mu = $scope.mu2D;
-            var interfaces = $scope.crystal.Struct.materialInterfaces();
-            var elem = document.getElementById(canvasElement);
-            var jelem = $("#" + canvasElement);
-            console.log("canvas element jquer:" + jelem.parent().css("background-color"));
-            var rgbColor = jelem.parent().css("background-color");
-            var WIDTH = elem.offsetWidth;
-            var HEIGHT = elem.offsetHeight;
-            var w1 = WIDTH;
-            var h1 = HEIGHT;
-            var three = THREE.Bootstrap({
-                plugins: ['core', 'controls'],
-                controls: {
-                    klass: THREE.OrbitControls
-                },
-                size: {
-                    width: w1,
-                    height: h1,
-                    // left: "400",
-                },
-            });
-            // expect(three.renderer.domElement.style.visibility).toBe('hidden');
+        // function _createAnim_DEPRECATED() {
+        //     var eXmax = 1;
+        //     var hXmax = 1;
+        //     var endRange = $scope.totalLength;
+        //     var canvasElement = "testcanvas";
+        //     var crystal1 = $scope.crystal;
+        //     var fields = $scope.field;
+        //     var epsilon = $scope.epsilon2D;
+        //     var mu = $scope.mu2D;
+        //     var interfaces = $scope.crystal.Struct.materialInterfaces();
+        //     var elem = document.getElementById(canvasElement);
+        //     var jelem = $("#" + canvasElement);
+        //     console.log("canvas element jquer:" + jelem.parent().css("background-color"));
+        //     var rgbColor = jelem.parent().css("background-color");
+        //     var WIDTH = elem.offsetWidth;
+        //     var HEIGHT = elem.offsetHeight;
+        //     var w1 = WIDTH;
+        //     var h1 = HEIGHT;
+        //     var three = THREE.Bootstrap({
+        //         plugins: ['core', 'controls'],
+        //         controls: {
+        //             klass: THREE.OrbitControls
+        //         },
+        //         size: {
+        //             width: w1,
+        //             height: h1,
+        //             // left: "400",
+        //         },
+        //     });
+        //     // expect(three.renderer.domElement.style.visibility).toBe('hidden');
 
-            var renderer = three.renderer;
-            var scene = three.scene;
-            var camera = three.camera;
-            // renderer.domElement.style.visibility = 'hidden';
+        //     var renderer = three.renderer;
+        //     var scene = three.scene;
+        //     var camera = three.camera;
+        //     // renderer.domElement.style.visibility = 'hidden';
 
-            console.log("styling canvas elem");
-            // Insert into document
+        //     console.log("styling canvas elem");
+        //     // Insert into document
 
-            elem.appendChild(renderer.domElement);
+        //     elem.appendChild(renderer.domElement);
 
-            // MathBox $scope.context
-            $scope.context = new MathBox.Context(renderer, scene, camera).init();
-            var mathbox = $scope.context.api;
-            // mathbox2 = mathBox({
-            //   plugins: ['core', 'controls', 'cursor'],
-            //   controls: {
-            //     klass: THREE.OrbitControls
-            //   },    });
-            // mathbox.install('controls');
-            // Set size
-            renderer.setSize(WIDTH, HEIGHT);
-            $scope.context.resize({ viewWidth: WIDTH, viewHeight: HEIGHT });
+        //     // MathBox $scope.context
+        //     $scope.context = new MathBox.Context(renderer, scene, camera).init();
+        //     var mathbox = $scope.context.api;
+        //     // mathbox2 = mathBox({
+        //     //   plugins: ['core', 'controls', 'cursor'],
+        //     //   controls: {
+        //     //     klass: THREE.OrbitControls
+        //     //   },    });
+        //     // mathbox.install('controls');
+        //     // Set size
+        //     renderer.setSize(WIDTH, HEIGHT);
+        //     $scope.context.resize({ viewWidth: WIDTH, viewHeight: HEIGHT });
 
-            // Place camera and set background
-            camera.position.set(-1, 2, 4);
-            renderer.setClearColor(new THREE.Color(rgbColor), 1.0);
-            // renderer.domElement.style.visibility = 'hidden';
+        //     // Place camera and set background
+        //     camera.position.set(-1, 2, 4);
+        //     renderer.setClearColor(new THREE.Color(rgbColor), 1.0);
+        //     // renderer.domElement.style.visibility = 'hidden';
 
-            console.log("made it here too");
-            var view = mathbox
-                .set({
-                    focus: 3,
-                })
-                .cartesian({
-                    range: [
-                        [0, endRange],
-                        [-eXmax, eXmax],
-                        [-hXmax, hXmax]
-                    ],
-                    scale: [2, 2, 2],
-                });
+        //     console.log("made it here too");
+        //     var view = mathbox
+        //         .set({
+        //             focus: 3,
+        //         })
+        //         .cartesian({
+        //             range: [
+        //                 [0, endRange],
+        //                 [-eXmax, eXmax],
+        //                 [-hXmax, hXmax]
+        //             ],
+        //             scale: [2, 2, 2],
+        //         });
 
-            view.axis({
-                detail: 30,
-            });
+        //     view.axis({
+        //         detail: 30,
+        //     });
 
-            view.axis({
-                axis: 2,
-            });
+        //     view.axis({
+        //         axis: 2,
+        //     });
 
-            view.scale({
-                divide: 10,
-            })
-            view.ticks({
-                classes: ['foo', 'bar'],
-                width: 2
-            });
+        //     view.scale({
+        //         divide: 10,
+        //     })
+        //     view.ticks({
+        //         classes: ['foo', 'bar'],
+        //         width: 2
+        //     });
 
-            // view.grid({
-            //   divideX: 30,
-            //   width: 1,
-            //   opacity: 0.5,
-            //   zBias: -5,
-            // });
-            view.scale({ //adds "X-Axis" to the graph
-                divide: 1,
-                origin: [0, -2, 0, 0],
-                axis: "x",
-            }).text({
-                live: false,
-                data: ["Electric Field"]
-            }).label({
-                color: 0x0074D9,
-                offset: [75, 20]
-            })
+        //     // view.grid({
+        //     //   divideX: 30,
+        //     //   width: 1,
+        //     //   opacity: 0.5,
+        //     //   zBias: -5,
+        //     // });
+        //     view.scale({ //adds "X-Axis" to the graph
+        //         divide: 1,
+        //         origin: [0, -2, 0, 0],
+        //         axis: "x",
+        //     }).text({
+        //         live: false,
+        //         data: ["Electric Field"]
+        //     }).label({
+        //         color: 0x0074D9,
+        //         offset: [0, 0]
+        //     })
+            
+        //     view.scale({ //adds "Y-Axis" to the graph
+        //         divide: 1,
+        //         origin: [0, 0, 2, 0],
+        //         axis: "y",
+        //     }).text({
+        //         live: false,
+        //         data: ["Magnetic Field"],
+        //         zIndex: 1
+        //     }).label({
+        //         color: 0xFF4136,
+        //         offset: [0, 0]
+        //     })
 
-            view.scale({ //adds "Y-Axis" to the graph
-                divide: 1,
-                origin: [0, 0, 2, 0],
-                axis: "y",
-            }).text({
-                live: false,
-                data: ["Magnetic Field"]
-            }).label({
-                color: 0xFF4136,
-                offset: [80, 20]
-            })
+        //     view.grid({
+        //             axes: "xy",
+        //             divideX: endRange,
+        //             divideY: 10
+        //         }) //makes two axes in space
+        //         .grid({
+        //             axes: "xz",
+        //             divideX: endRange,
+        //             divideY: 10,
+        //         })
 
-            view.grid({
-                    axes: "xy",
-                    divideX: endRange,
-                    divideY: 10
-                }) //makes two axes in space
-                .grid({
-                    axes: "xz",
-                    divideX: endRange,
-                    divideY: 10,
-                })
+        //         // three.canvas.style.visibility = "hidden";
 
-                // three.canvas.style.visibility = "hidden";
+        //     var colorCoords = []; //possibly remove, replace with just applying interfaces to arrays
+        //     var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+        //     for (var i = 0; i < interfaces.length - 1; i++) {
+        //         var array1 = [ //only x changes on all shapes coordinates
 
-            var colorCoords = []; //possibly remove, replace with just applying interfaces to arrays
-            var cols = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
-            for (var i = 0; i < interfaces.length - 1; i++) {
-                var array1 = [ //only x changes on all shapes coordinates
-
-                    //seperate 1st and last arrays. also, make each array part of an array[][]
-                    //
-                    0 + interfaces[0 + i], -2, 0, 0 + interfaces[1 + i], -2, 0, 0 + interfaces[1 + i], 2, 0, 0 + interfaces[0 + i], 2, 0, //first column
-                    //0+interfaces[0+i], 0, 1, 0+interfaces[0+i], 0, -1, 0+interfaces[1+i], 0, -1, 0+interfaces[1+i], 0, 1,  //first row
-                    // 0+interfaces[interfaces.length-2], -1, 0, 0+interfaces[interfaces.length-1], -1, 0, 0+interfaces[interfaces.length-1], 1, 0, 0+interfaces[interfaces.length-2], 1, 0, //last column
-                    // 0+interfaces[interfaces.length-2], 0, 1, 0+interfaces[interfaces.length-2], 0, -1, 0+interfaces[interfaces.length-1], 0, -1, 0+interfaces[interfaces.length-1], 0, 1,  //last row
+        //             //seperate 1st and last arrays. also, make each array part of an array[][]
+        //             //
+        //             0 + interfaces[0 + i], -2, 0, 0 + interfaces[1 + i], -2, 0, 0 + interfaces[1 + i], 2, 0, 0 + interfaces[0 + i], 2, 0, //first column
+        //             //0+interfaces[0+i], 0, 1, 0+interfaces[0+i], 0, -1, 0+interfaces[1+i], 0, -1, 0+interfaces[1+i], 0, 1,  //first row
+        //             // 0+interfaces[interfaces.length-2], -1, 0, 0+interfaces[interfaces.length-1], -1, 0, 0+interfaces[interfaces.length-1], 1, 0, 0+interfaces[interfaces.length-2], 1, 0, //last column
+        //             // 0+interfaces[interfaces.length-2], 0, 1, 0+interfaces[interfaces.length-2], 0, -1, 0+interfaces[interfaces.length-1], 0, -1, 0+interfaces[interfaces.length-1], 0, 1,  //last row
 
 
-                ];
-                var array2 = [0 + interfaces[0 + i], 0, 2, 0 + interfaces[0 + i], 0, -2, 0 + interfaces[1 + i], 0, -2, 0 + interfaces[1 + i], 0, 2, ]
+        //         ];
+        //         var array2 = [0 + interfaces[0 + i], 0, 2, 0 + interfaces[0 + i], 0, -2, 0 + interfaces[1 + i], 0, -2, 0 + interfaces[1 + i], 0, 2, ]
 
-                // colorCoords.push(array1); //remove push, place the voxel code here
-                // colorCoords.push(array2);?
-                console.log("test array1:" + array1)
-                view.voxel({
-                    data: array1,
-                    width: 4,
-                    height: 2,
-                    depth: 1,
-                    items: 4,
-                    channels: 3,
-                });
+        //         // colorCoords.push(array1); //remove push, place the voxel code here
+        //         // colorCoords.push(array2);?
+        //         console.log("test array1:" + array1)
+        //         view.voxel({
+        //             data: array1,
+        //             width: 4,
+        //             height: 2,
+        //             depth: 1,
+        //             items: 4,
+        //             channels: 3,
+        //         });
 
-                view
-                    .transform({
-                        pass: 'eye',
-                        position: [0, 0, 0],
-                        scale: [1, 1, 1],
-                    })
-                    .face({
-                        color: cols[i % 5],
-                        width: 3,
-                        line: false,
-                        shaded: true,
-                        opacity: .3,
-                        zOrder: 9,
-                    })
-                    .face({
-                        color: cols[i % 5],
-                        width: 3,
-                        fill: false,
-                        opacity: .3,
-                        zOrder: 9,
-                    })
-                    .array({
-                        data: [0, 0, 0],
-                        channels: 3,
-                    })
-                view.voxel({
-                    data: array2,
-                    width: 4,
-                    height: 2,
-                    depth: 1,
-                    items: 4,
-                    channels: 3,
-                });
+        //         view
+        //             .transform({
+        //                 pass: 'eye',
+        //                 position: [0, 0, 0],
+        //                 scale: [1, 1, 1],
+        //             })
+        //             .face({
+        //                 color: cols[i % 5],
+        //                 width: 3,
+        //                 line: false,
+        //                 shaded: true,
+        //                 opacity: .3,
+        //                 zOrder: 9,
+        //             })
+        //             .face({
+        //                 color: cols[i % 5],
+        //                 width: 3,
+        //                 fill: false,
+        //                 opacity: .3,
+        //                 zOrder: 9,
+        //             })
+        //             .array({
+        //                 data: [0, 0, 0],
+        //                 channels: 3,
+        //             })
+        //         view.voxel({
+        //             data: array2,
+        //             width: 4,
+        //             height: 2,
+        //             depth: 1,
+        //             items: 4,
+        //             channels: 3,
+        //         });
 
-                view
-                    .transform({
-                        pass: 'eye',
-                        position: [0, 0, 0],
-                        scale: [1, 1, 1],
-                    })
-                    .face({
-                        color: cols[i % 5],
-                        width: 3,
-                        line: false,
-                        shaded: true,
-                        opacity: .3,
-                        zOrder: 9,
-                    })
-                    .face({
-                        color: cols[i % 5],
-                        width: 3,
-                        fill: false,
-                        line: true,
-                        opacity: .3,
-                        zOrder: 9,
-                    })
-                    .array({
-                        data: [0, 0, 0],
-                        channels: 3,
-                    })
-            }
+        //         view
+        //             .transform({
+        //                 pass: 'eye',
+        //                 position: [0, 0, 0],
+        //                 scale: [1, 1, 1],
+        //             })
+        //             .face({
+        //                 color: cols[i % 5],
+        //                 width: 3,
+        //                 line: false,
+        //                 shaded: true,
+        //                 opacity: .3,
+        //                 zOrder: 9,
+        //             })
+        //             .face({
+        //                 color: cols[i % 5],
+        //                 width: 3,
+        //                 fill: false,
+        //                 line: true,
+        //                 opacity: .3,
+        //                 zOrder: 9,
+        //             })
+        //             .array({
+        //                 data: [0, 0, 0],
+        //                 channels: 3,
+        //             })
+        //     }
 
-            var ourFunc;
-            var runsetup = true;
-            var EigVals = new Array();
-            var EigVecs = new Array();
-            var ExrArray = new Array();
-            var ExthetaArray = new Array();
-            var EyrArray = new Array();
-            var EythetaArray = new Array();
+        //     var ourFunc;
+        //     var runsetup = true;
+        //     var EigVals = new Array();
+        //     var EigVecs = new Array();
+        //     var ExrArray = new Array();
+        //     var ExthetaArray = new Array();
+        //     var EyrArray = new Array();
+        //     var EythetaArray = new Array();
 
-            // var HxrArray = new Array();
-            // var HxthetaArray = new Array();
-            // var HyrArray = new Array();
-            // var HythetaArray = new Array();
+        //     // var HxrArray = new Array();
+        //     // var HxthetaArray = new Array();
+        //     // var HyrArray = new Array();
+        //     // var HythetaArray = new Array();
 
-            view.interval({
-                id: 'ElectricFieldPlot',
-                width: endRange * 10, //fields.Ex.length,
-                expr: function(emit, z, i, t) {
-                    if (runsetup) {
-                        var U = crystal1.scattering($scope.o, $scope.k1, $scope.k2, $scope.incoming);
-                        //Electric field
-                        var cxE = [$scope.incoming[0], $scope.incoming[1], U.x[0], U.x[1]];
-                        var cyE = [0, 0, U.y[0], U.y[1]];
-                        var cE = new numeric.T(cxE, cyE);
+        //     view.interval({
+        //         id: 'ElectricFieldPlot',
+        //         width: endRange * 10, //fields.Ex.length,
+        //         expr: function(emit, z, i, t) {
+        //             if (runsetup) {
+        //                 var U = crystal1.scattering($scope.o, $scope.k1, $scope.k2, $scope.incoming);
+        //                 //Electric field
+        //                 var cxE = [$scope.incoming[0], $scope.incoming[1], U.x[0], U.x[1]];
+        //                 var cyE = [0, 0, U.y[0], U.y[1]];
+        //                 var cE = new numeric.T(cxE, cyE);
                         
-                        //Magnetic field
-                        // var cxH = [j1, j2, U.x[2], U.x[3]];
-                        // var cyH = [0, 0, U.y[2], U.y[3]];
-                        // var cH = new numeric.T(cxH, cyH);
+        //                 //Magnetic field
+        //                 // var cxH = [j1, j2, U.x[2], U.x[3]];
+        //                 // var cyH = [0, 0, U.y[2], U.y[3]];
+        //                 // var cH = new numeric.T(cxH, cyH);
 
-                        for (var q = 0; q < epsilon.length; q++) {
-                            EigVals[q] = emScattering.eigenvaluesIsotropic(epsilon[q], mu[q], $scope.k1, $scope.k2);
-                            EigVecs[q] = emScattering.eigenvectorsIsotropic(epsilon[q], mu[q], $scope.k1, $scope.k2);
+        //                 for (var q = 0; q < epsilon.length; q++) {
+        //                     EigVals[q] = emScattering.eigenvaluesIsotropic(epsilon[q], mu[q], $scope.k1, $scope.k2);
+        //                     EigVecs[q] = emScattering.eigenvectorsIsotropic(epsilon[q], mu[q], $scope.k1, $scope.k2);
                             
-                            // console.log("EigVecs[q]: "+EigVecs[q].y[0][0]);//EigVecs[layernum].y[wavetype][vectornum]
-                            // .x or .y for real and imaginary parts
-                            // wavetype is 0 for ex, 1 for ey, 2 for hx, 3 for hy
-                            // Electric field
-                            var ExR = new Array();
-                            var ExTheta = new Array();
-                            var EyR = new Array();
-                            var EyTheta = new Array();
-                            // Magnetic field
-                            // var HxR = new Array();
-                            // var HxTheta = new Array();
-                            // var HyR = new Array();
-                            // var HyTheta = new Array();
-                            for (var j = 0; j < 4; j++) {
-                                //Electric field
-                                var ExA = cE.x[j] * EigVecs[q].x[0][j];
-                                var EyA = cE.x[j] * EigVecs[q].x[1][j];
-                                var ExB = cE.y[j] * EigVecs[q].y[0][j];
-                                var EyB = cE.y[j] * EigVecs[q].y[1][j];
-                                ExR[j] = Math.sqrt(Math.pow(ExA, 2) + Math.pow(ExB, 2));
-                                EyR[j] = Math.sqrt(Math.pow(EyA, 2) + Math.pow(EyB, 2));
-                                ExTheta[j] = Math.atan2(ExB, ExA);
-                                EyTheta[j] = Math.atan2(EyB, EyA);
-                                //Magnetic field
-                                // var HxA = cH.x[j]*EigVecs[q].x[2][j];
-                                // var HyA = cH.x[j]*EigVecs[q].x[3][j];
-                                // var HxB = cH.y[j]*EigVecs[q].y[2][j];
-                                // var HyB = cH.y[j]*EigVecs[q].y[3][j];
-                                // HxR[j] = Math.sqrt(Math.pow(HxA,2)+Math.pow(HxB,2));
-                                // HyR[j] = Math.sqrt(Math.pow(HyA,2)+Math.pow(HyB,2));
-                                // HxTheta[j] = Math.atan2(HxB,HxA);
-                                // HyTheta[j] = Math.atan2(HyB,HyA);
-                            }
-                            //electric field
-                            ExrArray[q] = ExR;
-                            EyrArray[q] = EyR;
-                            ExthetaArray[q] = ExTheta;
-                            EythetaArray[q] = EyTheta;
-                            //magnetic field
-                            // HxrArray[q] = HxR;
-                            // HyrArray[q] = HyR;
-                            // HxthetaArray[q] = HxTheta;
-                            // HythetaArray[q] = HyTheta;
+        //                     // console.log("EigVecs[q]: "+EigVecs[q].y[0][0]);//EigVecs[layernum].y[wavetype][vectornum]
+        //                     // .x or .y for real and imaginary parts
+        //                     // wavetype is 0 for ex, 1 for ey, 2 for hx, 3 for hy
+        //                     // Electric field
+        //                     var ExR = new Array();
+        //                     var ExTheta = new Array();
+        //                     var EyR = new Array();
+        //                     var EyTheta = new Array();
+        //                     // Magnetic field
+        //                     // var HxR = new Array();
+        //                     // var HxTheta = new Array();
+        //                     // var HyR = new Array();
+        //                     // var HyTheta = new Array();
+        //                     for (var j = 0; j < 4; j++) {
+        //                         //Electric field
+        //                         var ExA = cE.x[j] * EigVecs[q].x[0][j];
+        //                         var EyA = cE.x[j] * EigVecs[q].x[1][j];
+        //                         var ExB = cE.y[j] * EigVecs[q].y[0][j];
+        //                         var EyB = cE.y[j] * EigVecs[q].y[1][j];
+        //                         ExR[j] = Math.sqrt(Math.pow(ExA, 2) + Math.pow(ExB, 2));
+        //                         EyR[j] = Math.sqrt(Math.pow(EyA, 2) + Math.pow(EyB, 2));
+        //                         ExTheta[j] = Math.atan2(ExB, ExA);
+        //                         EyTheta[j] = Math.atan2(EyB, EyA);
+        //                         //Magnetic field
+        //                         // var HxA = cH.x[j]*EigVecs[q].x[2][j];
+        //                         // var HyA = cH.x[j]*EigVecs[q].x[3][j];
+        //                         // var HxB = cH.y[j]*EigVecs[q].y[2][j];
+        //                         // var HyB = cH.y[j]*EigVecs[q].y[3][j];
+        //                         // HxR[j] = Math.sqrt(Math.pow(HxA,2)+Math.pow(HxB,2));
+        //                         // HyR[j] = Math.sqrt(Math.pow(HyA,2)+Math.pow(HyB,2));
+        //                         // HxTheta[j] = Math.atan2(HxB,HxA);
+        //                         // HyTheta[j] = Math.atan2(HyB,HyA);
+        //                     }
+        //                     //electric field
+        //                     ExrArray[q] = ExR;
+        //                     EyrArray[q] = EyR;
+        //                     ExthetaArray[q] = ExTheta;
+        //                     EythetaArray[q] = EyTheta;
+        //                     //magnetic field
+        //                     // HxrArray[q] = HxR;
+        //                     // HyrArray[q] = HyR;
+        //                     // HxthetaArray[q] = HxTheta;
+        //                     // HythetaArray[q] = HyTheta;
 
-                            if (q + 1 < epsilon.length) {
+        //                     if (q + 1 < epsilon.length) {
 
-                        // console.log("here tooman22233124");
-                            try {
-                                cE = $scope.crystal.crystal.transferMatrices[q].dot(cE); // generates an exception
-                            }
-                            catch (e) {
-                            // statements to handle any exceptions
-                            console.log("errored out");
-                            logMyErrors(e); // pass exception object to error handler
-                            }
+        //                 // console.log("here tooman22233124");
+        //                     try {
+        //                         cE = $scope.crystal.crystal.transferMatrices[q].dot(cE); // generates an exception
+        //                     }
+        //                     catch (e) {
+        //                     // statements to handle any exceptions
+        //                     console.log("errored out");
+        //                     logMyErrors(e); // pass exception object to error handler
+        //                     }
                                 
-                                // console.log("here tooman222332");
-                                // cH = crystal1.crystal.transferMatrices[q].dot(cH);
-                                // console.log("c: "+c.x);
-                            }
+        //                         // console.log("here tooman222332");
+        //                         // cH = crystal1.crystal.transferMatrices[q].dot(cH);
+        //                         // console.log("c: "+c.x);
+        //                     }
 
-                        };
-                    };
+        //                 };
+        //             };
                     
-                    // runsetup = false;
-                    var layerNumber;
-                    var lowerL = 0;
-                    var upperL = $scope.length2D[0];
-                    for (var ii = 0; ii < $scope.length2D.length; ii++) {
-                        if (lowerL <= z && z <= upperL) {
-                            layerNumber = ii;
-                            break
-                        } else {
-                            lowerL = upperL;
-                            upperL = upperL + $scope.length2D[ii + 1];
+        //             // runsetup = false;
+        //             var layerNumber;
+        //             var lowerL = 0;
+        //             var upperL = $scope.length2D[0];
+        //             for (var ii = 0; ii < $scope.length2D.length; ii++) {
+        //                 if (lowerL <= z && z <= upperL) {
+        //                     layerNumber = ii;
+        //                     break
+        //                 } else {
+        //                     lowerL = upperL;
+        //                     upperL = upperL + $scope.length2D[ii + 1];
                         
-                        }
-                    }
+        //                 }
+        //             }
                     
-                    var Ex = ExrArray[layerNumber][0] * Math.cos(ExthetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
-                        ExrArray[layerNumber][1] * Math.cos(ExthetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
-                        ExrArray[layerNumber][2] * Math.cos(ExthetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
-                        ExrArray[layerNumber][3] * Math.cos(ExthetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
+        //             var Ex = ExrArray[layerNumber][0] * Math.cos(ExthetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
+        //                 ExrArray[layerNumber][1] * Math.cos(ExthetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
+        //                 ExrArray[layerNumber][2] * Math.cos(ExthetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
+        //                 ExrArray[layerNumber][3] * Math.cos(ExthetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
 
-                   var  Ey = EyrArray[layerNumber][0] * Math.cos(EythetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
-                        EyrArray[layerNumber][1] * Math.cos(EythetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
-                        EyrArray[layerNumber][2] * Math.cos(EythetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
-                        EyrArray[layerNumber][3] * Math.cos(EythetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
+        //            var  Ey = EyrArray[layerNumber][0] * Math.cos(EythetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
+        //                 EyrArray[layerNumber][1] * Math.cos(EythetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
+        //                 EyrArray[layerNumber][2] * Math.cos(EythetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
+        //                 EyrArray[layerNumber][3] * Math.cos(EythetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
 
-                    // Hx = ExrArray[layerNumber][0]*Math.cos(HxthetaArray[layerNumber][0] + EigVals[layerNumber][0].y*z - o*t) +
-                    //     ExrArray[layerNumber][1]*Math.cos(HxthetaArray[layerNumber][1] + EigVals[layerNumber][1].y*z - o*t) +
-                    //     ExrArray[layerNumber][2]*Math.cos(HxthetaArray[layerNumber][2] + EigVals[layerNumber][2].y*z - o*t) +
-                    //     ExrArray[layerNumber][3]*Math.cos(HxthetaArray[layerNumber][3] + EigVals[layerNumber][3].y*z - o*t);
+        //             // Hx = ExrArray[layerNumber][0]*Math.cos(HxthetaArray[layerNumber][0] + EigVals[layerNumber][0].y*z - o*t) +
+        //             //     ExrArray[layerNumber][1]*Math.cos(HxthetaArray[layerNumber][1] + EigVals[layerNumber][1].y*z - o*t) +
+        //             //     ExrArray[layerNumber][2]*Math.cos(HxthetaArray[layerNumber][2] + EigVals[layerNumber][2].y*z - o*t) +
+        //             //     ExrArray[layerNumber][3]*Math.cos(HxthetaArray[layerNumber][3] + EigVals[layerNumber][3].y*z - o*t);
 
-                    // Hy = EyrArray[layerNumber][0]*Math.cos(HythetaArray[layerNumber][0] + EigVals[layerNumber][0].y*z - o*t) +
-                    //     EyrArray[layerNumber][1]*Math.cos(HythetaArray[layerNumber][1] + EigVals[layerNumber][1].y*z - o*t) +
-                    //     EyrArray[layerNumber][2]*Math.cos(HythetaArray[layerNumber][2] + EigVals[layerNumber][2].y*z - o*t) +
-                    //     EyrArray[layerNumber][3]*Math.cos(HythetaArray[layerNumber][3] + EigVals[layerNumber][3].y*z - o*t);
-                    // x = Math.cos(-5*z);
-                    // y = Math.cos(2*x);
+        //             // Hy = EyrArray[layerNumber][0]*Math.cos(HythetaArray[layerNumber][0] + EigVals[layerNumber][0].y*z - o*t) +
+        //             //     EyrArray[layerNumber][1]*Math.cos(HythetaArray[layerNumber][1] + EigVals[layerNumber][1].y*z - o*t) +
+        //             //     EyrArray[layerNumber][2]*Math.cos(HythetaArray[layerNumber][2] + EigVals[layerNumber][2].y*z - o*t) +
+        //             //     EyrArray[layerNumber][3]*Math.cos(HythetaArray[layerNumber][3] + EigVals[layerNumber][3].y*z - o*t);
+        //             // x = Math.cos(-5*z);
+        //             // y = Math.cos(2*x);
 
-                    if (Ex > eXmax) {
-                        // console.log("Ex" + Ex);
-                        //eXmax++;
-                       // addAnim("testcanvas", endRange);
-                    }
-                    emit(z, Ex, Ey);
-                    emit(z, 0, 0);
-                },
-                items: 2,
-                channels: 3,
-                live: true,
-            });
+        //             if (Ex > eXmax) {
+        //                 // console.log("Ex" + Ex);
+        //                 //eXmax++;
+        //                // addAnim("testcanvas", endRange);
+        //             }
+        //             emit(z, Ex, Ey);
+        //             emit(z, 0, 0);
+        //         },
+        //         items: 2,
+        //         channels: 3,
+        //         live: true,
+        //     });
 
-            // view.line({
-            //   points: '#ElectricFieldPlot',
-            //   color: 0x0074D9,
-            //   width: 2,
-            // });
-            view.vector({
-                points: '#ElectricFieldPlot',
-                color: 0x0074D9,
-                width: 1,
-                start: true,
-            });
+        //     // view.line({
+        //     //   points: '#ElectricFieldPlot',
+        //     //   color: 0x0074D9,
+        //     //   width: 2,
+        //     // });
+        //     view.vector({
+        //         points: '#ElectricFieldPlot',
+        //         color: 0x0074D9,
+        //         width: 1,
+        //         start: true,
+        //     });
 
-            var HxrArray = new Array();
-            var HxthetaArray = new Array();
-            var HyrArray = new Array();
-            var HythetaArray = new Array();
+        //     var HxrArray = new Array();
+        //     var HxthetaArray = new Array();
+        //     var HyrArray = new Array();
+        //     var HythetaArray = new Array();
 
-            view.interval({
-                id: 'MagneticFieldPlot',
-                width: endRange * 10, //fields.Ex.length,
-                expr: function(emit, z, i, t) {
-                    if (runsetup) {
-                        var U = crystal1.scattering($scope.o, $scope.k1, $scope.k2, $scope.incoming);
-                        //Magnetic field
-                        var cxH = [$scope.incoming[0], $scope.incoming[1], U.x[2], U.x[3]];
-                        var cyH = [0, 0, U.y[2], U.y[3]];
-                        var cH = new numeric.T(cxH, cyH);
+        //     view.interval({
+        //         id: 'MagneticFieldPlot',
+        //         width: endRange * 10, //fields.Ex.length,
+        //         expr: function(emit, z, i, t) {
+        //             if (runsetup) {
+        //                 var U = crystal1.scattering($scope.o, $scope.k1, $scope.k2, $scope.incoming);
+        //                 //Magnetic field
+        //                 var cxH = [$scope.incoming[0], $scope.incoming[1], U.x[2], U.x[3]];
+        //                 var cyH = [0, 0, U.y[2], U.y[3]];
+        //                 var cH = new numeric.T(cxH, cyH);
 
-                        for (i = 0; i < epsilon.length; i++) {
-                            EigVals[i] = emScattering.eigenvaluesIsotropic(epsilon[i], mu[i], $scope.k1, $scope.k2);
-                            EigVecs[i] = emScattering.eigenvectorsIsotropic(epsilon[i], mu[i], $scope.k1, $scope.k2);
-                            // console.log("EigVecs[i]: "+EigVecs[i].y[0][0]);//EigVecs[layernum].y[wavetype][vectornum]
-                            // .x or .y for real and imaginary parts
-                            // wavetype is 0 for ex, 1 for ey, 2 for hx, 3 for hy
-                            var HxR = new Array();
-                            var HxTheta = new Array();
-                            var HyR = new Array();
-                            var HyTheta = new Array();
-                            for (var j = 0; j < 4; j++) {
-                                var HxA = cH.x[j] * EigVecs[i].x[2][j];
-                                var HyA = cH.x[j] * EigVecs[i].x[3][j];
-                                var HxB = cH.y[j] * EigVecs[i].y[2][j];
-                                var HyB = cH.y[j] * EigVecs[i].y[3][j];
-                                HxR[j] = Math.sqrt(Math.pow(HxA, 2) + Math.pow(HxB, 2));
-                                HyR[j] = Math.sqrt(Math.pow(HyA, 2) + Math.pow(HyB, 2));
-                                HxTheta[j] = Math.atan2(HxB, HxA);
-                                HyTheta[j] = Math.atan2(HyB, HyA);
-                            }
-                            HxrArray[i] = HxR;
-                            HyrArray[i] = HyR;
-                            HxthetaArray[i] = HxTheta;
-                            HythetaArray[i] = HyTheta;
+        //                 for (i = 0; i < epsilon.length; i++) {
+        //                     EigVals[i] = emScattering.eigenvaluesIsotropic(epsilon[i], mu[i], $scope.k1, $scope.k2);
+        //                     EigVecs[i] = emScattering.eigenvectorsIsotropic(epsilon[i], mu[i], $scope.k1, $scope.k2);
+        //                     // console.log("EigVecs[i]: "+EigVecs[i].y[0][0]);//EigVecs[layernum].y[wavetype][vectornum]
+        //                     // .x or .y for real and imaginary parts
+        //                     // wavetype is 0 for ex, 1 for ey, 2 for hx, 3 for hy
+        //                     var HxR = new Array();
+        //                     var HxTheta = new Array();
+        //                     var HyR = new Array();
+        //                     var HyTheta = new Array();
+        //                     for (var j = 0; j < 4; j++) {
+        //                         var HxA = cH.x[j] * EigVecs[i].x[2][j];
+        //                         var HyA = cH.x[j] * EigVecs[i].x[3][j];
+        //                         var HxB = cH.y[j] * EigVecs[i].y[2][j];
+        //                         var HyB = cH.y[j] * EigVecs[i].y[3][j];
+        //                         HxR[j] = Math.sqrt(Math.pow(HxA, 2) + Math.pow(HxB, 2));
+        //                         HyR[j] = Math.sqrt(Math.pow(HyA, 2) + Math.pow(HyB, 2));
+        //                         HxTheta[j] = Math.atan2(HxB, HxA);
+        //                         HyTheta[j] = Math.atan2(HyB, HyA);
+        //                     }
+        //                     HxrArray[i] = HxR;
+        //                     HyrArray[i] = HyR;
+        //                     HxthetaArray[i] = HxTheta;
+        //                     HythetaArray[i] = HyTheta;
 
-                            if (i + 1 < epsilon.length) {
-                                cH = crystal1.crystal.transferMatrices[i].dot(cH);
-                            }
-                        };
-                        runsetup = false;
-                    };
-                    var layerNumber;
-                    var lowerL = 0;
-                    var upperL = $scope.length2D[0];
-                    for (var ii = 0; ii < $scope.length2D.length; ii++) {
-                        if (lowerL <= z && z <= upperL) {
-                            layerNumber = ii;
-                            break
-                        } else {
-                            lowerL = upperL;
-                            upperL = upperL + $scope.length2D[ii + 1];
-                        }
-                    }
+        //                     if (i + 1 < epsilon.length) {
+        //                         cH = crystal1.crystal.transferMatrices[i].dot(cH);
+        //                     }
+        //                 };
+        //                 runsetup = false;
+        //             };
+        //             var layerNumber;
+        //             var lowerL = 0;
+        //             var upperL = $scope.length2D[0];
+        //             for (var ii = 0; ii < $scope.length2D.length; ii++) {
+        //                 if (lowerL <= z && z <= upperL) {
+        //                     layerNumber = ii;
+        //                     break
+        //                 } else {
+        //                     lowerL = upperL;
+        //                     upperL = upperL + $scope.length2D[ii + 1];
+        //                 }
+        //             }
 
-                   var Hx = HxrArray[layerNumber][0] * Math.cos(HxthetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
-                        HxrArray[layerNumber][1] * Math.cos(HxthetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
-                        HxrArray[layerNumber][2] * Math.cos(HxthetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
-                        HxrArray[layerNumber][3] * Math.cos(HxthetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
+        //            var Hx = HxrArray[layerNumber][0] * Math.cos(HxthetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
+        //                 HxrArray[layerNumber][1] * Math.cos(HxthetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
+        //                 HxrArray[layerNumber][2] * Math.cos(HxthetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
+        //                 HxrArray[layerNumber][3] * Math.cos(HxthetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
 
-                    var Hy = HyrArray[layerNumber][0] * Math.cos(HythetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
-                        HyrArray[layerNumber][1] * Math.cos(HythetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
-                        HyrArray[layerNumber][2] * Math.cos(HythetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
-                        HyrArray[layerNumber][3] * Math.cos(HythetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
-                    // x = Math.cos(-5*z);
-                    // y = Math.cos(2*x);
-                    // if(Hy>hXmax){ console.log("Hx"+Hy);
-                    // hXmax++;
-                    // addAnim("testcanvas",endRange);}
+        //             var Hy = HyrArray[layerNumber][0] * Math.cos(HythetaArray[layerNumber][0] + EigVals[layerNumber][0].y * z - $scope.o * t) +
+        //                 HyrArray[layerNumber][1] * Math.cos(HythetaArray[layerNumber][1] + EigVals[layerNumber][1].y * z - $scope.o * t) +
+        //                 HyrArray[layerNumber][2] * Math.cos(HythetaArray[layerNumber][2] + EigVals[layerNumber][2].y * z - $scope.o * t) +
+        //                 HyrArray[layerNumber][3] * Math.cos(HythetaArray[layerNumber][3] + EigVals[layerNumber][3].y * z - $scope.o * t);
+        //             // x = Math.cos(-5*z);
+        //             // y = Math.cos(2*x);
+        //             // if(Hy>hXmax){ console.log("Hx"+Hy);
+        //             // hXmax++;
+        //             // addAnim("testcanvas",endRange);}
 
-                    emit(z, Hx, Hy);
-                    emit(z, 0, 0);
-                    // emit(z, Hy, Hx);
-                },
-                items: 2,
-                channels: 3,
-                live: true,
-            });
+        //             emit(z, Hx, Hy);
+        //             emit(z, 0, 0);
+        //             // emit(z, Hy, Hx);
+        //         },
+        //         items: 2,
+        //         channels: 3,
+        //         live: true,
+        //     });
 
-            // view.line({
-            //   points: '#MagneticFieldPlot',
-            //   color: 0xFF4136,
-            //   width: 2,
-            // });
+        //     // view.line({
+        //     //   points: '#MagneticFieldPlot',
+        //     //   color: 0xFF4136,
+        //     //   width: 2,
+        //     // });
 
-            view.vector({
-                points: '#MagneticFieldPlot',
-                color: 0xFF4136,
-                width: 1,
-                start: true,
-            });
-            var visible = false;
-            var madeVisible = false;
-            var frame = function() {
-                var parentVisibility = jelem.parent().css("visibility");
-                    //console.log("doings things: ");
-                if(parentVisibility != 'hidden'){
-                    requestAnimationFrame(frame);
-                    visible = true;
+        //     view.vector({
+        //         points: '#MagneticFieldPlot',
+        //         color: 0xFF4136,
+        //         width: 1,
+        //         start: true,
+        //     });
+        //     var visible = false;
+        //     var madeVisible = false;
+        //     var frame = function() {
+        //         var parentVisibility = jelem.parent().css("visibility");
+        //             //console.log("doings things: ");
+        //         if(parentVisibility != 'hidden'){
+        //             requestAnimationFrame(frame);
+        //             visible = true;
                     
-                }
-                else if(parentVisibility == 'hidden'){
-                    visible = false;
+        //         }
+        //         else if(parentVisibility == 'hidden'){
+        //             visible = false;
 
-                    requestAnimationFrame(frame);
-                    renderer.domElement.style.visibility = parentVisibility;
-                    return;
-                }
+        //             requestAnimationFrame(frame);
+        //             renderer.domElement.style.visibility = parentVisibility;
+        //             return;
+        //         }
                 
-                if(!madeVisible) {
-                    renderer.domElement.style.visibility = parentVisibility; //wheretohide
-                    madeVisible = true;
-                }
+        //         if(!madeVisible) {
+        //             renderer.domElement.style.visibility = parentVisibility; //wheretohide
+        //             madeVisible = true;
+        //         }
                 
 
-                if(!visible)
-                    console.log("looping while visible is false");
-                //WIDTH = elem.offsetWidth - 10;
-                //HEIGHT = elem.offsetHeight - 5;
-                renderer.setSize(WIDTH, HEIGHT);
+        //         if(!visible)
+        //             console.log("looping while visible is false");
+        //         //WIDTH = elem.offsetWidth - 10;
+        //         //HEIGHT = elem.offsetHeight - 5;
+        //         renderer.setSize(WIDTH, HEIGHT);
 
-                //$scope.context.resize({ viewWidth: WIDTH, viewHeight: HEIGHT });
-                $scope.context.frame();
-                renderer.render(scene, camera);
-                // console.log("this is happening");
-                rgbColor = jelem.parent().css("background-color"); //0xFF851B;
-                renderer.setClearColor(new THREE.Color(rgbColor), 1.0);
+        //         //$scope.context.resize({ viewWidth: WIDTH, viewHeight: HEIGHT });
+        //         $scope.context.frame();
+        //         renderer.render(scene, camera);
+        //         // console.log("this is happening");
+        //         rgbColor = jelem.parent().css("background-color"); //0xFF851B;
+        //         renderer.setClearColor(new THREE.Color(rgbColor), 1.0);
 
                 
-            };
-            requestAnimationFrame(frame);
-            //var off = $(elem).offset();
-            //off.left += 5;
-            //$("canvas").offset(off);
-            // $("canvas").offset()
+        //     };
+        //     requestAnimationFrame(frame);
+        //     //var off = $(elem).offset();
+        //     //off.left += 5;
+        //     //$("canvas").offset(off);
+        //     // $("canvas").offset()
 
-        }
+        // }
 
         /** Creates the chart for the Dispersion tab. WIP */
         function createDispersionChart() {
