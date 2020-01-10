@@ -600,122 +600,112 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             }
         }
 
-        function createAnim() {
+        function createAnimTest() {
             $scope.runMathBoxField = true;
-            var eXmax = 1;
-            var hXmax = 1;
-            var endRange = $scope.totalLength;
+            var mathbox = mathBox(options);
+            if (mathbox.fallback) throw "WebGL not supported";
             var canvasElement = "testcanvas";
             var interfaces = $scope.crystal.Struct.materialInterfacesStartZero();
             var elem = document.getElementById(canvasElement);
-            var jelem = $("#" + canvasElement);
-            var rgbColor = jelem.parent().css("background-color");
-            var WIDTH = elem.offsetWidth;
-            var HEIGHT = elem.offsetHeight;
-            var w1 = WIDTH;
-            var h1 = HEIGHT;
-            var three = THREE.Bootstrap({
-                plugins: ['core', 'controls'],
-                controls: {
-                    klass: THREE.OrbitControls
-                },
-                size: {
-                    width: w1,
-                    height: h1,
-                },
-            });            
-            var renderer = three.renderer;
-            var scene = three.scene;
-            var camera = three.camera;
-            // Insert into document
-            elem.appendChild(renderer.domElement);
-            // MathBox $scope.context
+            var three = mathbox.three;
+            elem.appendChild(three.renderer.domElement);
             $scope.context = new MathBox.Context(renderer, scene, camera).init();
-            var mathbox = $scope.context.api;
-            var camera = mathbox.camera({
-                proxy: true,
-                position: [0, 0, 3],
-              });
-              var view = mathbox.cartesian({
-                range: [[-2, 2], [-1, 1], [-3,3]],
-                scale: [2, 1, 1],
-              });
-              view
-              .axis({
-                axis: 1,
-                width: 3,
-              })
-              .axis({
-                axis: 2,
-                width: 3,
-              })
-              .axis({
-                axis: 3,
-                width: 3,
-              })
-              .grid({
-                width: 2,  
-                divideX: 20,
-                divideY: 10,
-                divideZ: 10,      
-              });
-              mathbox.select('axis').set('color', 'black');
-              mathbox.set('focus', 3);
-              var data =
-              view.interval({
-                expr: function (emit, x, i, t) {
-                  emit(x, Math.sin(x + t));
+            var view = mathbox.set({
+                    focus: 3,
+                }).cartesian({
+                    range: [
+                        [0, endRange],
+                        [-eXmax, eXmax],
+                        [-hXmax, hXmax]
+                    ],
+                    scale: [2, 2, 2],
+                });
+
+                view.scale({ //adds "X-Axis" to the graph
+                divide: 1,
+                origin: [0, -2, 0, 0],
+                axis: "x",
+            }).text({
+                live: false,
+                data: ["Electric Field"]
+            }).label({
+                color: 0x0074D9,
+                offset: [75, 20]
+            })
+
+            view.scale({ //adds "Y-Axis" to the graph
+                divide: 1,
+                origin: [0, 0, 2, 0],
+                axis: "y",
+            }).text({
+                live: false,
+                data: ["Magnetic Field"]
+            }).label({
+                color: 0xFF4136,
+                offset: [80, 20]
+            })
+
+            var runsetup = true;
+            var E1,E2,H1,H2;
+            view.interval({
+                id: 'ElectricFieldPlot',
+                width: endRange, //fields.Ex.length,
+                expr: function(emit, z, i, t) {
+                    // if(z<=endRange){
+                    if (runsetup) {
+                        E1 = $scope.crystal.mathboxSetupEf();
+                    };                    
+                    E2 = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,t,z,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
+                    emit(z, E2.Ex, E2.Ey);
+                    // emit(z, 0, 0);
+                    // }
                 },
-                width: 64,
+                items: 2,
                 channels: 3,
-              });
-              var curve =
-              view.line({
-                width: 5,
-                color: '#3090FF',
-              });
-              var points =
-                view.point({
-                    size: 8,
-                    color: '#3090FF',
-                });
-                var scale =
-                view.scale({
-                    divide: 10,
-                });
-                var ticks =
-                view.ticks({
-                    width: 5,
-                    size: 15,
-                    color: 'black',
-                });
-                var format =
-                view.format({
-                    digits: 2,
-                    weight: 'bold',
-                });
-                var labels =
-                view.label({
-                    color: 'red',
-                    zIndex: 1,
-                });
-                var play = mathbox.play({
-                target: 'cartesian',
-                pace: 5,
-                to: 2,
-                loop: true,
-                script: [
-                    {props: {range: [[-2, 2], [-1, 1]]}},
-                    {props: {range: [[-4, 4], [-2, 2]]}},
-                    {props: {range: [[-2, 2], [-1, 1]]}},
-                ]
-                });   
+                live: true,
+            });
+            view.vector({
+                points: '#ElectricFieldPlot',
+                color: 0x0074D9,
+                width: 1,
+                start: true,
+            });
+
+            view.interval({
+                id: 'MagneticFieldPlot',
+                width: endRange, //fields.Ex.length,
+                expr: function(emit, z, i, t) {
+                    // if(z <= endRange){
+                    if (runsetup) {
+                        H1 = $scope.crystal.mathboxSetupHf();
+                        runsetup = false;
+                    };
+                    H2 = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,t,z,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
+                    emit(z, H2.Hx, H2.Hy);
+                    // emit(z, 0, 0);
+                    // }
+                },
+                items: 2,
+                channels: 3,
+                live: true,
+            });
+
+            view.vector({
+                points: '#MagneticFieldPlot',
+                color: 0xFF4136,
+                width: 1,
+                start: true,
+            });
         }
 
         /** Creates the MathBox animation on the Field tab. */
-        function createAnim1() {
+        function createAnim() {
             $scope.runMathBoxField = true;
-
+            // var E1 = $scope.crystal.mathboxSetupEf();
+            // var H1 = $scope.crystal.mathboxSetupHf();
+            // var hMaxCalc = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,1,1,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
+            // var eMaxCalc = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,1,1,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
+            // console.log(hMaxCalc); console.log(eMaxCalc);
             var eXmax = 1;
             var hXmax = 1;
             var endRange = $scope.totalLength;
@@ -824,6 +814,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                     0 + interfaces[0 + i], -2, 0, 0 + interfaces[1 + i], -2, 0, 0 + interfaces[1 + i], 2, 0, 0 + interfaces[0 + i], 2, 0, //first column
                 ];
                 var array2 = [0 + interfaces[0 + i], 0, 2, 0 + interfaces[0 + i], 0, -2, 0 + interfaces[1 + i], 0, -2, 0 + interfaces[1 + i], 0, 2, ];
+                // console.log("Array1: " + array1 + "\nArray2: " + array2 + "\n")
                 view.voxel({
                     data: array1,
                     width: 4,
@@ -902,14 +893,16 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 id: 'ElectricFieldPlot',
                 width: endRange, //fields.Ex.length,
                 expr: function(emit, z, i, t) {
-                    // if(z<=endRange){
+                    if(z<=endRange){
                     if (runsetup) {
                         E1 = $scope.crystal.mathboxSetupEf();
+                        console.log(E1)
                     };                    
                     E2 = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,t,z,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
+                    // console.log("z: " + z + "\nEx: " + E2.Ex + "\nEy: " + E2.Ey + "\n")
                     emit(z, E2.Ex, E2.Ey);
                     // emit(z, 0, 0);
-                    // }
+                    }
                 },
                 items: 2,
                 channels: 3,
@@ -926,15 +919,17 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 id: 'MagneticFieldPlot',
                 width: endRange, //fields.Ex.length,
                 expr: function(emit, z, i, t) {
-                    // if(z <= endRange){
+                    if(z <= endRange){
                     if (runsetup) {
                         H1 = $scope.crystal.mathboxSetupHf();
                         runsetup = false;
                     };
                     H2 = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,t,z,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
+                    // console.log("z: " + z + "\nHx: " + H2.Hx + "\nHy: " + H2.Hy + "\n")
+                    // console.log(H2);
                     emit(z, H2.Hx, H2.Hy);
                     // emit(z, 0, 0);
-                    // }
+                    }
                 },
                 items: 2,
                 channels: 3,
