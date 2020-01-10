@@ -702,8 +702,8 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             $scope.runMathBoxField = true;
             var E1 = $scope.crystal.mathboxSetupEf();
             var H1 = $scope.crystal.mathboxSetupHf();
-            var hMaxCalc = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,1,1,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
-            var eMaxCalc = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,1,1,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
+            // var hMaxCalc = $scope.crystal.mathboxHf($scope.crystal.Struct.lengths,1,1,H1.HxR,H1.HxPhi,H1.HyR,H1.HyPhi);
+            // var eMaxCalc = $scope.crystal.mathboxEf($scope.crystal.Struct.lengths,1,1,E1.ExR,E1.ExPhi,E1.EyR,E1.EyPhi);
             // console.log(hMaxCalc); console.log(eMaxCalc);
             var eXmax = 1;
             var hXmax = 1;
@@ -784,7 +784,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
             view.scale({ //adds "Y-Axis" to the graph
                 divide: 1,
                 origin: [25, 0, 0, 0],
-                axis: "y",
+                axis: "y"
             }).text({
                 live: false,
                 data: ["Magnetic Field"]
@@ -800,7 +800,7 @@ angular.module('myApp', []).controller('EMWSCtrl', function($scope) {
                 .grid({
                     axes: "xz",
                     divideX: endRange,
-                    divideY: 10,
+                    divideY: 10
                 })
 
             // var colorCoords = []; //possibly remove, replace with just applying interfaces to arrays

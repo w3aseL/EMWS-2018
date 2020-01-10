@@ -782,7 +782,7 @@ Expects the array of layer lengths, the current timestamp t, the position z,
 ExR, ExPhi, EyR, EyPhi.
  */
 emScattering3.PhotonicCrystal.prototype.mathboxEf = function(lengths,t,z,ExR,ExPhi,EyR,EyPhi) {
-    var layerNum = 0, inf = 0, sup = lengths[0], lambdas = this.Struct.eigenvalues, omega = this.Struct.omega, Ex, Ey, 
+    var layerNum = 0, inf = 0, sup = lengths[0], lambdas = this.Struct.eigenvalues, omega = this.Struct.omega, Ex, Ey;
     // var vecs = this.Struct.eigenvectors,Ex1,Ex2,Ex3,Ex4,Ey1,Ey2,Ey3,Ey4;
     for(var i = 0; i < lengths.length; i++){
         if(inf <= z && z <= sup){
