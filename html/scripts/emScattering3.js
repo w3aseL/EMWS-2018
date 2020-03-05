@@ -292,7 +292,10 @@ emScattering3.Struct.prototype.calcEigs = function(){
         //ret_vectors[i] = emScattering3.calcEigsVe(maxwell, complex_eigenvectors);
 
         console.time(`Eigencalc Time for ODE #${i}`);
-        console.log({maxwell, eigenvalues: emScattering3.calcEigsVa(maxwell, complex_eigenvalues), eigenvectors: emScattering3.calcEigsVe(maxwell, complex_eigenvectors)});
+
+        var eigenResultsOld = { values: emScattering3.calcEigsVa(maxwell, complex_eigenvalues), vectors: math.transpose(emScattering3.calcEigsVe(maxwell, complex_eigenvectors)) };
+        console.log({maxwell, eigenvalues: eigenResultsOld.values, eigenvectors: eigenResultsOld.vectors});
+        console.log({vectorDiv: math.divide(eigenResultsOld.vectors._data[0], eigenResultsOld.vectors.get([0,0])) })
         console.timeEnd(`Eigencalc Time for ODE #${i}`);
 
         var eigResults = EigenCalc.getEigenvaluesAndEigenvectors(maxwell), omega = this.omega;
