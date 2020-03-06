@@ -123,7 +123,7 @@ function characteristicPolynomial(A) {
  * @param Array coefficients 
  */
 function rootFinding(coeff) {
-    var n = coeff.length - 1, precision = 1e-9, prevVals = new Array(), curVals = new Array(), allUnderPrecision = false;
+    var n = coeff.length - 1, precision = 1e-12, prevVals = new Array(), curVals = new Array(), allUnderPrecision = false;
 
     for(var i = 0; i < n; i++) {
         curVals[i] = math.complex(0.4, 0.9);
@@ -268,7 +268,7 @@ function checkPrecision(val1, val2, precision) {
 
         var checkVal = A.get([pivotLoc, k])
 
-        if (isZero(checkVal, 1e-8))
+        if (isZero(checkVal, 1e-9))
             k++
         else {
             A = swapMatrixRows(A, h, pivotLoc)
@@ -352,13 +352,19 @@ function checkPrecision(val1, val2, precision) {
     for(var i = 0; i < eigenvalues.length; i++) {
         var eigVal = eigenvalues[i]
 
-        if (!isZero(eigVal.im, PRECISION) && isZero(eigVal.re, PRECISION)) {
+        if (!isNumZero(eigVal.im, PRECISION) && isNumZero(eigVal.re, PRECISION)) {
+            //console.log(`Eigenvalue ${eigVal} is imaginary`)
+
             if(eigVal.im > 0 && i != 0) {
+                //console.log(`Eigenvalue ${eigVal} is positive imaginary. Swapping to front!`)
                 eigenvalues = swapArrayIndexes(eigenvalues, i, 0)
                 eigenvectors = swapMatrixRows(eigenvectors, i, 0)
             }
-        } else if(isZero(eigVal.im, PRECISION) && !isZero(eigVal.re, PRECISION)) {
+        } else if(isNumZero(eigVal.im, PRECISION) && !isNumZero(eigVal.re, PRECISION)) {
+            //console.log(`Eigenvalue ${eigVal} is real`)
+            
             if(eigVal.re < 0 && i != 1) {
+                //console.log(`Eigenvalue ${eigVal} is negative real. Swapping to second index!`)
                 eigenvalues = swapArrayIndexes(eigenvalues, i, 1)
                 eigenvectors = swapMatrixRows(eigenvectors, i, 1)
             }
@@ -366,6 +372,10 @@ function checkPrecision(val1, val2, precision) {
     }
 
     return { eigenvalues: eigenvalues, eigenvectors: eigenvectors }
+ }
+
+ function isNumZero(num, precision) {
+    return (num < precision && num > -precision) || num == 0;
  }
 
  function swapArrayIndexes(array, val1, val2) {
