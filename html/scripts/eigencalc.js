@@ -123,7 +123,7 @@ function characteristicPolynomial(A) {
  * @param Array coefficients 
  */
 function rootFinding(coeff) {
-    var n = coeff.length - 1, precision = 1e-12, prevVals = new Array(), curVals = new Array(), allUnderPrecision = false;
+    var n = coeff.length - 1, precision = 1e-14, prevVals = new Array(), curVals = new Array(), allUnderPrecision = false;
 
     for(var i = 0; i < n; i++) {
         curVals[i] = math.complex(0.4, 0.9);
@@ -306,7 +306,7 @@ function checkPrecision(val1, val2, precision) {
         var isRowZero = true
 
         for(let j = 0; j < n; j++)
-            if(!isZero(A.get([i,j]), 1e-7)) isRowZero = false
+            if(!isZero(A.get([i,j]), 1e-6)) isRowZero = false
 
         if(isRowZero)
             vector.set([i, 0], math.complex(1))
