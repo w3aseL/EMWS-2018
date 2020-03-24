@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 
+# Pages
 intro = html.Div(style={'display': 'flex', 'flexDirection': 'row', 'padding': 'auto', 'margin': '10px'}, children=[
     html.Div(children=[
         dcc.Markdown('''#### Introduction '''),
@@ -50,12 +51,32 @@ structure = html.Div(children=[
     html.H1('Visualizations of Electromagnetic Wave Scattering'),
     html.Div(style={'margin': 'auto', 'border': '0.5px solid #babdbe'}, children=[
         html.Div(style={'borderBottom': '0.5px solid #babdbe'}, children=[
-            html.H6('Define Layered Structure'),
+            html.H4(style={'fontWeight': 'bold'}, children=['Define Layered Structure']),
             html.P(
                 'Enter number of layers and length, electric tensors, and magnetic tensors for each layer.'),
         ]),
-        dcc.Input(placeholder='Number of Layers'),
-        html.H6('Yo')])
+        html.Div(style={'display': 'flex', 'flexDirection': 'row', 'alignItems': 'center', 'padding': 'auto', 'margin': 'auto'}, children=[
+            html.H5(style={'paddingRight': '50px'}, children=['Number of Layers: ']),
+            dcc.Input(id='num_layers', type='number', value=3, min=1),
+        ]),
+        html.Span(style={'display': 'grid', 'gridGap': '50px', 'gridTemplateColumns': '200px', 'margin': 'auto', 'padding': 'auto'}, children=[
+                html.H6(style={'gridColumnStart': 2, 'gridColumnEnd': 3, 'fontWeight': 500}, children=['LENGTH']),
+                html.H6(style={'gridColumnStart': 3, 'gridColumnEnd': 4, 'fontWeight': 500}, children=['EPSILON']),
+                html.H6(style={'gridColumnStart': 4, 'gridColumnEnd': 5, 'fontWeight': 500}, children=['MU'])
+            ]),
+        html.Div(id='layers', style={'margin': '10px', 'padding': 'auto'}),
+        html.Span(id='structure', children=[
+            dcc.Graph(id='example-graph', figure={
+                'data': [
+                    {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
+                    {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+                    ],
+                    'layout': {
+                        'title': 'Dash Data Visualization'
+                        }
+                    }
+                )
+        ])])
 ])
 
 field = html.Div(children=[
