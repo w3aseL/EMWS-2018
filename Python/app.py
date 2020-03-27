@@ -4,10 +4,19 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import itertools
+import scattering
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 WIDTH = '200px'
+
+COLORS = {
+    'gray': {
+        'primary': '#78909c',
+        'dark': '#4b636e',
+        'light': '#f0f0f0'
+    }
+}
 
 # Pages
 intro = html.Div(style={'display': 'flex', 'flexDirection': 'row', 'padding': 'auto', 'margin': '10px'}, children=[
@@ -54,7 +63,7 @@ intro = html.Div(style={'display': 'flex', 'flexDirection': 'row', 'padding': 'a
     ])]
 )
 
-structure = html.Div(children=[
+structure = html.Div(id='structure', children=[
     html.H2('Visualizations of Electromagnetic Wave Scattering'),
     html.Div(style={'margin': 'auto', 'border': '0.5px solid #babdbe'}, children=[
         html.Div(style={'borderBottom': '0.5px solid #babdbe'}, children=[
@@ -71,13 +80,58 @@ structure = html.Div(children=[
                 html.H6(style={'gridColumnStart': 3, 'gridColumnEnd': 4, 'fontWeight': 500}, children=['EPSILON']),
                 html.H6(style={'gridColumnStart': 4, 'gridColumnEnd': 5, 'fontWeight': 500}, children=['MU'])
             ]),
-        html.Div(id='layers', style={'margin': '10px', 'padding': 'auto'}),
+        html.Div(id='layers', style={'margin': '10px', 'padding': 'auto'}, children=[]),
         html.Button(id='build', children=['Build Structure'], style={'margin': '20px'}),
         html.Span(id='structure')])
 ])
 
 field = html.Div(children=[
-    html.H3('TODO: Field Page')
+    html.H2('Electromagnetic Field'),
+    html.H5('Computation of electromagnetic field in space and time.'),
+    html.Div(id='constants', style={'display': 'flex'}, children=[
+        html.Div(style={'backgroundColor': 'white', 'width': '30%', 'margin': 'auto'}, children=[
+            html.Div(style={'borderBottom': '0.5px solid #babdbe', 'padding': '5px'}, children=[
+                html.H5('Frequency and Wave Vector'),
+                html.P('Enter frequency ω and wave vector (k\u2081, k\u2082) parallel to layers.')
+            ]),
+            html.Div(style={'padding': '5px', 'margin': '10px'}, children=[
+                html.Span(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, children=[
+                    html.P(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, children=['\u03C9']),
+                    dcc.Input(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, value=0.398)
+                ])
+            ]),
+            html.Div(style={'padding': '5px', 'margin': '10px'}, children=[
+                html.Span(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, children=[
+                    html.P(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, children=['k\u2081']),
+                    dcc.Input(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, value=0.5)
+                ])
+            ]),
+            html.Div(style={'padding': '5px', 'margin': '10px'}, children=[
+                html.Span(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, children=[
+                    html.P(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, children=['k\u2082']),
+                    dcc.Input(style={'display': 'flex', 'padding': 'auto', 'margin': 'auto'}, value=0.22)
+                ])
+            ]),
+            html.Div(style={'display': 'flex', 'justifyContent': 'center'}, children=[
+                html.Button(id='modes', children=['Calculate Modes'], style={'margin': '20px'}),
+            ])
+        ]),
+        html.Div(style={'backgroundColor': 'white', 'width': '30%', 'margin': 'auto'}, children=[
+            html.Div(style={'borderBottom': '0.5px solid #babdbe', 'padding': '5px'}, children=[
+                html.H5('Incoming Modes in Ambient Medium'),
+            ]),
+        ]),
+        html.Div(style={'backgroundColor': 'white', 'width': '30%', 'margin': 'auto'}, children=[
+            html.Div(style={'borderBottom': '0.5px solid #babdbe', 'padding': '5px'}, children=[
+                html.H5('Coefficients of Incoming Modes'),
+                html.P('Enter complex amplitudes of the incoming modes.')
+            ]),
+            html.Div(style={'display': 'flex', 'justifyContent': 'center'}, children=[
+                html.Button(id='run', children=['Run Experiment'], style={'margin': '20px'}),
+            ])
+        ])
+    ]),
+    html.Div(id='experiment')
 ])
 
 
@@ -85,7 +139,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.title = 'EMWS'
 
-app.layout = html.Div(style={'backgroundColor': '#eceff1', 'margin': 0, 'boxShadow': '0 0 10px 0 rgba(0, 0, 0, 0.16)'},
+app.layout = html.Div(style={'backgroundColor': COLORS['gray']['light'], 'margin': 0, 'boxShadow': '0 0 10px 0 rgba(0, 0, 0, 0.16)'},
                       children=[
     dcc.Tabs(id="tabs", value='tab-1', children=[
         dcc.Tab(label='Introduction', value='tab-1'),
@@ -120,7 +174,7 @@ def check_layers(num):
         layers.append('Ambient Right')
     for layer in layers:
         i = layers.index(layer)
-        children.append(html.Div(style={'display': 'grid', 'gridGap': '50px', 'gridTemplateColumns': WIDTH, 'minHeight': '200px', 'margin': '10px', 'padding': 'auto'}, children=[
+        children.append(html.Div(style={'borderTop': '0.5px solid #babdbe', 'display': 'grid', 'gridGap': '50px', 'gridTemplateColumns': WIDTH, 'minHeight': '200px', 'margin': '10px', 'padding': '10px'}, children=[
             html.P(style={'gridColumnStart': 1, 'gridColumnEnd': 2}, children=[
                 layer]),
             html.Div(style={'gridColumnStart': 2, 'gridColumnEnd': 3, 'display': 'flex', 'justifyContent': 'center', 'width': WIDTH}, children=[
@@ -150,8 +204,9 @@ def check_layers(num):
 def build_structure(layers, n):
     tot_length = 0
     for layer in layers:
+        # Example of accessing the children of an element. Mix of dictionaries and lists
         # print(layer['props']['children'][1]['props']['children'][0]['props']['value'])
-        tot_length += layer['props']['children'][1]['props']['children'][0]['props']['value']
+        tot_length += layer['props']['children'][1]['props']['children'][0]['props']['value'] # Sum length of layers
     left_ambient = -layers[0]['props']['children'][1]['props']['children'][0]['props']['value']
     fig = {
         'layout': {
@@ -162,6 +217,18 @@ def build_structure(layers, n):
     }
     return dcc.Graph(config={'displaylogo': False, 'staticPlot': True}, figure=fig)
 
+# Callback for calculating maxwell matrix and building final graph.
+@app.callback(Output('experiment', 'children'),
+            [Input('layers', 'children'),
+            Input('constants', 'children'),
+            Input('run', 'n_clicks')])
+def run_experiment(layers, constants, n):
+    print(layers)
+    omega = constants[0]['props']['children'][1]['props']['children'][0]['props']['children'][1]['props']['value']
+    k1 = constants[0]['props']['children'][2]['props']['children'][0]['props']['children'][1]['props']['value']
+    k2 = constants[0]['props']['children'][3]['props']['children'][0]['props']['children'][1]['props']['value']
+    # scattering.buildMatrices()
+    return dcc.Graph()
+
 if __name__ == '__main__':
     app.run_server(debug=True)
-
