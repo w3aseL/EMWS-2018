@@ -18,6 +18,7 @@ COLORS = {
     }
 }
 
+
 # Pages
 intro = html.Div(style={'display': 'flex', 'flexDirection': 'row', 'padding': 'auto', 'margin': '10px'}, children=[
     html.Div(children=[
@@ -88,7 +89,7 @@ structure = html.Div(id='structure', children=[
 field = html.Div(children=[
     html.H2('Electromagnetic Field'),
     html.H5('Computation of electromagnetic field in space and time.'),
-    html.Div(id='constants', style={'display': 'flex'}, children=[
+    html.Div(id='frequency', style={'display': 'flex'}, children=[
         html.Div(style={'backgroundColor': 'white', 'width': '30%', 'margin': 'auto'}, children=[
             html.Div(style={'borderBottom': '0.5px solid #babdbe', 'padding': '5px'}, children=[
                 html.H5('Frequency and Wave Vector'),
@@ -220,14 +221,14 @@ def build_structure(layers, n):
 # Callback for calculating maxwell matrix and building final graph.
 @app.callback(Output('experiment', 'children'),
             [Input('layers', 'children'),
-            Input('constants', 'children'),
+            Input('frequency', 'children'),
             Input('run', 'n_clicks')])
-def run_experiment(layers, constants, n):
+def run_experiment(layers, frequency, n):
     print(layers)
-    omega = constants[0]['props']['children'][1]['props']['children'][0]['props']['children'][1]['props']['value']
-    k1 = constants[0]['props']['children'][2]['props']['children'][0]['props']['children'][1]['props']['value']
-    k2 = constants[0]['props']['children'][3]['props']['children'][0]['props']['children'][1]['props']['value']
-    # scattering.buildMatrices()
+    omega = frequency[0]['props']['children'][1]['props']['children'][0]['props']['children'][1]['props']['value']
+    k1 = frequency[0]['props']['children'][2]['props']['children'][0]['props']['children'][1]['props']['value']
+    k2 = frequency[0]['props']['children'][3]['props']['children'][0]['props']['children'][1]['props']['value']
+    m = scattering.buildMatrices(omega, k1, k2, layers)
     return dcc.Graph()
 
 if __name__ == '__main__':
