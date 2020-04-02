@@ -9,18 +9,32 @@ class Structure:
     class Layer:
         # Instance variables for each Layer object
         def __init__(self, name, length, epsilon, mu):
+            print('Instanciating Layer')
             self.name = name
             self.length = length
             self.epsilon = epsilon
             self.mu = mu
 
+        def __str__(self):
+            return self.name + ': ' + str(self.length)
+
     # Instance variables for each Structure object
     def __init__(self, num, omega, k1, k2):
+        print('Instanciating Structure')
         self.num = num
         self.omega = omega
         self.k1 = k1
         self.k2 = k2
         self.layers = []
+
+    def printLayers(self):
+        print('LAYERS: ')
+        for layer in self.layers:
+            print(layer)
+
+    def removeLayer(self, n):
+        print('Removing Layer')
+        self.layers.pop(n)
 
     # Method for adding a layer to the structure
     def addLayer(self, name, length, epsilon, mu):
@@ -28,9 +42,14 @@ class Structure:
         l = self.Layer(name, length, epsilon, mu)
         self.layers.append(l)
 
+    def insertLayer(self, name, length, epsilon, mu, n):
+        print('Inserting Layer')
+        l = self.Layer(name, length, epsilon, mu)
+        self.layers.insert(n, l)
+
     # Create the maxwell matrices
     def buildMatrices(self):
-        print('In Build')
+        print('Building Maxwell')
         maxwell_matrices = []
         for layer in self.layers:
             # layer = layers[num]
@@ -79,16 +98,26 @@ class Structure:
         return maxwell_matrices
 
 # Test code
-s = Structure(3, 1, 1, 1)
-e = np.array([[1,1,1],
-              [1,1,1],
-              [1,1,1]])
-u = np.array([[1,1,1],
-              [1,1,1],
-              [1,1,1]])
-s.addLayer('Ambient Left', 10, e, u)
-s.addLayer('Layer 1', 7, e, u)
-s.addLayer('Ambient Right', 10, e, u)
-m = s.buildMatrices()
-print(len(m))
-print(m[0].shape)
+def test():
+    s = Structure(3, 1, 1, 1)
+    e = np.array([[1,1,1],
+                [1,1,1],
+                [1,1,1]])
+    u = np.array([[1,1,1],
+                [1,1,1],
+                [1,1,1]])
+    s.addLayer('Ambient Left', 10, e, u)
+    s.addLayer('Layer 1', 7, e, u)
+    s.addLayer('Ambient Right', 10, e, u)
+    s.printLayers()
+    s.removeLayer(1)
+    s.printLayers()
+    s.insertLayer('Layer 1', 7, e, u, 1)
+    s.printLayers()
+    m = s.buildMatrices()
+    print('Number of Layers: ' + str(len(m)))
+    print('Dimension of 1st layer: ' + str(m[0].shape))
+    print('Dimension of 2nd layer: ' + str(m[1].shape))
+    print('Dimension of 3rd layer: ' + str(m[2].shape))
+
+test()
