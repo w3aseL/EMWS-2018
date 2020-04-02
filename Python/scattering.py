@@ -119,5 +119,8 @@ def test():
     print('Dimension of 1st layer: ' + str(m[0].shape))
     print('Dimension of 2nd layer: ' + str(m[1].shape))
     print('Dimension of 3rd layer: ' + str(m[2].shape))
+    eig = np.linalg.eig(m)
+    print('Eigenvalues: ' + str(eig[0]))
+    print('Eigenvectors: ' + str(eig[1]))
 
 test()
