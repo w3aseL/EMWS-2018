@@ -100,19 +100,25 @@ class Structure:
 # Test code
 def test():
     s = Structure(3, 1, 1, 1)
-    e = np.array([[1,1,1],
-                [1,1,1],
-                [1,1,1]])
-    u = np.array([[1,1,1],
-                [1,1,1],
-                [1,1,1]])
+    e = np.array([[1.5,0,0],
+                [0,8,0],
+                [0,0,1]])
+    ee = np.array([[8,0,0],
+                [0,1.5,0],
+                [0,0,1]])
+    u = np.array([[4,0,0],
+                [0,1,0],
+                [0,0,1]])
+    uu = np.array([[1,0,0],
+                [0,4,0],
+                [0,0,1]])
     s.addLayer('Ambient Left', 10, e, u)
     s.addLayer('Layer 1', 7, e, u)
     s.addLayer('Ambient Right', 10, e, u)
     s.printLayers()
     s.removeLayer(1)
     s.printLayers()
-    s.insertLayer('Layer 1', 7, e, u, 1)
+    s.insertLayer('Layer 1', 7, ee, uu, 1)
     s.printLayers()
     m = s.buildMatrices()
     print('Number of Layers: ' + str(len(m)))
