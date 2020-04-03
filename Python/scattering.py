@@ -1,4 +1,5 @@
 import math
+import time
 import numpy as np
 
 
@@ -9,14 +10,17 @@ class Structure:
     class Layer:
         # Instance variables for each Layer object
         def __init__(self, name, length, epsilon, mu):
-            print('Instanciating Layer')
+            print('     Instanciating Layer')
             self.name = name
             self.length = length
             self.epsilon = epsilon
             self.mu = mu
 
         def __str__(self):
-            return self.name + ': ' + str(self.length)
+            try:
+                return self.name + ': ' + str(self.length) + '\nEigen: ' + self.eigVal + self.eigVec
+            except:
+                return self.name + ': ' + str(self.length) 
 
     # Instance variables for each Structure object
     def __init__(self, num, omega, k1, k2):
@@ -28,7 +32,7 @@ class Structure:
         self.layers = []
 
     def printLayers(self):
-        print('LAYERS: ')
+        print('\nLAYERS: ')
         for layer in self.layers:
             print(layer)
 
@@ -49,7 +53,7 @@ class Structure:
 
     # Create the maxwell matrices
     def buildMatrices(self):
-        print('Building Maxwell')
+        print('\nBuilding Maxwell')
         maxwell_matrices = []
         for layer in self.layers:
             # layer = layers[num]
@@ -97,9 +101,36 @@ class Structure:
         self.maxwell = maxwell_matrices
         return maxwell_matrices
 
+    def calcEig(self):
+        print('\nCalculating Eigen Problem')
+        for n in range(len(self.layers)):
+            print('For layer ' + str(n+1))
+            eig = np.linalg.eig(self.maxwell[n])
+            self.layers[n].eigVal = eig[0]
+            self.layers[n].eigVec = eig[1]
+            print(f'Values:\n{self.layers[n].eigVal}')
+            print(f'Vectors:\n{self.layers[n].eigVec}')
+
+    def calcModes(self):
+        print('\nCalculating Modes')
+        for layer in self.layers:
+            mode = 0
+            for n in range(len(layer.eigVal)):
+                mode += np.real(layer.eigVec[n]) * math.exp(np.real(layer.eigVal[n]) * layer.length)
+            layer.modes = mode
+            print(str(layer.name) + ' Modes:\n' + str(layer.modes))
+
+    def __str__(self):
+        return 'Omega: ' + str(self.omega) + '\n(k1,k2): (' + str(self.k1) + ',' + str(self.k2) + ')\nMaxwells:\n' + str(self.maxwell)
+
 # Test code
 def test():
-    s = Structure(3, 1, 1, 1)
+    print('Starting Test:')
+    size = 3
+    omega = 0.398
+    k1 = 0.5
+    k2 = 0.22
+    s = Structure(size, omega, k1, k2)
     e = np.array([[1.5,0,0],
                 [0,8,0],
                 [0,0,1]])
@@ -122,11 +153,16 @@ def test():
     s.printLayers()
     m = s.buildMatrices()
     print('Number of Layers: ' + str(len(m)))
-    print('Dimension of 1st layer: ' + str(m[0].shape))
-    print('Dimension of 2nd layer: ' + str(m[1].shape))
-    print('Dimension of 3rd layer: ' + str(m[2].shape))
-    eig = np.linalg.eig(m)
-    print('Eigenvalues: ' + str(eig[0]))
-    print('Eigenvectors: ' + str(eig[1]))
-
+    print('Dimension of 1st layer Maxwell: ' + str(m[0].shape))
+    print('Dimension of 2nd layer Maxwell: ' + str(m[1].shape))
+    print('Dimension of 3rd layer Maxwell: ' + str(m[2].shape))
+    print(s)
+    s.calcEig()
+    s.calcModes()
+    print('\nEnd of test\n\n')
+    
+    
+start = time.perf_counter()
 test()
+end = time.perf_counter()
+print(f'Ran test in: {end-start:0.4f} seconds')
