@@ -108,7 +108,7 @@ class Structure:
         for n in range(len(self.layers)):
             print('For layer ' + str(n+1))
             start = time.perf_counter()
-            eig = np.linalg.eigh(self.maxwell[n])
+            eig = np.linalg.eig(self.maxwell[n])
             end = time.perf_counter()
             print(f'Time to calculate Eigensystem: {end-start:0.5f} seconds')
             self.layers[n].eigVal = eig[0]
@@ -128,10 +128,7 @@ class Structure:
     def printMaxwell(self):
         print('Maxwells:')
         for m in self.maxwell:
-            print('m:')
             print(m)
-            print('complex conjugate transpose:')
-            print(m.getH())
 
     def __str__(self):
         return 'Omega: ' + str(self.omega) + '\n(k1,k2): (' + str(self.k1) + ',' + str(self.k2) + ')\n'
