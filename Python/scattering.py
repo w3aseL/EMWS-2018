@@ -27,10 +27,10 @@ class Structure:
         print('Instanciating Structure')
         self.num = num
         self.omega = omega
-        c = 1
-        kap = omega/c
-        self.k1 = k1/kap
-        self.k2 = k2/kap
+        self.c = 1
+        self.kap = omega/self.c
+        self.k1 = k1/self.kap
+        self.k2 = k2/self.kap
         self.layers = []
 
     def printLayers(self):
@@ -89,7 +89,7 @@ class Structure:
                                     e[2][2]) + (k1*k2/u[2][2]))
             m43 = omega * ((e[0][2]*k2/e[2][2]) - (k2*u[2][0]/u[2][2]))
             m44 = omega * (-(e[0][2]*k1/e[2][2]) - (k2*u[2][1]/u[2][2]))
-            maxwell_matrix = np.array([[m11,  m12, m13, m14],
+            maxwell_matrix = np.matrix([[m11,  m12, m13, m14],
                                     [m21,  m22, m23, m24],
                                     [m31,  m32, m33, m34],
                                     [m41,  m42, m43, m44]])
@@ -108,7 +108,7 @@ class Structure:
         for n in range(len(self.layers)):
             print('For layer ' + str(n+1))
             start = time.perf_counter()
-            eig = np.linalg.eig(self.maxwell[n])
+            eig = np.linalg.eigh(self.maxwell[n])
             end = time.perf_counter()
             print(f'Time to calculate Eigensystem: {end-start:0.5f} seconds')
             self.layers[n].eigVal = eig[0]
@@ -128,7 +128,10 @@ class Structure:
     def printMaxwell(self):
         print('Maxwells:')
         for m in self.maxwell:
+            print('m:')
             print(m)
+            print('complex conjugate transpose:')
+            print(m.getH())
 
     def __str__(self):
         return 'Omega: ' + str(self.omega) + '\n(k1,k2): (' + str(self.k1) + ',' + str(self.k2) + ')\n'
