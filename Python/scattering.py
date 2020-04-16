@@ -131,7 +131,7 @@ class Structure:
             print(m)
 
     def __str__(self):
-        return 'Omega: ' + str(self.omega) + '\n(k1,k2): (' + str(self.k1) + ',' + str(self.k2) + ')\n'
+        return 'Omega: ' + str(self.omega) + '\n(k1,k2): (' + str(self.k1*self.omega) + ',' + str(self.k2*self.omega) + ')\n'
 
 # Test code
 def test():
